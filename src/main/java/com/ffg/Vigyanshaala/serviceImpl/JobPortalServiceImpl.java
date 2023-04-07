@@ -12,6 +12,7 @@ public class JobPortalServiceImpl implements JobPortalServices {
     public Response createJobImpl(JobDetails jobDetails){
 
         Response response=new Response();
+        System.out.println("The job detail received for adding is "+jobDetails);
         try {
             System.out.println("Successfully created Job");
             response.setStatusCode(HttpStatus.OK.value());
