@@ -13,8 +13,8 @@ public class JobPortalController {
 
     @Autowired
     JobPortalServices jobPortalServices;
-    @RequestMapping("/createJob")
-    Response createJob(JobDetails jobDetails){
+    @PostMapping (value = "/createJob",consumes = "application/json",produces = "application/json")
+    Response createJob(@RequestBody JobDetails jobDetails){
 
         Response response = new Response();
         try {
