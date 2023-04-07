@@ -14,6 +14,65 @@ import java.util.List;
 @ToString
 public class JobDetails {
     private String companyName;
+    //private String jobId;
+    private String jobTitle;
+    private String jobDescription;
+    private String salary;
+    private String jobLocation;
+    private Date postingDate;
+    private Date expiryDate;
+
+    private String question1;
+
+
+
+    public String getQuestion1() {
+        return question1;
+    }
+
+    public void setQuestion1(String question1) {
+        this.question1 = question1;
+    }
+
+    private String question2;
+
+    public String getQuestion2() {
+        return question2;
+    }
+
+    public void setQuestion2(String question2) {
+        this.question2 = question2;
+    }
+
+    private String question3;
+
+    public String getQuestion3() {
+        return question3;
+    }
+
+    public void setQuestion3(String question3) {
+        this.question3 = question3;
+    }
+
+    private String question4;
+
+    public String getQuestion4() {
+        return question4;
+    }
+
+    public void setQuestion4(String question4) {
+        this.question4 = question4;
+    }
+
+    private String question5;
+
+    public String getQuestion5() {
+        return question5;
+    }
+
+    public void setQuestion5(String question5) {
+        this.question5 = question5;
+    }
 
     public String getCompanyName(){
         return companyName;
@@ -21,21 +80,21 @@ public class JobDetails {
     public void setCompanyName(String companyName){
         this.companyName=companyName;
     }
-    private String jobId;
-    public String getJobId(){
-        return jobId;
-    }
-    public void setJobId(String jobId){
-        this.jobId=jobId;
-    }
-    private String jobTitle;
+//
+//    public String getJobId(){
+//        return jobId;
+//    }
+//    public void setJobId(String jobId){
+//        this.jobId=jobId;
+//    }
+
     public String getJobTitle(){
         return jobTitle;
     }
     public void setJobTitle(String jobTitle){
         this.jobTitle=jobTitle;
     }
-    private String jobDescription;
+
 
     public String getJobDescription() {
         return jobDescription;
@@ -45,7 +104,7 @@ public class JobDetails {
         this.jobDescription = jobDescription;
     }
 
-    private String salary;
+
 
     public String getSalary() {
         return salary;
@@ -55,7 +114,7 @@ public class JobDetails {
         this.salary = salary;
     }
 
-    private String jobLocation;
+
 
     public String getJobLocation() {
         return jobLocation;
@@ -65,7 +124,7 @@ public class JobDetails {
         this.jobLocation = jobLocation;
     }
 
-    private Date postingDate;
+
 
     public Date getPostingDate() {
         return postingDate;
@@ -75,7 +134,7 @@ public class JobDetails {
         this.postingDate = postingDate;
     }
 
-    private Date expiryDate;
+
 
     public void setExpiryDate(Date expiryDate) {
         this.expiryDate = expiryDate;
@@ -85,53 +144,9 @@ public class JobDetails {
         return expiryDate;
     }
 
-    private String candidateName;
 
-    public void setCandidateName(String candidateName) {
-        this.candidateName = candidateName;
-    }
 
-    public String getCandidateName() {
-        return candidateName;
-    }
 
-    private String candidateEmail;
 
-    public void setCandidateEmail(String candidateEmail) {
-        this.candidateEmail = candidateEmail;
-    }
 
-    public String getCandidateEmail() {
-        return candidateEmail;
-    }
-
-    private String candidateMobileNumber;
-
-    public void setCandidateMobileNumber(String candidateMobileNumber) {
-        this.candidateMobileNumber = candidateMobileNumber;
-    }
-
-    public String getCandidateMobileNumber() {
-        return candidateMobileNumber;
-    }
-
-    private String candidateQualification;
-
-    public String getCandidateQualification() {
-        return candidateQualification;
-    }
-
-    public void setCandidateQualification(String candidateQualification) {
-        this.candidateQualification = candidateQualification;
-    }
-
-    private List<Questionairre> questionairreList;
-
-    public List<Questionairre> getQuestionairreList() {
-        return questionairreList;
-    }
-
-    public void setQuestionairreList(List<Questionairre> questionairreList) {
-        this.questionairreList = questionairreList;
-    }
 }
