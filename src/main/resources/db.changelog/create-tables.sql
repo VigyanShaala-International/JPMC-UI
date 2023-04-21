@@ -1,17 +1,20 @@
-create table company_name_table
+create table company
 (
-company_name varchar(255),
-primary key(company_name)
+companyId long,
+companyName varchar(255),
+primary key(companyId)
 );
 
-create table job_title_table
+create table job_title
 (
-job_title varchar(255),
-primary key(job_title)
+jobTitleId long,
+jobTitle varchar(255),
+primary key(jobTitleId)
 );
 
-create table job_location_table
+create table job_location
 (
-job_location varchar(255),
-primary key(job_location)
+jobLocationId long,
+jobLocation varchar(255),
+primary key(jobLocationId)
 );

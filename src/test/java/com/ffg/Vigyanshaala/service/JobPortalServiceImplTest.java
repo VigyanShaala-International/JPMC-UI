@@ -1,14 +1,13 @@
 package com.ffg.Vigyanshaala.service;
 
-import com.ffg.Vigyanshaala.model.JobDetails;
+import com.ffg.Vigyanshaala.model.JobPortal.JobDetails;
 import com.ffg.Vigyanshaala.response.Response;
-import com.ffg.Vigyanshaala.serviceImpl.JobPortalServiceImpl;
+import com.ffg.Vigyanshaala.serviceImpl.JobPortalServiceImpl.AdminServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -21,7 +20,7 @@ import java.util.Date;
 @ExtendWith(MockitoExtension.class)
 public class JobPortalServiceImplTest {
     @InjectMocks
-    JobPortalServiceImpl jobPortalServiceImpl;
+    AdminServiceImpl jobPortalServiceImpl;
     @Before
     public void setup()
     {

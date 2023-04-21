@@ -1,4 +1,4 @@
-package com.ffg.Vigyanshaala.controller;
+package com.ffg.Vigyanshaala.controller.PdfGeneratorController;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;

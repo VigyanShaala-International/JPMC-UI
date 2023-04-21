@@ -1,14 +1,14 @@
-package com.ffg.Vigyanshaala.serviceImpl;
+package com.ffg.Vigyanshaala.serviceImpl.JobPortalServiceImpl;
 
-import com.ffg.Vigyanshaala.entity.CompanyName;
-import com.ffg.Vigyanshaala.entity.JobLocation;
-import com.ffg.Vigyanshaala.entity.JobTitle;
-import com.ffg.Vigyanshaala.model.JobDetails;
-import com.ffg.Vigyanshaala.repository.CompanyNameRepository;
-import com.ffg.Vigyanshaala.repository.JobLocationRepository;
-import com.ffg.Vigyanshaala.repository.JobTitleRepository;
+import com.ffg.Vigyanshaala.entity.JobPortalEntity.Company;
+import com.ffg.Vigyanshaala.entity.JobPortalEntity.JobLocation;
+import com.ffg.Vigyanshaala.entity.JobPortalEntity.JobTitle;
+import com.ffg.Vigyanshaala.model.JobPortal.JobDetails;
+import com.ffg.Vigyanshaala.repository.JobPortalRepository.CompanyNameRepository;
+import com.ffg.Vigyanshaala.repository.JobPortalRepository.JobLocationRepository;
+import com.ffg.Vigyanshaala.repository.JobPortalRepository.JobTitleRepository;
 import com.ffg.Vigyanshaala.response.Response;
-import com.ffg.Vigyanshaala.service.JobPortalServices;
+import com.ffg.Vigyanshaala.service.JobPortalService.AdminServices;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,17 +17,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class JobPortalServiceImpl implements JobPortalServices {
+public class AdminServiceImpl implements AdminServices {
  private final CompanyNameRepository companyNameRepository;
  private final JobLocationRepository jobLocationRepository;
  private final JobTitleRepository jobTitleRepository;
 
-    public JobPortalServiceImpl(CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository) {
+    public AdminServiceImpl(CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository) {
         this.companyNameRepository = companyDetailsRepository;
         this.jobLocationRepository = jobLocationRepository;
         this.jobTitleRepository = jobTitleRepository;
     }
 
+
+    /*to create a job posting*/
     @Override
     public Response createJobImpl(JobDetails jobDetails){
 
@@ -47,13 +49,14 @@ public class JobPortalServiceImpl implements JobPortalServices {
 
     }
 
+    /*to get the list of companies to choose from the company table while creating a job posting */
     @Override
-    public ResponseEntity getCompanyNameList()
+    public ResponseEntity getCompanyList()
     {
         ResponseEntity responseEntity;
         Response response=new Response();
         try {
-            List<CompanyName> companyNameList=companyNameRepository.findAll();
+            List<Company> companyNameList=companyNameRepository.findAll();
             System.out.println("The company name list is "+companyNameList);
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully received all company names");
@@ -69,6 +72,7 @@ public class JobPortalServiceImpl implements JobPortalServices {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    /*to get the list of job locations to choose from while creating a job posting*/
     @Override
     public ResponseEntity getJobLocationList()
     {
@@ -91,6 +95,7 @@ public class JobPortalServiceImpl implements JobPortalServices {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    /*to get a list of job titles to choose from while creating a job posting*/
     @Override
     public ResponseEntity getJobTitleList()
     {
@@ -113,77 +118,92 @@ public class JobPortalServiceImpl implements JobPortalServices {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    /*to add a company detail from the admin page*/
     @Override
-    public Response addCompanyNameList(List<String> companyNameList){
+    public Response addCompany(Company company){
         Response response=new Response();
-        List<CompanyName> companyNameObjectList=new ArrayList<>();
-        companyNameList.forEach((cn)-> {
-                    CompanyName companyName = new CompanyName();
-                    companyName.setCompany_name(cn);
-                    companyNameObjectList.add(companyName);
-                });
-
-        System.out.println("The company name List is  "+companyNameObjectList);
+        List<Company> companyList = companyNameRepository.findAll();
+        System.out.println("The list is : ");
+        for(Company company1:companyList) {
+            System.out.println(company1.getCompanyId()+" "+company1.getCompanyName());
+            if (company1.getCompanyName().equals(company.getCompanyName())) {
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("The company detail already exists in the table");
+                return response;
+            }
+        }
+        List<Company> companyListFinal =new ArrayList<>();
+        companyListFinal.add(company);
         try {
-            companyNameRepository.saveAll(companyNameObjectList);
-            System.out.println("Successfully saved all company names");
+            companyNameRepository.saveAll(companyListFinal);
+            System.out.println("Successfully saved company Detail");
             response.setStatusCode(HttpStatus.OK.value());
-            response.setStatusMessage("Successfully saved all company names");
+            response.setStatusMessage("Successfully saved company detail");
         }catch(Exception e)
         {
-            System.out.println("Exception occurred while saving company names "+e);
+            System.out.println("Exception occurred while saving company detail "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while saving company names "+e);
+            response.setStatusMessage("Exception occurred while saving company detail "+e);
         }
         return response;
     }
 
+    /*to add a job location from the admin page*/
     @Override
-    public Response addJobLocationList(List<String> jobLocationList){
+    public Response addJobLocation(JobLocation jobLocation){
         Response response=new Response();
-        List<JobLocation> jobLocationObjectList=new ArrayList<>();
-        jobLocationList.forEach((jl)-> {
-            JobLocation jobLocation = new JobLocation();
-            jobLocation.setJob_location(jl);
-            jobLocationObjectList.add(jobLocation);
-        });
+        List<JobLocation>jobLocationList= jobLocationRepository.findAll();
+        System.out.println("The list is : "+jobLocationList);
 
-        System.out.println("The job location List is  "+jobLocationObjectList);
+        for(JobLocation jobLocation1:jobLocationList) {
+            if (jobLocation1.getJobLocation().equals(jobLocation.getJobLocation())) {
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("The job location already exists in the table");
+                return response;
+            }
+        }
+        List<JobLocation>jobLocationListFinal=new ArrayList<>();
+        jobLocationListFinal.add(jobLocation);
         try {
-            jobLocationRepository.saveAll(jobLocationObjectList);
-            System.out.println("Successfully saved all job locations");
+            jobLocationRepository.saveAll(jobLocationListFinal);
+            System.out.println("Successfully saved  job location");
             response.setStatusCode(HttpStatus.OK.value());
-            response.setStatusMessage("Successfully saved all job locations");
+            response.setStatusMessage("Successfully saved  job location");
         }catch(Exception e)
         {
-            System.out.println("Exception occurred while saving job locations "+e);
+            System.out.println("Exception occurred while saving job location "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while saving job locations "+e);
+            response.setStatusMessage("Exception occurred while saving job location "+e);
         }
         return response;
     }
 
+    /*to add a job title from the admin page*/
     @Override
-    public Response addJobTitleList(List<String> jobTitleList){
+    public Response addJobTitle(JobTitle jobTitle){
         Response response=new Response();
-        List<JobTitle> jobTitleObjectList=new ArrayList<>();
-        jobTitleList.forEach((jt)-> {
-            JobTitle jobTitle = new JobTitle();
-            jobTitle.setJob_title(jt);
-            jobTitleObjectList.add(jobTitle);
-        });
 
-        System.out.println("The job title List is  "+jobTitleObjectList);
-        try {
-            jobTitleRepository.saveAll(jobTitleObjectList);
-            System.out.println("Successfully saved all job titles");
+        List<JobTitle>jobTitleList= jobTitleRepository.findAll();
+        System.out.println("The list is : "+jobTitleList);
+        for(JobTitle jobTitle1:jobTitleList){
+        if(jobTitle1.getJobTitle().equals(jobTitle.getJobTitle()))
+        {
             response.setStatusCode(HttpStatus.OK.value());
-            response.setStatusMessage("Successfully saved all job titles");
+            response.setStatusMessage("The jobTitle already exists in the table");
+            return response;
+        }}
+        List<JobTitle>jobTitleListFinal=new ArrayList<>();
+        jobTitleListFinal.add(jobTitle);
+        try {
+            jobTitleRepository.saveAll(jobTitleListFinal);
+            System.out.println("Successfully saved  job title");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully saved  job title");
         }catch(Exception e)
         {
-            System.out.println("Exception occurred while saving job titles "+e);
+            System.out.println("Exception occurred while saving job title "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while saving job titles "+e);
+            response.setStatusMessage("Exception occurred while saving job title "+e);
         }
         return response;
     }
