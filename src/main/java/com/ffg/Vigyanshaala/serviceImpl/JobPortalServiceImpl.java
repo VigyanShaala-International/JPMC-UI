@@ -70,6 +70,50 @@ public class JobPortalServiceImpl implements JobPortalServices {
     }
 
     @Override
+    public ResponseEntity getJobLocationList()
+    {
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try {
+            List<JobLocation> jobLocationList=jobLocationRepository.findAll();
+            System.out.println("The company name list is "+jobLocationList);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received all job locations");
+            response.setData(jobLocationList);
+
+        }catch(Exception e)
+        {
+            System.out.println("Exception occurred while getting job locations "+e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting job locations "+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Override
+    public ResponseEntity getJobTitleList()
+    {
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try {
+            List<JobTitle> jobTitleList=jobTitleRepository.findAll();
+            System.out.println("The job title list is "+jobTitleList);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received all company names");
+            response.setData(jobTitleList);
+
+        }catch(Exception e)
+        {
+            System.out.println("Exception occurred while getting job title list "+e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting job title list "+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Override
     public Response addCompanyNameList(List<String> companyNameList){
         Response response=new Response();
         List<CompanyName> companyNameObjectList=new ArrayList<>();
