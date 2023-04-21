@@ -36,7 +36,7 @@ public class JobPortalController {
         return response;
     }
 
-    @GetMapping(value="/getCompanyNameList",consumes="application/json", produces="application/json")
+    @GetMapping(value="/getCompanyNameList", produces="application/json")
     ResponseEntity<Response> getCompanyNameList(){
         ResponseEntity responseEntity;
         Response response=new Response();
@@ -65,6 +65,22 @@ public class JobPortalController {
         return response;
     }
 
+    @GetMapping(value="/getJobTitleList", produces="application/json")
+    ResponseEntity<Response> getJobTitleList(){
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try{
+            responseEntity=jobPortalServices.getJobTitleList();
+        }catch(Exception e){
+            System.out.println("Exception occurred while getting job title list "+e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occured while getting job title list"+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return responseEntity;
+    }
+
+
     @PostMapping(value="/addJobLocationList",consumes="application/json", produces="application/json")
     Response addJobLocationList(@RequestBody List<String> jobLocationList){
         Response response=new Response();
@@ -77,6 +93,21 @@ public class JobPortalController {
             response.setStatusMessage("Exception occured while adding job location "+e);
         }
         return response;
+    }
+
+    @GetMapping(value="/getJobLocationList", produces="application/json")
+    ResponseEntity<Response> getJobLocationList(){
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try{
+            responseEntity=jobPortalServices.getJobLocationList();
+        }catch(Exception e){
+            System.out.println("Exception occurred while getting job location list "+e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occured while getting job location list"+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return responseEntity;
     }
     @PostMapping (value = "/createJob",consumes = "application/json",produces = "application/json")
     Response createJob(@RequestBody JobDetails jobDetails){

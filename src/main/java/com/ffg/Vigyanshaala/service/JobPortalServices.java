@@ -11,4 +11,6 @@ public interface JobPortalServices {
     public Response addJobLocationList(List<String> jobLocationList);
     public Response addJobTitleList(List<String> jobTitleList);
     public ResponseEntity getCompanyNameList();
+    public ResponseEntity getJobLocationList();
+    public ResponseEntity getJobTitleList();
 }
