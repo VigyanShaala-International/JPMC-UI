@@ -8,3 +8,4 @@ databaseChangeLog:
         - sqlFile:
             path: create-tables.sql
             relativeToChangelogFile: true
+

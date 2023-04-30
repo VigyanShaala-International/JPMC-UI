@@ -1,11 +1,13 @@
 package com.ffg.Vigyanshaala.serviceImpl.JobPortalServiceImpl;
 
 import com.ffg.Vigyanshaala.entity.JobPortalEntity.Company;
+import com.ffg.Vigyanshaala.entity.JobPortalEntity.Job;
 import com.ffg.Vigyanshaala.entity.JobPortalEntity.JobLocation;
 import com.ffg.Vigyanshaala.entity.JobPortalEntity.JobTitle;
 import com.ffg.Vigyanshaala.model.JobPortal.JobDetails;
 import com.ffg.Vigyanshaala.repository.JobPortalRepository.CompanyNameRepository;
 import com.ffg.Vigyanshaala.repository.JobPortalRepository.JobLocationRepository;
+import com.ffg.Vigyanshaala.repository.JobPortalRepository.JobRepository;
 import com.ffg.Vigyanshaala.repository.JobPortalRepository.JobTitleRepository;
 import com.ffg.Vigyanshaala.response.Response;
 import com.ffg.Vigyanshaala.service.JobPortalService.AdminServices;
@@ -21,21 +23,24 @@ public class AdminServiceImpl implements AdminServices {
  private final CompanyNameRepository companyNameRepository;
  private final JobLocationRepository jobLocationRepository;
  private final JobTitleRepository jobTitleRepository;
+ private final JobRepository jobRepository;
 
-    public AdminServiceImpl(CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository) {
+    public AdminServiceImpl(JobRepository jobRepository,CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository) {
         this.companyNameRepository = companyDetailsRepository;
         this.jobLocationRepository = jobLocationRepository;
         this.jobTitleRepository = jobTitleRepository;
+        this.jobRepository=jobRepository;
     }
 
 
     /*to create a job posting*/
     @Override
-    public Response createJobImpl(JobDetails jobDetails){
+    public Response createJob(Job job){
 
         Response response=new Response();
-        System.out.println("The job detail received for adding is "+jobDetails);
+        System.out.println("The job detail received for adding is "+job);
         try {
+            jobRepository.save(job);
             System.out.println("Successfully created Job");
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully created Job");
@@ -132,10 +137,9 @@ public class AdminServiceImpl implements AdminServices {
                 return response;
             }
         }
-        List<Company> companyListFinal =new ArrayList<>();
-        companyListFinal.add(company);
+
         try {
-            companyNameRepository.saveAll(companyListFinal);
+            companyNameRepository.save(company);
             System.out.println("Successfully saved company Detail");
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully saved company detail");
@@ -162,10 +166,9 @@ public class AdminServiceImpl implements AdminServices {
                 return response;
             }
         }
-        List<JobLocation>jobLocationListFinal=new ArrayList<>();
-        jobLocationListFinal.add(jobLocation);
+
         try {
-            jobLocationRepository.saveAll(jobLocationListFinal);
+            jobLocationRepository.save(jobLocation);
             System.out.println("Successfully saved  job location");
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully saved  job location");
@@ -192,10 +195,9 @@ public class AdminServiceImpl implements AdminServices {
             response.setStatusMessage("The jobTitle already exists in the table");
             return response;
         }}
-        List<JobTitle>jobTitleListFinal=new ArrayList<>();
-        jobTitleListFinal.add(jobTitle);
+
         try {
-            jobTitleRepository.saveAll(jobTitleListFinal);
+            jobTitleRepository.save(jobTitle);
             System.out.println("Successfully saved  job title");
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully saved  job title");

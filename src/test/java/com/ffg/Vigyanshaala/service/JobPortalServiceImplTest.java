@@ -54,12 +54,5 @@ public class JobPortalServiceImplTest {
 
         return jobDetails;
     }
-    @Test
-    public void createJobImpl()
-    {
-        JobDetails jobDetails=createNewJob();
 
-        Response response=jobPortalServiceImpl.createJobImpl(jobDetails);
-        assertEquals(200,response.getStatusCode());
-    }
 }

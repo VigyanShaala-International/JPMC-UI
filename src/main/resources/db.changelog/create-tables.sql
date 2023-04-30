@@ -18,3 +18,9 @@ jobLocationId long,
 jobLocation varchar(255),
 primary key(jobLocationId)
 );
+
+create table job(
+jobId long,
+jobName varchar(255),
+primary key(jobId)
+);

@@ -1,6 +1,7 @@
 package com.ffg.Vigyanshaala.controller.JobPortalController;
 
 import com.ffg.Vigyanshaala.entity.JobPortalEntity.Company;
+import com.ffg.Vigyanshaala.entity.JobPortalEntity.Job;
 import com.ffg.Vigyanshaala.entity.JobPortalEntity.JobLocation;
 import com.ffg.Vigyanshaala.entity.JobPortalEntity.JobTitle;
 import com.ffg.Vigyanshaala.model.JobPortal.JobDetails;
@@ -27,7 +28,7 @@ public class AdminController {
     @ApiOperation(value = "Health Check for the admin route", notes = "Checks whether the route /jobPortal/admin/ is healthy or not")
     @GetMapping("/")
     String healthCheck(){
-        return "This route is healthy";
+        return "This admin route is healthy";
     }
 
     @ApiOperation(value = "Add company details in the Company table", notes = "Returns a response with status code 200 for successful addition in the table.")
@@ -124,20 +125,17 @@ public class AdminController {
         }
         return responseEntity;
     }
-    @PostMapping (value = "/createJob",consumes = "application/json",produces = "application/json")
-    Response createJob(@RequestBody JobDetails jobDetails){
-
-        Response response = new Response();
-        try {
-            System.out.println("Job Details are : " + jobDetails);
-            response = adminServices.createJobImpl(jobDetails);
-        }
-        catch(Exception e)
-        {
-            System.out.println("Exception occurred while createJobImpl "+e);
+    @ApiOperation(value = "Add job in the job table", notes = "Returns a response with status code 200 for successful addition in the table.")
+    @PostMapping(value="/createJob",consumes="application/json", produces="application/json")
+    Response addCompany(@RequestBody Job job){
+        Response response=new Response();
+        try{
+            System.out.println("The Job detail is : "+ job.toString());
+            response= adminServices.createJob(job);
+        }catch(Exception e){
+            System.out.println("Exception occurred while adding job  "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while createJobImp "+e);
-
+            response.setStatusMessage("Exception occurred while adding job  "+e);
         }
         return response;
     }
