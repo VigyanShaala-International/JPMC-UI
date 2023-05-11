@@ -22,5 +22,7 @@ primary key(jobLocationId)
 create table job(
 jobId long,
 jobName varchar(255),
+isActive varchar(255),
+expiryDate varchar(255),
 primary key(jobId)
 );

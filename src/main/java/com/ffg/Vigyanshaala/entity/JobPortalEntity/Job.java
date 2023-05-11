@@ -16,11 +16,11 @@ public class Job {
     @GeneratedValue Long jobId;
     private
     String jobName;
-    private Date expiryDate;
+    private String expiryDate;
     private String isActive;
 
     public Job(){}
-    Job(String jobName, Long jobId, Date expiryDate, String isActive){
+    Job(String jobName, Long jobId, String expiryDate, String isActive){
         this.jobName=jobName;
         this.jobId=jobId;
         this.expiryDate=expiryDate;
@@ -42,11 +42,11 @@ public class Job {
     {
         this.jobId=jobId;
     }
-    public Date getExpiryDate()
+    public String getExpiryDate()
     {
         return expiryDate;
     }
-    public void setExpiryDate(Date expiryDate)
+    public void setExpiryDate(String expiryDate)
     {
         this.expiryDate=expiryDate;
     }

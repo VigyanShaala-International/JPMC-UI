@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @RestController
@@ -29,8 +30,9 @@ public class SystemController {
         ResponseEntity responseEntity;
         Response response=new Response();
         try{
-            Date date = new Date();
-            responseEntity= systemServices.deleteExpiredJobs(date);
+         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+         Date date = new Date();
+            responseEntity= systemServices.deleteExpiredJobs(formatter.format(date));
         }catch(Exception e){
             System.out.println("Exception occurred while deleting job "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());

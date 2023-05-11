@@ -1,15 +1,11 @@
 package com.ffg.Vigyanshaala.serviceImpl.JobPortalServiceImpl;
 
-import com.ffg.Vigyanshaala.entity.JobPortalEntity.Job;
 import com.ffg.Vigyanshaala.repository.JobPortalRepository.ExpiredJobsRepository;
 import com.ffg.Vigyanshaala.response.Response;
 import com.ffg.Vigyanshaala.service.JobPortalService.SystemServices;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Date;
 
 @Service
 public class SystemServiceImpl implements SystemServices {
@@ -21,12 +17,12 @@ public class SystemServiceImpl implements SystemServices {
     }
 
     @Override
-    public ResponseEntity deleteExpiredJobs(Date date){
-        ArrayList<Job> results = null;
+    public ResponseEntity deleteExpiredJobs(String date){
+//        ArrayList<Job> results = null;
         Response response = new Response();
         try {
-            results = expiredJobsRepository.softdeleteJobs(date);
-            System.out.println(results);
+              expiredJobsRepository.softdeleteJobs(date);
+//            System.out.println(results);
             System.out.println("Successfully soft deleted expired jobs");
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully flagged expired jobs");
