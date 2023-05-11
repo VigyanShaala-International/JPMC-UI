@@ -2,9 +2,11 @@ package com.ffg.Vigyanshaala.serviceImpl;
 
 import com.ffg.Vigyanshaala.entity.CompanyName;
 import com.ffg.Vigyanshaala.entity.JobLocation;
+import com.ffg.Vigyanshaala.entity.JobPosting;
 import com.ffg.Vigyanshaala.entity.JobTitle;
 import com.ffg.Vigyanshaala.model.JobDetails;
 import com.ffg.Vigyanshaala.repository.CompanyNameRepository;
+import com.ffg.Vigyanshaala.repository.ExpiredJobsRepository;
 import com.ffg.Vigyanshaala.repository.JobLocationRepository;
 import com.ffg.Vigyanshaala.repository.JobTitleRepository;
 import com.ffg.Vigyanshaala.response.Response;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -21,11 +24,13 @@ public class JobPortalServiceImpl implements JobPortalServices {
  private final CompanyNameRepository companyNameRepository;
  private final JobLocationRepository jobLocationRepository;
  private final JobTitleRepository jobTitleRepository;
+ private final ExpiredJobsRepository expiredJobsRepository;
 
-    public JobPortalServiceImpl(CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository) {
+    public JobPortalServiceImpl(CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, ExpiredJobsRepository expiredJobsRepository) {
         this.companyNameRepository = companyDetailsRepository;
         this.jobLocationRepository = jobLocationRepository;
         this.jobTitleRepository = jobTitleRepository;
+        this.expiredJobsRepository = expiredJobsRepository;
     }
 
     @Override
@@ -187,4 +192,34 @@ public class JobPortalServiceImpl implements JobPortalServices {
         }
         return response;
     }
+    @Override
+    public ArrayList<JobPosting> deleteExpiredJobs(Date date){
+        ArrayList<JobPosting> results = null;
+        try {
+            results = expiredJobsRepository.softdeleteJobs(date);
+            System.out.println("Successfully soft deleted expired jobs");
+//            response.setStatusCode(HttpStatus.OK.value());
+//            response.setStatusMessage("Successfully flagged expired jobs");
+        }catch(Exception e)
+        {
+            System.out.println("Exception occurred while soft deleting titles "+e);
+//            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//            response.setStatusMessage("Exception occurred while soft deleting titles "+e);
+        }
+        return results;
+    }
+//    @Override
+//    public ArrayList<JobPosting> deleteExpiredJobs(Date date) {
+//        try {
+//            ArrayList<JobPosting> results = null;
+//            results = ExpiredJobsRepository.softdeleteJobs(date);
+//            return results;
+//        }catch(Exception e)
+//        {
+//            System.out.println("Exception occurred while soft deleting titles "+e);
+//            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//            response.setStatusMessage("Exception occurred while soft deleting titles "+e);
+//        }
+//
+//    }
 }

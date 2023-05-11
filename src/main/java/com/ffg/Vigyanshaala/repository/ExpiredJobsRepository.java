@@ -7,13 +7,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
 
 @Repository
 public interface ExpiredJobsRepository extends JpaRepository<JobPosting,Long> {
-//    LocalTime localTime = LocalTime.now();
+    //    LocalTime localTime = LocalTime.now();
     @Modifying
-    @Query("UPDATE job_posting_table a set is_active='N' where a.expiry_date<:date and is_active='Y'")
-    void softdeleteJobs(@Param("date") LocalDate date);
+    @Query("UPDATE JobPosting a set is_active='N' where a.expiry_date<:date and is_active='Y'")
+    public ArrayList<JobPosting> softdeleteJobs(
+            @Param("date") Date date);
+
 }

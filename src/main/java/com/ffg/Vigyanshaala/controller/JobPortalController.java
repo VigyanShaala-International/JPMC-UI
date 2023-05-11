@@ -1,5 +1,6 @@
 package com.ffg.Vigyanshaala.controller;
 
+import com.ffg.Vigyanshaala.entity.JobPosting;
 import com.ffg.Vigyanshaala.model.JobDetails;
 import com.ffg.Vigyanshaala.response.Response;
 import com.ffg.Vigyanshaala.service.JobPortalServices;
@@ -8,6 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -126,5 +130,19 @@ public class JobPortalController {
 
         }
         return response;
+    }
+    @PostMapping(value="/deleteExpiredJobs", produces="application/json")
+    ArrayList<JobPosting> deleteExpiredJobs(){
+        ArrayList<JobPosting> result = null;
+        try{
+            Date date = new Date();
+            result=jobPortalServices.deleteExpiredJobs(date);
+            System.out.println(result);
+        }catch(Exception e){
+            System.out.println("Exception occurred while deleting job "+e);
+//            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//            response.setStatusMessage("Exception occured while deleting job "+e);
+        }
+        return result;
     }
 }
