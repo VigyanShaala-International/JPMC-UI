@@ -9,8 +9,21 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class Response {
+public class Response<T> {
     private int statusCode;
+
+    private String statusMessage;
+
+    private T data;
+
+    public Response(int statusCode, String statusMessage, T data)
+    {
+        this.statusCode=statusCode;
+
+        this.statusMessage=statusMessage;
+
+        this.data=data;
+    }
 
     public int getStatusCode() {
         return statusCode;
@@ -20,17 +33,9 @@ public class Response {
         this.statusCode = statusCode;
     }
 
-    private String errorCode;
 
-    public String getErrorCode() {
-        return errorCode;
-    }
 
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
-    }
 
-    private String statusMessage;
 
     public String getStatusMessage() {
         return statusMessage;
@@ -40,13 +45,14 @@ public class Response {
         this.statusMessage = statusMessage;
     }
 
-    private String errorMessage;
 
-    public String getErrorMessage() {
-        return errorMessage;
+
+
+    public T getData(){return data;}
+    public void setData(T data){
+        this.data=data;
     }
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
+
+
 }

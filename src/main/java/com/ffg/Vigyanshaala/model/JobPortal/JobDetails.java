@@ -1,4 +1,4 @@
-package com.ffg.Vigyanshaala.model;
+package com.ffg.Vigyanshaala.model.JobPortal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,15 +14,19 @@ import java.util.List;
 @ToString
 public class JobDetails {
     private String companyName;
-    //private String jobId;
     private String jobTitle;
+    private String jobLocation;
     private String jobDescription;
     private String salary;
-    private String jobLocation;
     private Date postingDate;
     private Date expiryDate;
-
+    private String commonQuestion;
     private String question1;
+    private String question2;
+    private String question3;
+    private String question4;
+    private String question5;
+
 
 
 
@@ -34,7 +38,7 @@ public class JobDetails {
         this.question1 = question1;
     }
 
-    private String question2;
+
 
     public String getQuestion2() {
         return question2;
@@ -44,7 +48,7 @@ public class JobDetails {
         this.question2 = question2;
     }
 
-    private String question3;
+
 
     public String getQuestion3() {
         return question3;
@@ -54,7 +58,7 @@ public class JobDetails {
         this.question3 = question3;
     }
 
-    private String question4;
+
 
     public String getQuestion4() {
         return question4;
@@ -64,7 +68,7 @@ public class JobDetails {
         this.question4 = question4;
     }
 
-    private String question5;
+
 
     public String getQuestion5() {
         return question5;
@@ -80,13 +84,7 @@ public class JobDetails {
     public void setCompanyName(String companyName){
         this.companyName=companyName;
     }
-//
-//    public String getJobId(){
-//        return jobId;
-//    }
-//    public void setJobId(String jobId){
-//        this.jobId=jobId;
-//    }
+
 
     public String getJobTitle(){
         return jobTitle;
