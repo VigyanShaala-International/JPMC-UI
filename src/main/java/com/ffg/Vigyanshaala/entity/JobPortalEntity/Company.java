@@ -1,10 +1,7 @@
 package com.ffg.Vigyanshaala.entity.JobPortalEntity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 /*This is the company table that stores all the company details which the admin has submitted */
 @Entity
@@ -12,29 +9,29 @@ import jakarta.persistence.Table;
 public class Company {
 
     private @Id
-    @GeneratedValue Long companyId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) Long company_ID;
     private
-    String companyName;
+    String company_name;
 
     public Company(){}
     Company(String companyName, Long companyId){
-        this.companyName=companyName;
-        this.companyId=companyId;
+        this.company_name=companyName;
+        this.company_ID=companyId;
     }
     public String getCompanyName()
     {
-        return companyName;
+        return company_name;
     }
 
     public void setCompanyName(String companyName){
-        this.companyName=companyName;
+        this.company_name=companyName;
     }
     public Long getCompanyId()
     {
-        return companyId;
+        return company_ID;
     }
     public void setCompanyId(Long companyId)
     {
-        this.companyId=companyId;
+        this.company_ID=companyId;
     }
 }

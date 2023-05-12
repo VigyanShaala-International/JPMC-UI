@@ -11,17 +11,17 @@ import lombok.ToString;
 @ToString
 public class Response<T> {
     private int statusCode;
-    private int errorCode;
+
     private String statusMessage;
-    private String errorMessage;
+
     private T data;
 
-    public Response(int statusCode, int errorCode, String statusMessage, String errorMessage,T data)
+    public Response(int statusCode, String statusMessage, T data)
     {
         this.statusCode=statusCode;
-        this.errorCode=errorCode;
+
         this.statusMessage=statusMessage;
-        this.errorMessage=errorMessage;
+
         this.data=data;
     }
 
@@ -35,14 +35,6 @@ public class Response<T> {
 
 
 
-    public int getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
-    }
-
 
 
     public String getStatusMessage() {
@@ -55,13 +47,6 @@ public class Response<T> {
 
 
 
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
 
     public T getData(){return data;}
     public void setData(T data){

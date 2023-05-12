@@ -1,38 +1,35 @@
 package com.ffg.Vigyanshaala.entity.JobPortalEntity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 /*This is the job_location table which stores all the job locations that the admin has submitted*/
 @Entity
 @Table(name="job_location")
 public class JobLocation {
 
-    private @Id @GeneratedValue Long jobLocationId;
-    private  String jobLocation;
+    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long job_location_ID;
+    private  String job_location;
 
     public JobLocation(){}
-    JobLocation(String job_location, Long jobId){
-        this.jobLocation=jobLocation;
-        this.jobLocationId=jobId;
+    JobLocation(String jobLocation, Long jobId){
+        this.job_location=jobLocation;
+        this.job_location_ID=jobId;
     }
     public String getJobLocation()
     {
-        return jobLocation;
+        return job_location;
     }
 
     public void setJobLocation(String jobLocation){
-        this.jobLocation=jobLocation;
+        this.job_location=jobLocation;
     }
     public Long getJobLocationId()
     {
-        return jobLocationId;
+        return job_location_ID;
     }
     public void setJobLocationId(Long jobLocationId)
     {
-        this.jobLocationId=jobLocationId;
+        this.job_location_ID=jobLocationId;
     }
 
 }

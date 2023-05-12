@@ -1,28 +1,42 @@
 create table company
 (
-companyId long,
-companyName varchar(255),
-primary key(companyId)
+company_ID long,
+company_name varchar(255),
+primary key(company_ID)
 );
 
 create table job_title
 (
-jobTitleId long,
-jobTitle varchar(255),
-primary key(jobTitleId)
+job_title_ID long,
+job_title varchar(255),
+primary key(job_title_ID)
 );
 
 create table job_location
 (
-jobLocationId long,
-jobLocation varchar(255),
-primary key(jobLocationId)
+job_location_ID long,
+job_location varchar(255),
+primary key(job_location_ID)
 );
 
 create table job(
-jobId long,
-jobName varchar(255),
-isActive varchar(255),
-expiryDate varchar(255),
-primary key(jobId)
+job_ID long,
+job_name varchar(255),
+is_active varchar(255),
+expiry_date varchar(255),
+primary key(job_ID)
 );
+
+create table swot_template(
+student_ID varchar(255),
+student_email varchar(255),
+version long,
+strength varchar(255),
+weakness varchar(255),
+opportunity varchar(255),
+threat varchar(255),
+student_name varchar(255),
+student_degree varchar(255),
+goal varchar(255),
+primary key(student_ID)
+)
