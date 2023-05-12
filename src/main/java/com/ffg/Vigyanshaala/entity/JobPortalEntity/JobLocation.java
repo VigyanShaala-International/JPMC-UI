@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 @Table(name="job_location")
 public class JobLocation {
 
-    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long job_location_ID;
+    private @Id Long job_location_ID;
     private  String job_location;
 
     public JobLocation(){}

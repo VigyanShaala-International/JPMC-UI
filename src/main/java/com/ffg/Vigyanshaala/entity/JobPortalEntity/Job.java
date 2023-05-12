@@ -10,7 +10,7 @@ import java.util.Date;
 public class Job {
 
     private @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) Long job_ID;
+    Long job_ID;
     private
     String job_name;
     private String expiry_date;
