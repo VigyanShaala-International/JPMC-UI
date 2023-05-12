@@ -4,7 +4,6 @@ import com.ffg.Vigyanshaala.entity.JobPortalEntity.Company;
 import com.ffg.Vigyanshaala.entity.JobPortalEntity.Job;
 import com.ffg.Vigyanshaala.entity.JobPortalEntity.JobLocation;
 import com.ffg.Vigyanshaala.entity.JobPortalEntity.JobTitle;
-import com.ffg.Vigyanshaala.model.JobPortal.JobDetails;
 import com.ffg.Vigyanshaala.repository.JobPortalRepository.CompanyNameRepository;
 import com.ffg.Vigyanshaala.repository.JobPortalRepository.JobLocationRepository;
 import com.ffg.Vigyanshaala.repository.JobPortalRepository.JobRepository;
