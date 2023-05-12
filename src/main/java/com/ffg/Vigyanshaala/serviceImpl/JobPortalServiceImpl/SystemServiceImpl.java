@@ -5,6 +5,7 @@ import com.ffg.Vigyanshaala.response.Response;
 import com.ffg.Vigyanshaala.service.JobPortalService.SystemServices;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
