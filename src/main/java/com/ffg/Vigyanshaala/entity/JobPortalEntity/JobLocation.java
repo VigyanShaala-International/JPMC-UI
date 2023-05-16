@@ -7,11 +7,11 @@ import jakarta.persistence.*;
 @Table(name="job_location")
 public class JobLocation {
 
-    private @Id Long job_location_ID;
+    private @Id String job_location_ID;
     private  String job_location;
 
     public JobLocation(){}
-    JobLocation(String jobLocation, Long jobId){
+    JobLocation(String jobLocation, String jobId){
         this.job_location=jobLocation;
         this.job_location_ID=jobId;
     }
@@ -23,11 +23,11 @@ public class JobLocation {
     public void setJobLocation(String jobLocation){
         this.job_location=jobLocation;
     }
-    public Long getJobLocationId()
+    public String getJobLocationId()
     {
         return job_location_ID;
     }
-    public void setJobLocationId(Long jobLocationId)
+    public void setJobLocationId(String jobLocationId)
     {
         this.job_location_ID=jobLocationId;
     }
