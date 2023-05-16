@@ -8,13 +8,9 @@ This README would normally document whatever steps are necessary to get your app
 
 
 
-### How do I get set up? ###
+### Versions ###
 
 * The code uses Java version 20 and Spring Boot version 3
-* Clone this folder and open in IntelliJ
-* Right click the folder and open Module Settings, make sure correct SDK is selected
-* Under Module Settings select Project Settings and make sure correct SDK is selected here as well and select Language level as 11
-* Build the project
 
 
 
