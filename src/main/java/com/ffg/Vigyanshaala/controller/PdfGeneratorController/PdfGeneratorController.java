@@ -44,9 +44,9 @@ public class PdfGeneratorController {
         try{
             responseEntity= swotTemplateServices.getSwotLatestVersion(studentEmail);
         }catch(Exception e){
-            System.out.println("Exception occurred while getting company detail list "+e);
+            System.out.println("Exception occurred while getting swot latest version "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while getting company detail list"+e);
+            response.setStatusMessage("Exception occured while getting swot latest version"+e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
         return responseEntity;
@@ -60,9 +60,9 @@ public class PdfGeneratorController {
         try{
             responseEntity= swotTemplateServices.getSwotTemplate(studentEmail,version);
         }catch(Exception e){
-            System.out.println("Exception occurred while getting company detail list "+e);
+            System.out.println("Exception occurred while getting Swot Template data "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while getting company detail list"+e);
+            response.setStatusMessage("Exception occured while getting Swot Template data"+e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
         return responseEntity;

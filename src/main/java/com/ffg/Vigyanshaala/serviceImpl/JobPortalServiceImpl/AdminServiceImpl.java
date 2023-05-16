@@ -127,15 +127,19 @@ public class AdminServiceImpl implements AdminServices {
 
     /*to add a company detail from the admin page*/
     @Override
-    public Response addCompany(Company company){
+    public Response addCompany(String company){
         Response response=new Response();
+        Company companyOb=new Company();
+
         String companyId = UUID.randomUUID().toString();
-        company.setCompanyId(companyId);
+        companyOb.setCompanyId(companyId);
+        companyOb.setCompanyName(company);
+
         List<Company> companyList = companyNameRepository.findAll();
         System.out.println("The list is : ");
         for(Company company1:companyList) {
             System.out.println(company1.getCompanyId()+" "+company1.getCompanyName());
-            if (company1.getCompanyName().equals(company.getCompanyName())) {
+            if (company1.getCompanyName().equals(company)) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The company detail already exists in the table");
                 return response;
@@ -143,7 +147,7 @@ public class AdminServiceImpl implements AdminServices {
         }
 
         try {
-            companyNameRepository.save(company);
+            companyNameRepository.save(companyOb);
             System.out.println("Successfully saved company Detail");
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully saved company detail");
@@ -158,15 +162,18 @@ public class AdminServiceImpl implements AdminServices {
 
     /*to add a job location from the admin page*/
     @Override
-    public Response addJobLocation(JobLocation jobLocation){
+    public Response addJobLocation(String jobLocation){
         Response response=new Response();
+        JobLocation jobLocationOb=new JobLocation();
+
         String jobLocationId = UUID.randomUUID().toString();
-        jobLocation.setJobLocationId(jobLocationId);
+        jobLocationOb.setJobLocationId(jobLocationId);
+        jobLocationOb.setJobLocation(jobLocation);
         List<JobLocation>jobLocationList= jobLocationRepository.findAll();
         System.out.println("The list is : "+jobLocationList);
 
         for(JobLocation jobLocation1:jobLocationList) {
-            if (jobLocation1.getJobLocation().equals(jobLocation.getJobLocation())) {
+            if (jobLocation1.getJobLocation().equals(jobLocation)) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The job location already exists in the table");
                 return response;
@@ -174,7 +181,7 @@ public class AdminServiceImpl implements AdminServices {
         }
 
         try {
-            jobLocationRepository.save(jobLocation);
+            jobLocationRepository.save(jobLocationOb);
             System.out.println("Successfully saved  job location");
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully saved  job location");
@@ -189,14 +196,17 @@ public class AdminServiceImpl implements AdminServices {
 
     /*to add a job title from the admin page*/
     @Override
-    public Response addJobTitle(JobTitle jobTitle){
+    public Response addJobTitle(String jobTitle){
         Response response=new Response();
         String jobTitleId = UUID.randomUUID().toString();
-        jobTitle.setJobTitleId(jobTitleId);
+
+        JobTitle jobTitleOb=new JobTitle();
+        jobTitleOb.setJobTitleId(jobTitleId);
+        jobTitleOb.setJobTitle(jobTitle);
         List<JobTitle>jobTitleList= jobTitleRepository.findAll();
         System.out.println("The list is : "+jobTitleList);
         for(JobTitle jobTitle1:jobTitleList){
-        if(jobTitle1.getJobTitle().equals(jobTitle.getJobTitle()))
+        if(jobTitle1.getJobTitle().equals(jobTitle))
         {
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("The jobTitle already exists in the table");
@@ -204,7 +214,7 @@ public class AdminServiceImpl implements AdminServices {
         }}
 
         try {
-            jobTitleRepository.save(jobTitle);
+            jobTitleRepository.save(jobTitleOb);
             System.out.println("Successfully saved  job title");
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully saved  job title");

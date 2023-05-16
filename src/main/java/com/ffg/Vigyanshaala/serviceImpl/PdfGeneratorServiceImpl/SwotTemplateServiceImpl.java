@@ -66,13 +66,13 @@ public class SwotTemplateServiceImpl implements SwotTemplateServices {
         try{
             Long version=swotTemplateRepository.getLatestVersion(studentEmail);
             response.setData(version);
-            response.setStatusMessage("Successfully received latest version for email "+studentEmail);
+            response.setStatusMessage("Successfully received latest version of swot template for email "+studentEmail);
             response.setStatusCode(200);
         }catch(Exception e)
         {
-            System.out.println("Exception occurred while getting swot template "+e);
+            System.out.println("Exception occurred while getting latest version of swot template "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while saving job location "+e);
+            response.setStatusMessage("Exception occurred while getting latest version of swot template "+e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
 
@@ -87,13 +87,13 @@ public class SwotTemplateServiceImpl implements SwotTemplateServices {
         try{
             List<SwotTemplateEntity> swotTemplateList=swotTemplateRepository.getTemplate(studentEmail,version);
             response.setData(swotTemplateList);
-            response.setStatusMessage("Successfully received list of all swot template versions for email "+studentEmail);
+            response.setStatusMessage("Successfully received swot template data for email "+studentEmail+" and version "+version);
             response.setStatusCode(200);
         }catch(Exception e)
         {
             System.out.println("Exception occurred while getting swot template "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while saving job location "+e);
+            response.setStatusMessage("Exception occurred while getting swot template "+e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
 

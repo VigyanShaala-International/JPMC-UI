@@ -36,12 +36,12 @@ public class AdminController {
     Response addCompany(@RequestBody String company){
         Response response=new Response();
         try{
-            System.out.println("The company detail is : "+ company.toString());
+            System.out.println("The company name is : "+ company);
             response= adminServices.addCompany(company);
         }catch(Exception e){
-            System.out.println("Exception occurred while adding company detail "+e);
+            System.out.println("Exception occurred while adding company name "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding company detail "+e);
+            response.setStatusMessage("Exception occurred while adding company name "+e);
         }
         return response;
     }
@@ -54,9 +54,9 @@ public class AdminController {
         try{
             responseEntity= adminServices.getCompanyList();
         }catch(Exception e){
-            System.out.println("Exception occurred while getting company detail list "+e);
+            System.out.println("Exception occurred while getting company name list "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while getting company detail list"+e);
+            response.setStatusMessage("Exception occured while getting company name list"+e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
         return responseEntity;
