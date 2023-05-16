@@ -8,5 +8,6 @@ import org.springframework.http.ResponseEntity;
 public interface SwotTemplateServices {
 
     public Response saveSwotTemplate(SwotTemplate swotTemplate);
-    public ResponseEntity getSwotTemplate(String studentEmailID);
+    public ResponseEntity getSwotTemplate(String studentEmailID,Long version);
+    public ResponseEntity getSwotLatestVersion(String studentEmailID);
 }

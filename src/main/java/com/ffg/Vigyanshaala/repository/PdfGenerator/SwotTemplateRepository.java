@@ -15,10 +15,12 @@ public interface SwotTemplateRepository extends JpaRepository<SwotTemplateEntity
     public Long getLatestVersion (
             @Param("studentEmail") String studentEmail);
 
-
     @Transactional
-    @Query(value="SELECT * from swot_template a where a.student_email=:studentEmail", nativeQuery = true)
-    public List<SwotTemplateEntity> getAllVersions(
-            @Param("studentEmail") String studentEmail);
+    @Query(value="SELECT * from swot_template a where a.student_email=:studentEmail and a.version=:version", nativeQuery = true)
+    public List<SwotTemplateEntity> getTemplate (
+            @Param("studentEmail") String studentEmail,@Param("version") Long version);
+
+
+
 }
 

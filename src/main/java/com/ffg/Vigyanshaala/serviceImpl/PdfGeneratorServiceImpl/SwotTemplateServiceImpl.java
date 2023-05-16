@@ -59,13 +59,33 @@ public class SwotTemplateServiceImpl implements SwotTemplateServices {
         response.setStatusMessage("Successfully saved Swot Template data");
         return  response;
     }
-
     @Override
-    public ResponseEntity getSwotTemplate(String studentEmail)
+    public ResponseEntity getSwotLatestVersion(String studentEmail)
     {
         Response response=new Response();
         try{
-            List<SwotTemplateEntity> swotTemplateList=swotTemplateRepository.getAllVersions(studentEmail);
+            Long version=swotTemplateRepository.getLatestVersion(studentEmail);
+            response.setData(version);
+            response.setStatusMessage("Successfully received latest version for email "+studentEmail);
+            response.setStatusCode(200);
+        }catch(Exception e)
+        {
+            System.out.println("Exception occurred while getting swot template "+e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while saving job location "+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
+    @Override
+    public ResponseEntity getSwotTemplate(String studentEmail, Long version)
+    {
+        Response response=new Response();
+        try{
+            List<SwotTemplateEntity> swotTemplateList=swotTemplateRepository.getTemplate(studentEmail,version);
             response.setData(swotTemplateList);
             response.setStatusMessage("Successfully received list of all swot template versions for email "+studentEmail);
             response.setStatusCode(200);

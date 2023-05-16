@@ -36,13 +36,13 @@ public class PdfGeneratorController {
         }
         return response;
     }
-    @ApiOperation(value = "Get swot template list from the swot template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all swot versions.")
-    @GetMapping(value="/getSwotTemplateList", produces="application/json")
-    ResponseEntity<Response> getSwotTemplateList(String studentEmail){
+    @ApiOperation(value = "Get swot template latest version from the swot template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all swot versions.")
+    @GetMapping(value="/getSwotLatestVersion/{studentEmail}", produces="application/json")
+    ResponseEntity getSwotLatestVersion(@PathVariable("studentEmail") String studentEmail){
         ResponseEntity responseEntity;
         Response response=new Response();
         try{
-            responseEntity= swotTemplateServices.getSwotTemplate(studentEmail);
+            responseEntity= swotTemplateServices.getSwotLatestVersion(studentEmail);
         }catch(Exception e){
             System.out.println("Exception occurred while getting company detail list "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -52,4 +52,19 @@ public class PdfGeneratorController {
         return responseEntity;
     }
 
+    @ApiOperation(value = "Get swot template data from the swot template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all swot versions.")
+    @GetMapping(value="/getSwotTemplate/{studentEmail}/{version}", produces="application/json")
+    ResponseEntity<Response> getSwotTemplate(@PathVariable("studentEmail") String studentEmail,@PathVariable("version") Long version){
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try{
+            responseEntity= swotTemplateServices.getSwotTemplate(studentEmail,version);
+        }catch(Exception e){
+            System.out.println("Exception occurred while getting company detail list "+e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occured while getting company detail list"+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return responseEntity;
+    }
 }

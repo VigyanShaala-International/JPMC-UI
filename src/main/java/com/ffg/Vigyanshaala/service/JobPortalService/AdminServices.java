@@ -10,9 +10,9 @@ import org.springframework.http.ResponseEntity;
 /*Service interface which declares all the functions used by the admin */
 public interface AdminServices {
     public Response createJob(Job job);
-    public Response addCompany(Company company);
-    public Response addJobLocation(JobLocation jobLocation);
-    public Response addJobTitle(JobTitle jobTitle);
+    public Response addCompany(String company);
+    public Response addJobLocation(String jobLocation);
+    public Response addJobTitle(String jobTitle);
     public ResponseEntity getCompanyList();
     public ResponseEntity getJobLocationList();
     public ResponseEntity getJobTitleList();

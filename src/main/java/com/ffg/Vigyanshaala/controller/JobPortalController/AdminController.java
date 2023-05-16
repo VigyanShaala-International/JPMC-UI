@@ -33,7 +33,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add company details in the Company table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/addCompany",consumes="application/json", produces="application/json")
-    Response addCompany(@RequestBody Company company){
+    Response addCompany(@RequestBody String company){
         Response response=new Response();
         try{
             System.out.println("The company detail is : "+ company.toString());
@@ -64,7 +64,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job title in the JobTitle table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/addJobTitle",consumes="application/json", produces="application/json")
-    Response addJobTitle(@RequestBody JobTitle jobTitle){
+    Response addJobTitle(@RequestBody String jobTitle){
         Response response=new Response();
         try{
             System.out.println("The company name list is : "+jobTitle.toString());
@@ -97,7 +97,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job location in the JobLocation table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/addJobLocation",consumes="application/json", produces="application/json")
-    Response addJobLocationList(@RequestBody JobLocation jobLocation){
+    Response addJobLocationList(@RequestBody String jobLocation){
         Response response=new Response();
         try{
             System.out.println("The company name list is : "+jobLocation.toString());
