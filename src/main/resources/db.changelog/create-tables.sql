@@ -1,20 +1,20 @@
 create table company
 (
-company_ID long,
+company_ID varchar(50),
 company_name varchar(255),
 primary key(company_ID)
 );
 
 create table job_title
 (
-job_title_ID long,
+job_title_ID varchar(50),
 job_title varchar(255),
 primary key(job_title_ID)
 );
 
 create table job_location
 (
-job_location_ID long,
+job_location_ID varchar(50),
 job_location varchar(255),
 primary key(job_location_ID)
 );

@@ -11,12 +11,14 @@ import com.ffg.Vigyanshaala.repository.JobPortalRepository.JobRepository;
 import com.ffg.Vigyanshaala.repository.JobPortalRepository.JobTitleRepository;
 import com.ffg.Vigyanshaala.response.Response;
 import com.ffg.Vigyanshaala.service.JobPortalService.AdminServices;
+import org.hibernate.id.GUIDGenerator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AdminServiceImpl implements AdminServices {
@@ -127,6 +129,8 @@ public class AdminServiceImpl implements AdminServices {
     @Override
     public Response addCompany(Company company){
         Response response=new Response();
+        String companyId = UUID.randomUUID().toString();
+        company.setCompanyId(companyId);
         List<Company> companyList = companyNameRepository.findAll();
         System.out.println("The list is : ");
         for(Company company1:companyList) {
@@ -156,6 +160,8 @@ public class AdminServiceImpl implements AdminServices {
     @Override
     public Response addJobLocation(JobLocation jobLocation){
         Response response=new Response();
+        String jobLocationId = UUID.randomUUID().toString();
+        jobLocation.setJobLocationId(jobLocationId);
         List<JobLocation>jobLocationList= jobLocationRepository.findAll();
         System.out.println("The list is : "+jobLocationList);
 
@@ -185,7 +191,8 @@ public class AdminServiceImpl implements AdminServices {
     @Override
     public Response addJobTitle(JobTitle jobTitle){
         Response response=new Response();
-
+        String jobTitleId = UUID.randomUUID().toString();
+        jobTitle.setJobTitleId(jobTitleId);
         List<JobTitle>jobTitleList= jobTitleRepository.findAll();
         System.out.println("The list is : "+jobTitleList);
         for(JobTitle jobTitle1:jobTitleList){
