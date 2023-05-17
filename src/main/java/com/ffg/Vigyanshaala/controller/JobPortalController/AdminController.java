@@ -1,9 +1,6 @@
 package com.ffg.Vigyanshaala.controller.JobPortalController;
 
-import com.ffg.Vigyanshaala.entity.JobPortalEntity.Company;
-import com.ffg.Vigyanshaala.entity.JobPortalEntity.Job;
-import com.ffg.Vigyanshaala.entity.JobPortalEntity.JobLocation;
-import com.ffg.Vigyanshaala.entity.JobPortalEntity.JobTitle;
+import com.ffg.Vigyanshaala.entity.JobPortalEntity.*;
 import com.ffg.Vigyanshaala.model.JobPortal.JobDetails;
 import com.ffg.Vigyanshaala.response.Response;
 import com.ffg.Vigyanshaala.service.JobPortalService.AdminServices;
@@ -12,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 /*The following Admin Controller contains all the get and post calls for the Admin tasks
 POST : saving the company details, job titles, job locations, job postings
@@ -66,6 +65,8 @@ public class AdminController {
     @PostMapping(value="/addJobTitle",consumes="application/json", produces="application/json")
     Response addJobTitle(@RequestBody JobTitle jobTitle){
         Response response=new Response();
+        String jobTitleId = UUID.randomUUID().toString();
+        jobTitle.setJobTitleId(jobTitleId);
         try{
             System.out.println("The company name list is : "+jobTitle.toString());
             response= adminServices.addJobTitle(jobTitle);
@@ -132,6 +133,21 @@ public class AdminController {
         try{
             System.out.println("The Job detail is : "+ job.toString());
             response= adminServices.createJob(job);
+        }catch(Exception e){
+            System.out.println("Exception occurred while adding job  "+e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while adding job  "+e);
+        }
+        return response;
+    }
+
+    @ApiOperation(value = "Add questions for a job posting in the questionnaire table", notes = "Returns a response with status code 200 for successful addition in the table.")
+    @PostMapping(value="/createQuestionnaire",consumes="application/json", produces="application/json")
+    Response createQuestionnaire(@RequestBody Questionnaire questionnaire){
+        Response response=new Response();
+        try{
+            System.out.println("The questionnaire received is : "+ questionnaire.toString());
+            response= adminServices.createQuestionnaire(questionnaire);
         }catch(Exception e){
             System.out.println("Exception occurred while adding job  "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());

@@ -9,12 +9,12 @@ import jakarta.persistence.*;
 public class Company {
 
     private @Id
-    Long company_ID;
+    String company_ID;
     private
     String company_name;
 
     public Company(){}
-    Company(String companyName, Long companyId){
+    Company(String companyName, String companyId){
         this.company_name=companyName;
         this.company_ID=companyId;
     }
@@ -26,11 +26,11 @@ public class Company {
     public void setCompanyName(String companyName){
         this.company_name=companyName;
     }
-    public Long getCompanyId()
+    public String getCompanyId()
     {
         return company_ID;
     }
-    public void setCompanyId(Long companyId)
+    public void setCompanyId(String companyId)
     {
         this.company_ID=companyId;
     }

@@ -1,14 +1,8 @@
 package com.ffg.Vigyanshaala.serviceImpl.JobPortalServiceImpl;
 
-import com.ffg.Vigyanshaala.entity.JobPortalEntity.Company;
-import com.ffg.Vigyanshaala.entity.JobPortalEntity.Job;
-import com.ffg.Vigyanshaala.entity.JobPortalEntity.JobLocation;
-import com.ffg.Vigyanshaala.entity.JobPortalEntity.JobTitle;
+import com.ffg.Vigyanshaala.entity.JobPortalEntity.*;
 import com.ffg.Vigyanshaala.model.JobPortal.JobDetails;
-import com.ffg.Vigyanshaala.repository.JobPortalRepository.CompanyNameRepository;
-import com.ffg.Vigyanshaala.repository.JobPortalRepository.JobLocationRepository;
-import com.ffg.Vigyanshaala.repository.JobPortalRepository.JobRepository;
-import com.ffg.Vigyanshaala.repository.JobPortalRepository.JobTitleRepository;
+import com.ffg.Vigyanshaala.repository.JobPortalRepository.*;
 import com.ffg.Vigyanshaala.response.Response;
 import com.ffg.Vigyanshaala.service.JobPortalService.AdminServices;
 import org.springframework.http.HttpStatus;
@@ -17,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class AdminServiceImpl implements AdminServices {
@@ -24,12 +19,14 @@ public class AdminServiceImpl implements AdminServices {
  private final JobLocationRepository jobLocationRepository;
  private final JobTitleRepository jobTitleRepository;
  private final JobRepository jobRepository;
+ private final QuestionnaireRepository questionnaireRepository;
 
-    public AdminServiceImpl(JobRepository jobRepository,CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository) {
+    public AdminServiceImpl(JobRepository jobRepository,CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, QuestionnaireRepository questionnaireRepository) {
         this.companyNameRepository = companyDetailsRepository;
         this.jobLocationRepository = jobLocationRepository;
         this.jobTitleRepository = jobTitleRepository;
         this.jobRepository=jobRepository;
+        this.questionnaireRepository = questionnaireRepository;
     }
 
 
@@ -38,6 +35,9 @@ public class AdminServiceImpl implements AdminServices {
     public Response createJob(Job job){
 
         Response response=new Response();
+        String jobID = UUID.randomUUID().toString();
+        job.setJob_ID(jobID);
+        job.setIs_active("Y");
         System.out.println("The job detail received for adding is "+job);
         try {
             jobRepository.save(job);
@@ -127,6 +127,8 @@ public class AdminServiceImpl implements AdminServices {
     @Override
     public Response addCompany(Company company){
         Response response=new Response();
+        String companyId = UUID.randomUUID().toString();
+        company.setCompanyId(companyId);
         List<Company> companyList = companyNameRepository.findAll();
         System.out.println("The list is : ");
         for(Company company1:companyList) {
@@ -156,6 +158,8 @@ public class AdminServiceImpl implements AdminServices {
     @Override
     public Response addJobLocation(JobLocation jobLocation){
         Response response=new Response();
+        String jobLocationId = UUID.randomUUID().toString();
+        jobLocation.setJobLocationId(jobLocationId);
         List<JobLocation>jobLocationList= jobLocationRepository.findAll();
         System.out.println("The list is : "+jobLocationList);
 
@@ -185,7 +189,8 @@ public class AdminServiceImpl implements AdminServices {
     @Override
     public Response addJobTitle(JobTitle jobTitle){
         Response response=new Response();
-
+        String jobTitleId = UUID.randomUUID().toString();
+        jobTitle.setJobTitleId(jobTitleId);
         List<JobTitle>jobTitleList= jobTitleRepository.findAll();
         System.out.println("The list is : "+jobTitleList);
         for(JobTitle jobTitle1:jobTitleList){
@@ -208,5 +213,28 @@ public class AdminServiceImpl implements AdminServices {
             response.setStatusMessage("Exception occurred while saving job title "+e);
         }
         return response;
+    }
+
+    /*to create questionnaire for a job posting*/
+    @Override
+    public Response createQuestionnaire(Questionnaire questionnaire){
+
+        Response response=new Response();
+        String questionnaireID = UUID.randomUUID().toString();
+        questionnaire.setQuestionnaire_ID(questionnaireID);
+        System.out.println("The questionnaire received for adding is "+ questionnaire);
+        try {
+            questionnaireRepository.save(questionnaire);
+            System.out.println("Successfully created Job");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully created Job");
+        }catch(Exception e)
+        {
+            System.out.println("Exception occurred while creating Job "+e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while creating Job "+e);
+        }
+        return response;
+
     }
 }
