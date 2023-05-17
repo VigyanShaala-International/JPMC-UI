@@ -12,7 +12,12 @@ import lombok.Data;
 public class JobLocation {
 
     @Id
-    private final String jobLocationId;
-    private final String jobLocation;
+    private  String jobLocationId;
+    private  String jobLocation;
+    public JobLocation(String jobLocationId,String jobLocation)
+    {
+        this.jobLocationId=jobLocationId;
+        this.jobLocation=jobLocation;
+    }
 
 }

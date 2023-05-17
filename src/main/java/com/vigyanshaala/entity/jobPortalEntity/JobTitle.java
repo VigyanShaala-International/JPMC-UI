@@ -13,8 +13,13 @@ import lombok.Data;
 public class JobTitle {
 
     @Id
-    private final String jobTitleId;
-    private final String jobTitle;
+    private  String jobTitleId;
+    private  String jobTitle;
+    public JobTitle(String jobTitleId,String jobTitle)
+    {
+        this.jobTitleId=jobTitleId;
+        this.jobTitle=jobTitle;
+    }
 
 
 }
