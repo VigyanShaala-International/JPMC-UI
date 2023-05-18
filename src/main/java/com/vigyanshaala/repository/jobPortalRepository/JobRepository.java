@@ -1,6 +1,6 @@
-package com.ffg.Vigyanshaala.repository.JobPortalRepository;
+package com.vigyanshaala.repository.jobPortalRepository;
 
-import com.ffg.Vigyanshaala.entity.JobPortalEntity.Job;
+import com.vigyanshaala.entity.jobPortalEntity.Job;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JobRepository extends JpaRepository<Job,String>{

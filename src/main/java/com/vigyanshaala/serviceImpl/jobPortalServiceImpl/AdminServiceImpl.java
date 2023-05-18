@@ -1,13 +1,7 @@
 package com.vigyanshaala.serviceImpl.jobPortalServiceImpl;
 
-import com.vigyanshaala.entity.jobPortalEntity.Company;
-import com.vigyanshaala.entity.jobPortalEntity.Job;
-import com.vigyanshaala.entity.jobPortalEntity.JobLocation;
-import com.vigyanshaala.entity.jobPortalEntity.JobTitle;
-import com.vigyanshaala.repository.jobPortalRepository.CompanyNameRepository;
-import com.vigyanshaala.repository.jobPortalRepository.JobLocationRepository;
-import com.vigyanshaala.repository.jobPortalRepository.JobRepository;
-import com.vigyanshaala.repository.jobPortalRepository.JobTitleRepository;
+import com.vigyanshaala.entity.jobPortalEntity.*;
+import com.vigyanshaala.repository.jobPortalRepository.*;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.AdminServices;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +20,14 @@ public class AdminServiceImpl implements AdminServices {
     private final JobTitleRepository jobTitleRepository;
     private final JobRepository jobRepository;
 
-    public AdminServiceImpl(JobRepository jobRepository,CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository) {
+    private final QuestionnaireRepository questionnaireRepository;
+
+    public AdminServiceImpl(JobRepository jobRepository, CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, QuestionnaireRepository questionnaireRepository) {
         this.companyNameRepository = companyDetailsRepository;
         this.jobLocationRepository = jobLocationRepository;
         this.jobTitleRepository = jobTitleRepository;
         this.jobRepository=jobRepository;
+        this.questionnaireRepository = questionnaireRepository;
     }
 
 
@@ -232,9 +229,9 @@ public class AdminServiceImpl implements AdminServices {
         log.info("The questionnaire received for adding is {}", questionnaire);
         try {
             questionnaireRepository.save(questionnaire);
-            System.out.println("Successfully created Job");
+            log.info("Successfully created Questionnaire");
             response.setStatusCode(HttpStatus.OK.value());
-            response.setStatusMessage("Successfully created Job");
+            response.setStatusMessage("Successfully created Questionnaire");
         }catch(Exception e)
         {
             log.error("Exception occurred while creating Job "+e);

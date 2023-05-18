@@ -1,6 +1,7 @@
 package com.vigyanshaala.controller.jobPortalController;
 
 import com.vigyanshaala.entity.jobPortalEntity.Job;
+import com.vigyanshaala.entity.jobPortalEntity.Questionnaire;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.AdminServices;
 import io.swagger.annotations.ApiOperation;
@@ -124,10 +125,10 @@ public class AdminController {
     Response addCompany(@RequestBody Job job){
         Response response=new Response();
         try{
-            System.out.println("The Job detail is : "+ job.toString());
+            log.info("The Job detail is : "+ job.toString());
             response= adminServices.createJob(job);
         }catch(Exception e){
-            System.out.println("Exception occurred while adding job  "+e);
+            log.error("Exception occurred while adding job  "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occurred while adding job  "+e);
         }
@@ -139,10 +140,10 @@ public class AdminController {
     Response createQuestionnaire(@RequestBody Questionnaire questionnaire){
         Response response=new Response();
         try{
-            System.out.println("The questionnaire received is : "+ questionnaire.toString());
+            log.info("The questionnaire received is : "+ questionnaire.toString());
             response= adminServices.createQuestionnaire(questionnaire);
         }catch(Exception e){
-            System.out.println("Exception occurred while adding job  "+e);
+            log.error("Exception occurred while adding job  "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occurred while adding job  "+e);
         }

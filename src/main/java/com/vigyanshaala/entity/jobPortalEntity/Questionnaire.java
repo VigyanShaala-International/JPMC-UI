@@ -1,4 +1,4 @@
-package com.ffg.Vigyanshaala.entity.JobPortalEntity;
+package com.vigyanshaala.entity.jobPortalEntity;
 
 import jakarta.persistence.*;
 
