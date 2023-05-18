@@ -1,13 +1,7 @@
 package com.vigyanshaala.serviceImpl.jobPortalServiceImpl;
 
-import com.vigyanshaala.entity.jobPortalEntity.Company;
-import com.vigyanshaala.entity.jobPortalEntity.Job;
-import com.vigyanshaala.entity.jobPortalEntity.JobLocation;
-import com.vigyanshaala.entity.jobPortalEntity.JobTitle;
-import com.vigyanshaala.repository.jobPortalRepository.CompanyNameRepository;
-import com.vigyanshaala.repository.jobPortalRepository.JobLocationRepository;
-import com.vigyanshaala.repository.jobPortalRepository.JobRepository;
-import com.vigyanshaala.repository.jobPortalRepository.JobTitleRepository;
+import com.vigyanshaala.entity.jobPortalEntity.*;
+import com.vigyanshaala.repository.jobPortalRepository.*;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.AdminServices;
 import lombok.extern.slf4j.Slf4j;
@@ -21,16 +15,19 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class AdminServiceImpl implements AdminServices {
- private final CompanyNameRepository companyNameRepository;
- private final JobLocationRepository jobLocationRepository;
- private final JobTitleRepository jobTitleRepository;
- private final JobRepository jobRepository;
+    private final CompanyNameRepository companyNameRepository;
+    private final JobLocationRepository jobLocationRepository;
+    private final JobTitleRepository jobTitleRepository;
+    private final JobRepository jobRepository;
 
-    public AdminServiceImpl(JobRepository jobRepository,CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository) {
+    private final QuestionnaireRepository questionnaireRepository;
+
+    public AdminServiceImpl(JobRepository jobRepository, CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, QuestionnaireRepository questionnaireRepository) {
         this.companyNameRepository = companyDetailsRepository;
         this.jobLocationRepository = jobLocationRepository;
         this.jobTitleRepository = jobTitleRepository;
         this.jobRepository=jobRepository;
+        this.questionnaireRepository = questionnaireRepository;
     }
 
 
@@ -39,6 +36,9 @@ public class AdminServiceImpl implements AdminServices {
     public Response createJob(Job job){
 
         Response response=new Response();
+        String jobID = UUID.randomUUID().toString();
+        job.setJob_ID(jobID);
+        job.setIs_active("Y");
         log.info("The job detail received for adding is {}",job);
         try {
             jobRepository.save(job);
@@ -47,7 +47,7 @@ public class AdminServiceImpl implements AdminServices {
             response.setStatusMessage("Successfully created Job");
         }catch(Exception e)
         {
-            log.error("Exception occurred while creating Job ",e);
+            log.error("Exception occurred while creating Job "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occurred while creating Job "+e);
         }
@@ -198,12 +198,12 @@ public class AdminServiceImpl implements AdminServices {
         List<JobTitle>jobTitleList= jobTitleRepository.findAll();
         log.info("The list is : {}",jobTitleList);
         for(JobTitle jobTitle1:jobTitleList){
-        if(jobTitle1.getJobTitle().equals(jobTitleName))
-        {
-            response.setStatusCode(HttpStatus.OK.value());
-            response.setStatusMessage("The jobTitle already exists in the table");
-            return response;
-        }}
+            if(jobTitle1.getJobTitle().equals(jobTitleName))
+            {
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("The jobTitle already exists in the table");
+                return response;
+            }}
 
         try {
             jobTitleRepository.save(jobTitle);
@@ -217,5 +217,28 @@ public class AdminServiceImpl implements AdminServices {
             response.setStatusMessage("Exception occurred while saving job title "+e);
         }
         return response;
+    }
+
+    /*to create questionnaire for a job posting*/
+    @Override
+    public Response createQuestionnaire(Questionnaire questionnaire){
+
+        Response response=new Response();
+        String questionnaireID = UUID.randomUUID().toString();
+        questionnaire.setQuestionnaire_ID(questionnaireID);
+        log.info("The questionnaire received for adding is {}", questionnaire);
+        try {
+            questionnaireRepository.save(questionnaire);
+            log.info("Successfully created Questionnaire");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully created Questionnaire");
+        }catch(Exception e)
+        {
+            log.error("Exception occurred while creating Job "+e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while creating Job "+e);
+        }
+        return response;
+
     }
 }

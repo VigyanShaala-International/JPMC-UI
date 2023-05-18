@@ -1,6 +1,7 @@
 package com.vigyanshaala.controller.jobPortalController;
 
 import com.vigyanshaala.entity.jobPortalEntity.Job;
+import com.vigyanshaala.entity.jobPortalEntity.Questionnaire;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.AdminServices;
 import io.swagger.annotations.ApiOperation;
@@ -11,8 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**The following Admin Controller contains all the get and post calls for the Admin tasks
-POST : saving the company details, job titles, job locations, job postings
-GET : get company details,job titles, job locations
+ POST : saving the company details, job titles, job locations, job postings
+ GET : get company details,job titles, job locations
  */
 
 @RestController
@@ -118,18 +119,35 @@ public class AdminController {
         }
         return responseEntity;
     }
+
     @ApiOperation(value = "Add job in the job table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/job",consumes="application/json", produces="application/json")
     Response addCompany(@RequestBody Job job){
         Response response=new Response();
         try{
-            log.info("The Job detail is : {}", job);
+            log.info("The Job detail is : "+ job.toString());
             response= adminServices.createJob(job);
         }catch(Exception e){
-            log.error("Exception occurred while adding job  ",e);
+            log.error("Exception occurred while adding job  "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occurred while adding job  "+e);
         }
         return response;
     }
+
+    @ApiOperation(value = "Add questions for a job posting in the questionnaire table", notes = "Returns a response with status code 200 for successful addition in the table.")
+    @PostMapping(value="/questionnaire",consumes="application/json", produces="application/json")
+    Response createQuestionnaire(@RequestBody Questionnaire questionnaire){
+        Response response=new Response();
+        try{
+            log.info("The questionnaire received is : "+ questionnaire.toString());
+            response= adminServices.createQuestionnaire(questionnaire);
+        }catch(Exception e){
+            log.error("Exception occurred while adding job  "+e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while adding job  "+e);
+        }
+        return response;
+    }
+
 }

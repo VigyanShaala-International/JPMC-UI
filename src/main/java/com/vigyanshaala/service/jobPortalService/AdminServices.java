@@ -1,5 +1,6 @@
 package com.vigyanshaala.service.jobPortalService;
 import com.vigyanshaala.entity.jobPortalEntity.Job;
+import com.vigyanshaala.entity.jobPortalEntity.Questionnaire;
 import com.vigyanshaala.response.Response;
 import org.springframework.http.ResponseEntity;
 
@@ -12,4 +13,5 @@ public interface AdminServices {
     ResponseEntity getCompanyList();
     ResponseEntity getJobLocationList();
     ResponseEntity getJobTitleList();
+    Response createQuestionnaire(Questionnaire questionnaire);
 }
