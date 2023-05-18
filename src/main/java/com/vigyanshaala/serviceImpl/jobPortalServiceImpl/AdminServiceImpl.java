@@ -135,7 +135,7 @@ public class AdminServiceImpl implements AdminServices {
         log.info("The list is : ");
         for(Company company1:companyList) {
             log.info(company1.getCompanyId()+" "+company1.getCompanyName());
-            if (company1.getCompanyName().equals(company)) {
+            if (company1.getCompanyName().equals(companyName)) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The company detail already exists in the table");
                 return response;
@@ -167,7 +167,7 @@ public class AdminServiceImpl implements AdminServices {
         log.info("The list is : "+jobLocationList);
 
         for(JobLocation jobLocation1:jobLocationList) {
-            if (jobLocation1.getJobLocation().equals(jobLocation)) {
+            if (jobLocation1.getJobLocation().equals(jobLocationName)) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The job location already exists in the table");
                 return response;
@@ -198,7 +198,7 @@ public class AdminServiceImpl implements AdminServices {
         List<JobTitle>jobTitleList= jobTitleRepository.findAll();
         log.info("The list is : {}",jobTitleList);
         for(JobTitle jobTitle1:jobTitleList){
-        if(jobTitle1.getJobTitle().equals(jobTitle))
+        if(jobTitle1.getJobTitle().equals(jobTitleName))
         {
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("The jobTitle already exists in the table");

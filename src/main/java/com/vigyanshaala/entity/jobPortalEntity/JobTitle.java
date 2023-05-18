@@ -15,6 +15,7 @@ public class JobTitle {
     @Id
     private  String jobTitleId;
     private  String jobTitle;
+    public JobTitle(){}
     public JobTitle(String jobTitleId,String jobTitle)
     {
         this.jobTitleId=jobTitleId;

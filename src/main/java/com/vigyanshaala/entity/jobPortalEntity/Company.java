@@ -16,6 +16,7 @@ public class Company {
     @Id
     private  String companyId;
     private  String companyName;
+    public Company(){}
     public Company(String companyId,String companyName)
     {
         this.companyId=companyId;

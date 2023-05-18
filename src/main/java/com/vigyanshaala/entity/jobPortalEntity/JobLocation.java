@@ -14,6 +14,7 @@ public class JobLocation {
     @Id
     private  String jobLocationId;
     private  String jobLocation;
+    public JobLocation(){}
     public JobLocation(String jobLocationId,String jobLocation)
     {
         this.jobLocationId=jobLocationId;
