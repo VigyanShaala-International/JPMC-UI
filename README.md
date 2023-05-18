@@ -4,26 +4,19 @@ This README would normally document whatever steps are necessary to get your app
 
 ### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* This repository contains the entire backend code for Vigyanshaala Job Portal and Pdf Generator Services
 
-### How do I get set up? ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
 
-### Contribution guidelines ###
+### Versions ###
 
-* Writing tests
-* Code review
-* Other guidelines
+* The code uses Java version 20 and Spring Boot version 3
 
-### Who do I talk to? ###
 
-* Repo owner or admin
-* Other community or team contact
+
+### Important Links ###
+
+* Swagger link : http://localhost:8080/swagger-ui/index.html
+* H2 Console link :http://localhost:8080/h2-console
+
+
