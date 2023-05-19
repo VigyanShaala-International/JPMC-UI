@@ -16,10 +16,10 @@ public class Job {
     private String expiryDate;
     private String isActive;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Company company;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     private JobTitle jobTitle;
 
     private String jobDescription;
@@ -115,7 +115,7 @@ public class Job {
         this.jobLocation = job_location;
     }
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     private JobLocation jobLocation;
 
 
