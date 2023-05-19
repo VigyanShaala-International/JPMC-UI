@@ -8,3 +8,11 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db.changelog/changelog.yml
+
+
+  jpa:
+    hibernate:
+      ddl-auto : create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
