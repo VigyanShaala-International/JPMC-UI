@@ -8,25 +8,24 @@ import jakarta.persistence.*;
 public class Questionnaire {
 
     private @Id
-    String questionnaire_ID;
+    String questionnaireId;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private Job job;
     private String question1;
     private String question2;
     private String question3;
     private String question4;
+    private String question5;
+
 
     public Questionnaire() {
     }
 
-    public String getQuestionnaire_ID() {
-        return questionnaire_ID;
+    public String getQuestionnaireId() {
+        return questionnaireId;
     }
 
-    public Questionnaire(String questionnaire_ID, Job job, String question1, String question2, String question3, String question4, String question5) {
-        this.questionnaire_ID = questionnaire_ID;
-        this.job = job;
+    public Questionnaire(String questionnaireId, Job job, String question1, String question2, String question3, String question4, String question5) {
+        this.questionnaireId = questionnaireId;
         this.question1 = question1;
         this.question2 = question2;
         this.question3 = question3;
@@ -34,17 +33,11 @@ public class Questionnaire {
         this.question5 = question5;
     }
 
-    public void setQuestionnaire_ID(String questionnaire_ID) {
-        this.questionnaire_ID = questionnaire_ID;
+    public void setQuestionnaireId(String questionnaireId) {
+        this.questionnaireId = questionnaireId;
     }
 
-    public Job getJob() {
-        return job;
-    }
 
-    public void setJob(Job job) {
-        this.job = job;
-    }
 
     public String getQuestion1() {
         return question1;
@@ -86,7 +79,6 @@ public class Questionnaire {
         this.question5 = question5;
     }
 
-    private String question5;
 
 
 

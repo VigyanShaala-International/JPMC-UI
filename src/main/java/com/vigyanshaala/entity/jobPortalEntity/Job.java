@@ -9,65 +9,55 @@ import lombok.Data;
 public class Job {
 
     private @Id
-    String job_ID;
+    String jobId;
 
-    private String posting_date;
+    private String postingDate;
 
-    private String expiry_date;
-    private String is_active;
+    private String expiryDate;
+    private String isActive;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Company company;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private JobTitle job_title;
+    @ManyToOne(cascade = CascadeType.ALL)
+    private JobTitle jobTitle;
 
-    private String job_description;
+    private String jobDescription;
 
-    public Job() {
+    public Questionnaire getQuestionnaire() {
+        return questionnaire;
     }
 
-    public Job(String job_ID, String posting_date, String expiry_date, String is_active, Company company, JobTitle job_title, String job_description, JobLocation job_location) {
-        this.job_ID = job_ID;
-        this.posting_date = posting_date;
-        this.expiry_date = expiry_date;
-        this.is_active = is_active;
-        this.company = company;
-        this.job_title = job_title;
-        this.job_description = job_description;
-        this.job_location = job_location;
+    public String getJobId() {
+        return jobId;
     }
 
-    public String getJob_ID() {
-        return job_ID;
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
     }
 
-    public void setJob_ID(String job_ID) {
-        this.job_ID = job_ID;
+    public String getPostingDate() {
+        return postingDate;
     }
 
-    public String getPosting_date() {
-        return posting_date;
+    public void setPostingDate(String postingDate) {
+        this.postingDate = postingDate;
     }
 
-    public void setPosting_date(String posting_date) {
-        this.posting_date = posting_date;
+    public String getExpiryDate() {
+        return expiryDate;
     }
 
-    public String getExpiry_date() {
-        return expiry_date;
+    public void setExpiryDate(String expiryDate) {
+        this.expiryDate = expiryDate;
     }
 
-    public void setExpiry_date(String expiry_date) {
-        this.expiry_date = expiry_date;
+    public String getIsActive() {
+        return isActive;
     }
 
-    public String getIs_active() {
-        return is_active;
-    }
-
-    public void setIs_active(String is_active) {
-        this.is_active = is_active;
+    public void setIsActive(String isActive) {
+        this.isActive = isActive;
     }
 
     public Company getCompany() {
@@ -78,32 +68,61 @@ public class Job {
         this.company = company;
     }
 
-    public JobTitle getJob_title() {
-        return job_title;
+    public JobTitle getJobTitle() {
+        return jobTitle;
     }
 
-    public void setJob_title(JobTitle job_title) {
-        this.job_title = job_title;
+    public void setJobTitle(JobTitle jobTitle) {
+        this.jobTitle = jobTitle;
     }
 
-    public String getJob_description() {
-        return job_description;
+    public String getJobDescription() {
+        return jobDescription;
     }
 
-    public void setJob_description(String job_description) {
-        this.job_description = job_description;
+    public void setJobDescription(String jobDescription) {
+        this.jobDescription = jobDescription;
     }
 
-    public JobLocation getJob_location() {
-        return job_location;
+    public JobLocation getJobLocation() {
+        return jobLocation;
     }
 
-    public void setJob_location(JobLocation job_location) {
-        this.job_location = job_location;
+    public void setJobLocation(JobLocation jobLocation) {
+        this.jobLocation = jobLocation;
+    }
+
+    public void setQuestionnaire(Questionnaire questionnaire) {
+        this.questionnaire = questionnaire;
     }
 
     @OneToOne(cascade = CascadeType.ALL)
-    private JobLocation job_location;
+    private Questionnaire questionnaire;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private JobLocation jobLocation;
+
+    public Job() {
+    }
+
+    public Job(String jobId, String postingDate, String expiryDate, String isActive, Company company, JobTitle jobTitle, String jobDescription, JobLocation jobLocation, Questionnaire questionnaire) {
+        this.jobId = jobId;
+        this.postingDate = postingDate;
+        this.expiryDate = expiryDate;
+        this.isActive = isActive;
+        this.company = company;
+        this.jobTitle = jobTitle;
+        this.jobDescription = jobDescription;
+        this.jobLocation = jobLocation;
+        this.questionnaire = questionnaire;
+    }
+
+
+
+
+
+
+
 
 
 

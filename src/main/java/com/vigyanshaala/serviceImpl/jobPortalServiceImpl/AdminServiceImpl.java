@@ -37,11 +37,26 @@ public class AdminServiceImpl implements AdminServices {
 
         Response response=new Response();
         String jobID = UUID.randomUUID().toString();
-        job.setJob_ID(jobID);
-        job.setIs_active("Y");
+        String questionnaireId = UUID.randomUUID().toString();
+        job.setJobId(jobID);
+        job.setIsActive("Y");
+        job.getQuestionnaire().setQuestionnaireId(questionnaireId);
+
+        List<Job> jobList = jobRepository.findAll();
+        log.info("The list is : ");
+        for(Job job1:jobList) {
+            log.info(job1.getJobId()+" "+job1.getJobDescription());
+            if (job1.getCompany().getCompanyName().equals(job.getCompany().getCompanyName()) && job1.getJobLocation().getJobLocation().equals(job.getJobLocation().getJobLocation()) &&  job1.getJobTitle().getJobTitle().equals(job.getJobTitle().getJobTitle())) {
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("The job detail already exists in the table");
+                return response;
+            }
+        }
+
         log.info("The job detail received for adding is {}",job);
         try {
             jobRepository.save(job);
+            questionnaireRepository.save(job.getQuestionnaire());
             log.info("Successfully created Job");
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully created Job");
@@ -224,8 +239,8 @@ public class AdminServiceImpl implements AdminServices {
     public Response createQuestionnaire(Questionnaire questionnaire){
 
         Response response=new Response();
-        String questionnaireID = UUID.randomUUID().toString();
-        questionnaire.setQuestionnaire_ID(questionnaireID);
+        String questionnaireId = UUID.randomUUID().toString();
+        questionnaire.setQuestionnaireId(questionnaireId);
         log.info("The questionnaire received for adding is {}", questionnaire);
         try {
             questionnaireRepository.save(questionnaire);
