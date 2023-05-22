@@ -38,9 +38,21 @@ public class AdminServiceImpl implements AdminServices {
         Response response=new Response();
         String jobID = UUID.randomUUID().toString();
         String questionnaireId = UUID.randomUUID().toString();
-        job.setJob_ID(jobID);
-        job.setIs_active("Y");
+        job.setJobId(jobID);
+        job.setIsActive("Y");
         job.getQuestionnaire().setQuestionnaireId(questionnaireId);
+
+        List<Job> jobList = jobRepository.findAll();
+        log.info("The list is : ");
+        for(Job job1:jobList) {
+            log.info(job1.getJobId()+" "+job1.getJobDescription());
+            if (job1.getCompany().getCompanyName().equals(job.getCompany().getCompanyName()) && job1.getJobLocation().getJobLocation().equals(job.getJobLocation().getJobLocation()) &&  job1.getJobTitle().getJobTitle().equals(job.getJobTitle().getJobTitle())) {
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("The job detail already exists in the table");
+                return response;
+            }
+        }
+
         log.info("The job detail received for adding is {}",job);
         try {
             jobRepository.save(job);

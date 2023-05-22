@@ -28,6 +28,70 @@ public class Job {
         return questionnaire;
     }
 
+    public String getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
+    }
+
+    public String getPostingDate() {
+        return postingDate;
+    }
+
+    public void setPostingDate(String postingDate) {
+        this.postingDate = postingDate;
+    }
+
+    public String getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(String expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public String getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(String isActive) {
+        this.isActive = isActive;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public JobTitle getJobTitle() {
+        return jobTitle;
+    }
+
+    public void setJobTitle(JobTitle jobTitle) {
+        this.jobTitle = jobTitle;
+    }
+
+    public String getJobDescription() {
+        return jobDescription;
+    }
+
+    public void setJobDescription(String jobDescription) {
+        this.jobDescription = jobDescription;
+    }
+
+    public JobLocation getJobLocation() {
+        return jobLocation;
+    }
+
+    public void setJobLocation(JobLocation jobLocation) {
+        this.jobLocation = jobLocation;
+    }
+
     public void setQuestionnaire(Questionnaire questionnaire) {
         this.questionnaire = questionnaire;
     }
@@ -35,6 +99,8 @@ public class Job {
     @OneToOne(cascade = CascadeType.ALL)
     private Questionnaire questionnaire;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    private JobLocation jobLocation;
 
     public Job() {
     }
@@ -51,72 +117,12 @@ public class Job {
         this.questionnaire = questionnaire;
     }
 
-    public String getJobId() {
-        return jobId;
-    }
 
-    public void setJob_ID(String job_ID) {
-        this.jobId = job_ID;
-    }
 
-    public String getPosting_date() {
-        return postingDate;
-    }
 
-    public void setPosting_date(String posting_date) {
-        this.postingDate = posting_date;
-    }
 
-    public String getExpiry_date() {
-        return expiryDate;
-    }
 
-    public void setExpiry_date(String expiry_date) {
-        this.expiryDate = expiry_date;
-    }
 
-    public String getIs_active() {
-        return isActive;
-    }
-
-    public void setIs_active(String is_active) {
-        this.isActive = is_active;
-    }
-
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
-
-    public JobTitle getJob_title() {
-        return jobTitle;
-    }
-
-    public void setJob_title(JobTitle job_title) {
-        this.jobTitle = job_title;
-    }
-
-    public String getJob_description() {
-        return jobDescription;
-    }
-
-    public void setJob_description(String job_description) {
-        this.jobDescription = job_description;
-    }
-
-    public JobLocation getJob_location() {
-        return jobLocation;
-    }
-
-    public void setJob_location(JobLocation job_location) {
-        this.jobLocation = job_location;
-    }
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    private JobLocation jobLocation;
 
 
 
