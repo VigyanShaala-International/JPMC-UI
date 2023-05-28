@@ -14,4 +14,6 @@ public interface AdminServices {
     ResponseEntity getJobLocationList();
     ResponseEntity getJobTitleList();
     Response createQuestionnaire(Questionnaire questionnaire);
+    Response updateJob(Job job);
+    ResponseEntity getJobById(String jobId);
 }

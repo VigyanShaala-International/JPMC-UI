@@ -122,11 +122,27 @@ public class AdminController {
 
     @ApiOperation(value = "Add job in the job table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/job",consumes="application/json", produces="application/json")
-    Response addCompany(@RequestBody Job job){
+    Response addJob(@RequestBody Job job){
         Response response=new Response();
         try{
             log.info("The Job detail is : "+ job.toString());
             response= adminServices.createJob(job);
+        }catch(Exception e){
+            log.error("Exception occurred while adding job  "+e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while adding job  "+e);
+        }
+        return response;
+    }
+
+
+    @ApiOperation(value = "Update job in the job table", notes = "Returns a response with status code 200 for successful updation in the table.")
+    @PostMapping(value="/job/update",consumes="application/json", produces="application/json")
+    Response updateJob(@RequestBody Job job){
+        Response response=new Response();
+        try{
+            log.info("The Job ID is : "+ job);
+            response= adminServices.updateJob(job);
         }catch(Exception e){
             log.error("Exception occurred while adding job  "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -148,6 +164,24 @@ public class AdminController {
             response.setStatusMessage("Exception occurred while adding job  "+e);
         }
         return response;
+    }
+
+
+    @ApiOperation(value = "Fetch job from the job table", notes = "Returns a response with status code 200 for successful fetch from the job table.")
+    @GetMapping(value="/job/{jobId}", produces="application/json")
+    ResponseEntity getJobById(@PathVariable("jobId") String jobId){
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try{
+            responseEntity = adminServices.getJobById(jobId);
+            log.info("The Job is : "+ response);
+        }catch(Exception e){
+            log.error("Exception occurred while fetching job  "+e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while fetching job"+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return responseEntity;
     }
 
 }
