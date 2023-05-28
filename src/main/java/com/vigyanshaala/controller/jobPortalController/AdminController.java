@@ -25,8 +25,100 @@ public class AdminController {
     @Autowired
     AdminServices adminServices;
 
+    @ApiOperation(value = "Add work mode in the WorkMode table", notes = "Returns a response with status code 200 for successful addition in the table.")
+    @PostMapping(value="/workmode", produces="application/json")
+    Response addWorkmode(@RequestBody String workmode){
+        Response response=new Response();
+        try{
+            log.info("The work mode is : {}", workmode);
+            response= adminServices.addWorkmode(workmode);
+        }catch(Exception e){
+            log.error("Exception occurred while adding workmode name ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while adding workmode name "+e);
+        }
+        return response;
+    }
+
+    @ApiOperation(value = "Get workmode list from the Workmode table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all workmodes.")
+    @GetMapping(value="/workmode/all", produces="application/json")
+    ResponseEntity<Response> getWorkmodeList(){
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try{
+            responseEntity= adminServices.getWorkmodeList();
+        }catch(Exception e){
+            log.error("Exception occurred while getting workmode name list ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occured while getting workmode name list"+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return responseEntity;
+    }
+    @ApiOperation(value = "Add education level in the EducationLevel table", notes = "Returns a response with status code 200 for successful addition in the table.")
+    @PostMapping(value="/educationLevel", produces="application/json")
+    Response addEducationLevel(@RequestBody String educationLevel){
+        Response response=new Response();
+        try{
+            log.info("The education level is : {}", educationLevel);
+            response= adminServices.addEducationLevel(educationLevel);
+        }catch(Exception e){
+            log.error("Exception occurred while adding educationLevel name ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while adding educationLevel name "+e);
+        }
+        return response;
+    }
+
+    @ApiOperation(value = "Get education Level list from the educationLevel table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all education levls.")
+    @GetMapping(value="/educationLevel/all", produces="application/json")
+    ResponseEntity<Response> getEducationLevelList(){
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try{
+            responseEntity= adminServices.getEducationLevelList();
+        }catch(Exception e){
+            log.error("Exception occurred while getting education level list ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting education level list"+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return responseEntity;
+    }
+
+    @ApiOperation(value = "Add industry in the Industry table", notes = "Returns a response with status code 200 for successful addition in the table.")
+    @PostMapping(value="/industry", produces="application/json")
+    Response addIndustry(@RequestBody String industry){
+        Response response=new Response();
+        try{
+            log.info("The industry is : {}", industry);
+            response= adminServices.addIndustry(industry);
+        }catch(Exception e){
+            log.error("Exception occurred while adding industry name ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while adding industry name "+e);
+        }
+        return response;
+    }
+
+    @ApiOperation(value = "Get industry list from the Industry table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all industry.")
+    @GetMapping(value="/industry/all", produces="application/json")
+    ResponseEntity<Response> getIndustryList(){
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try{
+            responseEntity= adminServices.getIndustryList();
+        }catch(Exception e){
+            log.error("Exception occurred while getting industry name list ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occured while getting industry name list"+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return responseEntity;
+    }
+
     @ApiOperation(value = "Add company details in the Company table", notes = "Returns a response with status code 200 for successful addition in the table.")
-    @PostMapping(value="/company",consumes="application/json", produces="application/json")
+    @PostMapping(value="/company", produces="application/json")
     Response addCompany(@RequestBody String company){
         Response response=new Response();
         try{
@@ -57,7 +149,7 @@ public class AdminController {
     }
 
     @ApiOperation(value = "Add job title in the JobTitle table", notes = "Returns a response with status code 200 for successful addition in the table")
-    @PostMapping(value="/title",consumes="application/json", produces="application/json")
+    @PostMapping(value="/title", produces="application/json")
     Response addJobTitle(@RequestBody String jobTitle){
         Response response=new Response();
         try{
@@ -90,7 +182,7 @@ public class AdminController {
 
 
     @ApiOperation(value = "Add job location in the JobLocation table", notes = "Returns a response with status code 200 for successful addition in the table")
-    @PostMapping(value="/location",consumes="application/json", produces="application/json")
+    @PostMapping(value="/location", produces="application/json")
     Response addJobLocationList(@RequestBody String jobLocation){
         Response response=new Response();
         try{

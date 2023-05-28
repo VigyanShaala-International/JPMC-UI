@@ -22,8 +22,30 @@ public class Job {
     @ManyToOne(cascade = CascadeType.MERGE)
     private JobTitle jobTitle;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    private EducationLevel educationLevel;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Industry industry;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private WorkMode workMode;
+
     private String jobDescription;
 
+    public EducationLevel getEducationLevel(){return educationLevel;}
+    public void setEducationLevel(EducationLevel educationLevel)
+    {
+        educationLevel=this.educationLevel;
+    }
+
+    public Industry getIndustry(){return industry;}
+    public void setIndustry(Industry industry)
+    {
+        industry=this.industry;
+    }
+    public WorkMode getWorkMode(){return  workMode;}
+    public void setWorkMode(WorkMode workMode){workMode=this.workMode;}
     public Questionnaire getQuestionnaire() {
         return questionnaire;
     }
@@ -105,7 +127,7 @@ public class Job {
     public Job() {
     }
 
-    public Job(String jobId, String postingDate, String expiryDate, String isActive, Company company, JobTitle jobTitle, String jobDescription, JobLocation jobLocation, Questionnaire questionnaire) {
+    public Job(String jobId, String postingDate, String expiryDate, String isActive, Company company, JobTitle jobTitle, String jobDescription, JobLocation jobLocation, Questionnaire questionnaire, WorkMode workMode, EducationLevel educationLevel, Industry industry) {
         this.jobId = jobId;
         this.postingDate = postingDate;
         this.expiryDate = expiryDate;
@@ -115,6 +137,9 @@ public class Job {
         this.jobDescription = jobDescription;
         this.jobLocation = jobLocation;
         this.questionnaire = questionnaire;
+        this.workMode=workMode;
+        this.industry=industry;
+        this.educationLevel=educationLevel;
     }
 
 
