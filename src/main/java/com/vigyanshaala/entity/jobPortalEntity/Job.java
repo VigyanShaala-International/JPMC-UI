@@ -22,13 +22,13 @@ public class Job {
     @ManyToOne(cascade = CascadeType.MERGE)
     private JobTitle jobTitle;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private EducationLevel educationLevel;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Industry industry;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private WorkMode workMode;
 
     private String jobDescription;
