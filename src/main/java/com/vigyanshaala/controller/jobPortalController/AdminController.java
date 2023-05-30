@@ -1,7 +1,6 @@
 package com.vigyanshaala.controller.jobPortalController;
 
-import com.vigyanshaala.entity.jobPortalEntity.Job;
-import com.vigyanshaala.entity.jobPortalEntity.Questionnaire;
+import com.vigyanshaala.entity.jobPortalEntity.*;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.AdminServices;
 import io.swagger.annotations.ApiOperation;
@@ -27,7 +26,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add work mode in the WorkMode table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/workmode", produces="application/json")
-    Response addWorkmode(@RequestBody String workmode){
+    Response addWorkmode(@RequestBody WorkMode workmode){
         Response response=new Response();
         try{
             log.info("The work mode is : {}", workmode);
@@ -57,7 +56,7 @@ public class AdminController {
     }
     @ApiOperation(value = "Add education level in the EducationLevel table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/educationLevel", produces="application/json")
-    Response addEducationLevel(@RequestBody String educationLevel){
+    Response addEducationLevel(@RequestBody EducationLevel educationLevel){
         Response response=new Response();
         try{
             log.info("The education level is : {}", educationLevel);
@@ -88,7 +87,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add industry in the Industry table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/industry", produces="application/json")
-    Response addIndustry(@RequestBody String industry){
+    Response addIndustry(@RequestBody Industry industry){
         Response response=new Response();
         try{
             log.info("The industry is : {}", industry);
@@ -119,7 +118,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add company details in the Company table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/company", produces="application/json")
-    Response addCompany(@RequestBody String company){
+    Response addCompany(@RequestBody Company company){
         Response response=new Response();
         try{
             log.info("The company name is : {}", company);
@@ -150,7 +149,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job title in the JobTitle table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/title", produces="application/json")
-    Response addJobTitle(@RequestBody String jobTitle){
+    Response addJobTitle(@RequestBody JobTitle jobTitle){
         Response response=new Response();
         try{
             log.info("The company name list is : {}",jobTitle);
@@ -183,7 +182,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job location in the JobLocation table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/location", produces="application/json")
-    Response addJobLocationList(@RequestBody String jobLocation){
+    Response addJobLocationList(@RequestBody JobLocation jobLocation){
         Response response=new Response();
         try{
             log.info("The company name list is : {}",jobLocation);
