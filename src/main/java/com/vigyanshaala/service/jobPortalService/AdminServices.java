@@ -1,4 +1,5 @@
 package com.vigyanshaala.service.jobPortalService;
+
 import com.vigyanshaala.entity.jobPortalEntity.Job;
 import com.vigyanshaala.entity.jobPortalEntity.Questionnaire;
 import com.vigyanshaala.response.Response;
@@ -21,5 +22,5 @@ public interface AdminServices {
     ResponseEntity getEducationLevelList();
     Response createQuestionnaire(Questionnaire questionnaire);
     Response updateJob(Job job);
-    ResponseEntity getJobById(String jobId);
+    //ResponseEntity getJobById(String jobId);
 }

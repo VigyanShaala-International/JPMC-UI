@@ -25,15 +25,18 @@ public class AdminServiceImpl implements AdminServices {
 
     private final QuestionnaireRepository questionnaireRepository;
 
-    public AdminServiceImpl(WorkModeRepository workModeRepository,IndustryRepository industryRepository, EducationLevelRepository educationLevelRepository,JobRepository jobRepository, CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, QuestionnaireRepository questionnaireRepository) {
+//    @PersistenceContext
+//    private EntityManager em;
+
+    public AdminServiceImpl(WorkModeRepository workModeRepository, IndustryRepository industryRepository, EducationLevelRepository educationLevelRepository, JobRepository jobRepository, CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, QuestionnaireRepository questionnaireRepository) {
         this.companyNameRepository = companyDetailsRepository;
         this.jobLocationRepository = jobLocationRepository;
         this.jobTitleRepository = jobTitleRepository;
-        this.jobRepository=jobRepository;
+        this.jobRepository = jobRepository;
         this.questionnaireRepository = questionnaireRepository;
-        this.workModeRepository=workModeRepository;
-        this.industryRepository=industryRepository;
-        this.educationLevelRepository=educationLevelRepository;
+        this.workModeRepository = workModeRepository;
+        this.industryRepository = industryRepository;
+        this.educationLevelRepository = educationLevelRepository;
     }
 
 
@@ -47,6 +50,7 @@ public class AdminServiceImpl implements AdminServices {
         job.setJobId(jobID);
         job.setIsActive("Y");
         job.getQuestionnaire().setQuestionnaireId(questionnaireId);
+        //job.setPostingDate(LocalDate.now());
 
         return saveJob(job, "CREATE");
     }
@@ -400,13 +404,13 @@ public class AdminServiceImpl implements AdminServices {
 
     }
 
+    /* To save a job posting only if it is not a duplicate */
     private Response saveJob(Job job, String operation) {
         Response response=new Response();
-        // Finding if a job posting already exists
+        //Finding if a job posting already exists
         Job duplicateJob = jobRepository.findDuplicateJob(job.getCompany().getCompanyName(), job.getJobLocation().getJobLocation(), job.getJobTitle().getJobTitle(), job.getJobDescription());
         log.info("The job which already exists in the table is {}", duplicateJob);
-        if (duplicateJob != null)
-        {
+        if (duplicateJob != null) {
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("The job detail already exists in the table");
             response.setData(duplicateJob);
@@ -421,24 +425,22 @@ public class AdminServiceImpl implements AdminServices {
                 log.info("Successfully created Job");
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("Successfully created Job");
-            }
-            else if (operation == "UPDATE") {
+            } else if (operation == "UPDATE") {
                 log.info("Successfully updated Job");
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("Successfully updated Job");
             }
-            }catch(Exception e)
-            {
-                log.error("Exception occurred while creating Job " + e);
-                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occurred while creating Job " + e);
-            }
+        } catch (Exception e) {
+            log.error("Exception occurred while creating Job " + e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while creating Job " + e);
+        }
 
         return response;
 
     }
 
-    /*to create questionnaire for a job posting*/
+    /*to update a job posting*/
     @Override
     public Response updateJob(Job job){
 
@@ -459,33 +461,34 @@ public class AdminServiceImpl implements AdminServices {
         return saveJob(job1, "UPDATE");
     }
 
-    @Override
-    public ResponseEntity getJobById(String jobId){
+//    @Override
+//    public ResponseEntity getJobById(String jobId){
+//
+//        ResponseEntity responseEntity;
+//        Response response=new Response();
+//        try {
+//            Job job1 = jobRepository.findByJobId(jobId);
+//            if( job1!= null) {
+//                log.info("The job fetched is {}", job1);
+//                response.setStatusCode(HttpStatus.OK.value());
+//                response.setStatusMessage("Successfully received the job details");
+//                response.setData(job1);
+//                return ResponseEntity.status(HttpStatus.OK).body(response);
+//            }
+//            else {
+//                log.info("No job was found for the corresponding job ID");
+//                response.setStatusCode(HttpStatus.NOT_FOUND.value());
+//                response.setStatusMessage("No job was found for the corresponding job ID");
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+//            }
+//
+//        }catch(Exception e)
+//        {
+//            log.error("Exception occurred while getting job details ",e);
+//            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//            response.setStatusMessage("Exception occurred while getting job details "+e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+//        }
+//    }
 
-        ResponseEntity responseEntity;
-        Response response=new Response();
-        try {
-            Job job1 = jobRepository.findByJobId(jobId);
-            if( job1!= null) {
-                log.info("The job fetched is {}", job1);
-                response.setStatusCode(HttpStatus.OK.value());
-                response.setStatusMessage("Successfully received the job details");
-                response.setData(job1);
-                return ResponseEntity.status(HttpStatus.OK).body(response);
-            }
-            else {
-                log.info("No job was found for the corresponding job ID");
-                response.setStatusCode(HttpStatus.NOT_FOUND.value());
-                response.setStatusMessage("No job was found for the corresponding job ID");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
-
-        }catch(Exception e)
-        {
-            log.error("Exception occurred while getting job details ",e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while getting job details "+e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
 }

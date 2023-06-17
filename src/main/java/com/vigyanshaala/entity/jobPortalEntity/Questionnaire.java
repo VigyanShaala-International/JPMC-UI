@@ -1,10 +1,13 @@
 package com.vigyanshaala.entity.jobPortalEntity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /*This is the company table that stores all the company details which the admin has submitted */
 @Entity
 @Table(name="questionnaire")
+
 public class Questionnaire {
 
     private @Id

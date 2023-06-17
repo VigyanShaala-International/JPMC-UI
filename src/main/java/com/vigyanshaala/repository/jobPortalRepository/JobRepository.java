@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface JobRepository extends JpaRepository<Job,String>{
+public interface JobRepository extends JpaRepository<Job, String>, CustomJobRepository {
 
     @Transactional
     @Query(value = "SELECT * FROM job j where j.job_id= :jobId", nativeQuery = true)
@@ -22,4 +22,5 @@ public interface JobRepository extends JpaRepository<Job,String>{
             "  LEFT JOIN job_title AS j3 ON j.job_title_job_title_id = j3.job_title_id where j1.company_name= :companyName AND j2.job_location= :jobLocation AND j3.job_title= :jobTitle AND j.job_description= :jobDescription AND j.is_active='Y' ;\n" +
             "   " , nativeQuery = true)
     public Job findDuplicateJob(String companyName, String jobLocation, String jobTitle, String jobDescription);
+
 }

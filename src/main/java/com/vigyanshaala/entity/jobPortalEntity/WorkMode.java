@@ -8,6 +8,7 @@ import lombok.Data;
 @Entity
 @Table(name="work_mode")
 @Data
+
 public class WorkMode {
     @Id
     private  String workModeId;
