@@ -8,6 +8,7 @@ import lombok.Data;
 @Entity
 @Table(name="industry")
 @Data
+
 public class Industry {
     @Id
     private  String industryId;
