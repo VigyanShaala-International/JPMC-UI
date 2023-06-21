@@ -27,12 +27,12 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 
         CriteriaQuery query = criteriaBuilder.createQuery(Job.class);
         Root<Job> jobTable = query.from(Job.class);
-        Root<JobLocation> locationTable = query.from(JobLocation.class);
-        Root<Company> companyTable = query.from(Company.class);
-        Root<JobTitle> jobTitleTable = query.from(JobTitle.class);
-        Root<WorkMode> workModeTable = query.from(WorkMode.class);
-        Root<Industry> industryTable = query.from(Industry.class);
-        Root<EducationLevel> educationLevelTable = query.from(EducationLevel.class);
+//        Root<JobLocation> locationTable = query.from(JobLocation.class);
+//        Root<Company> companyTable = query.from(Company.class);
+//        Root<JobTitle> jobTitleTable = query.from(JobTitle.class);
+//        Root<WorkMode> workModeTable = query.from(WorkMode.class);
+//        Root<Industry> industryTable = query.from(Industry.class);
+//        Root<EducationLevel> educationLevelTable = query.from(EducationLevel.class);
 
         Join<Job, JobLocation> locationJoin = jobTable.join("jobLocation", JoinType.INNER);
         Join<Job, Company> companyJoin = jobTable.join("company", JoinType.INNER);
@@ -40,30 +40,29 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
         Join<Job, WorkMode> workModeJoin = jobTable.join("workMode", JoinType.INNER);
         Join<Job, EducationLevel> educationLevelJoin = jobTable.join("educationLevel", JoinType.INNER);
         Join<Job, Industry> industryJoin = jobTable.join("industry", JoinType.INNER);
-
         List<Predicate> predicates = new ArrayList<>();
         if (filter.getLocation() != "" && filter.getLocation() != null) {
-            predicates.add(criteriaBuilder.equal(locationTable.get("jobLocation"), filter.getLocation()));
+            predicates.add(criteriaBuilder.equal(locationJoin.get("jobLocation"), filter.getLocation()));
         }
 
         if (filter.getCompany() != "" && filter.getCompany() != null) {
-            predicates.add(criteriaBuilder.equal(companyTable.get("companyName"), filter.getCompany()));
+            predicates.add(criteriaBuilder.equal(companyJoin.get("companyName"), filter.getCompany()));
         }
 
         if (filter.getJobTitle() != "" && filter.getJobTitle() != null) {
-            predicates.add(criteriaBuilder.equal(jobTitleTable.get("jobTitle"), filter.getJobTitle()));
+            predicates.add(criteriaBuilder.equal(jobTitleJoin.get("jobTitle"), filter.getJobTitle()));
         }
 
         if (filter.getWorkMode() != "" && filter.getWorkMode() != null) {
-            predicates.add(criteriaBuilder.equal(workModeTable.get("workMode"), filter.getWorkMode()));
+            predicates.add(criteriaBuilder.equal(workModeJoin.get("workMode"), filter.getWorkMode()));
         }
 
         if (filter.getIndustry() != "" && filter.getIndustry() != null) {
-            predicates.add(criteriaBuilder.equal(industryTable.get("industry"), filter.getIndustry()));
+            predicates.add(criteriaBuilder.equal(industryJoin.get("industry"), filter.getIndustry()));
         }
 
         if (filter.getEducationLevel() != "" && filter.getEducationLevel() != null) {
-            predicates.add(criteriaBuilder.equal(educationLevelTable.get("educationLevel"), filter.getEducationLevel()));
+            predicates.add(criteriaBuilder.equal(educationLevelJoin.get("educationLevel"), filter.getEducationLevel()));
         }
 
         if (filter.getFromDate() != null) {
@@ -72,11 +71,8 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 
         predicates.add(criteriaBuilder.greaterThanOrEqualTo(jobTable.get("expiryDate"), LocalDate.now()));
 
-        query.multiselect(companyJoin, jobTitleJoin, locationJoin, workModeJoin, educationLevelJoin, industryJoin);
-
-        query.where(predicates.stream().toArray(Predicate[]::new));
-
-        return entityManager.createQuery(query.select(jobTable).orderBy((criteriaBuilder.desc(jobTable.get("postingDate"))))).getResultList();
+        return entityManager.createQuery(query.select(jobTable)
+                .where(predicates.toArray(new Predicate[]{})).distinct(true).orderBy((criteriaBuilder.desc(jobTable.get("postingDate"))))).getResultList();
 
     }
 }
