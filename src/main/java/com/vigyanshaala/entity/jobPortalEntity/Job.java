@@ -3,26 +3,63 @@ package com.vigyanshaala.entity.jobPortalEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
+
+
 @Entity
-@Table(name="job")
+@Table(name = "job")
 @Data
+
 public class Job {
 
     private @Id
     String jobId;
 
-    private String postingDate;
+    private LocalDate postingDate;
 
-    private String expiryDate;
+    private LocalDate expiryDate;
     private String isActive;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private Company company;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private JobTitle jobTitle;
 
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private EducationLevel educationLevel;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private Industry industry;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private WorkMode workMode;
+
     private String jobDescription;
+
+    public EducationLevel getEducationLevel() {
+        return educationLevel;
+    }
+
+    public void setEducationLevel(EducationLevel educationLevel) {
+        this.educationLevel = educationLevel;
+    }
+
+    public Industry getIndustry() {
+        return industry;
+    }
+
+    public void setIndustry(Industry industry) {
+        this.industry = industry;
+    }
+
+    public WorkMode getWorkMode() {
+        return workMode;
+    }
+
+    public void setWorkMode(WorkMode workMode) {
+        this.workMode = workMode;
+    }
 
     public Questionnaire getQuestionnaire() {
         return questionnaire;
@@ -36,19 +73,19 @@ public class Job {
         this.jobId = jobId;
     }
 
-    public String getPostingDate() {
+    public LocalDate getPostingDate() {
         return postingDate;
     }
 
-    public void setPostingDate(String postingDate) {
+    public void setPostingDate(LocalDate postingDate) {
         this.postingDate = postingDate;
     }
 
-    public String getExpiryDate() {
+    public LocalDate getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(String expiryDate) {
+    public void setExpiryDate(LocalDate expiryDate) {
         this.expiryDate = expiryDate;
     }
 
@@ -96,16 +133,16 @@ public class Job {
         this.questionnaire = questionnaire;
     }
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     private Questionnaire questionnaire;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     private JobLocation jobLocation;
 
     public Job() {
     }
 
-    public Job(String jobId, String postingDate, String expiryDate, String isActive, Company company, JobTitle jobTitle, String jobDescription, JobLocation jobLocation, Questionnaire questionnaire) {
+    public Job(String jobId, LocalDate postingDate, LocalDate expiryDate, String isActive, Company company, JobTitle jobTitle, String jobDescription, JobLocation jobLocation, Questionnaire questionnaire, WorkMode workMode, EducationLevel educationLevel, Industry industry) {
         this.jobId = jobId;
         this.postingDate = postingDate;
         this.expiryDate = expiryDate;
@@ -115,8 +152,24 @@ public class Job {
         this.jobDescription = jobDescription;
         this.jobLocation = jobLocation;
         this.questionnaire = questionnaire;
+        this.workMode = workMode;
+        this.industry = industry;
+        this.educationLevel = educationLevel;
     }
 
+    public Job(Company company, JobTitle jobTitle, JobLocation jobLocation, WorkMode workMode, EducationLevel educationLevel, Industry industry) {
+        this.company = company;
+        this.jobTitle = jobTitle;
+        this.jobLocation = jobLocation;
+        this.workMode = workMode;
+        this.industry = industry;
+        this.educationLevel = educationLevel;
+    }
+
+    public Job(String company, String jobTitle, String jobLocation, String workMode, String educationLevel, String industry) {
+
+
+    }
 
 
 

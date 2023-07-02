@@ -19,15 +19,24 @@ public class AdminServiceImpl implements AdminServices {
     private final JobLocationRepository jobLocationRepository;
     private final JobTitleRepository jobTitleRepository;
     private final JobRepository jobRepository;
+    private final WorkModeRepository workModeRepository;
+    private final IndustryRepository industryRepository;
+    private final EducationLevelRepository educationLevelRepository;
 
     private final QuestionnaireRepository questionnaireRepository;
 
-    public AdminServiceImpl(JobRepository jobRepository, CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, QuestionnaireRepository questionnaireRepository) {
+//    @PersistenceContext
+//    private EntityManager em;
+
+    public AdminServiceImpl(WorkModeRepository workModeRepository, IndustryRepository industryRepository, EducationLevelRepository educationLevelRepository, JobRepository jobRepository, CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, QuestionnaireRepository questionnaireRepository) {
         this.companyNameRepository = companyDetailsRepository;
         this.jobLocationRepository = jobLocationRepository;
         this.jobTitleRepository = jobTitleRepository;
-        this.jobRepository=jobRepository;
+        this.jobRepository = jobRepository;
         this.questionnaireRepository = questionnaireRepository;
+        this.workModeRepository = workModeRepository;
+        this.industryRepository = industryRepository;
+        this.educationLevelRepository = educationLevelRepository;
     }
 
 
@@ -35,39 +44,15 @@ public class AdminServiceImpl implements AdminServices {
     @Override
     public Response createJob(Job job){
 
-        Response response=new Response();
+        //Response response=new Response();
         String jobID = UUID.randomUUID().toString();
         String questionnaireId = UUID.randomUUID().toString();
         job.setJobId(jobID);
         job.setIsActive("Y");
         job.getQuestionnaire().setQuestionnaireId(questionnaireId);
+        //job.setPostingDate(LocalDate.now());
 
-        List<Job> jobList = jobRepository.findAll();
-        log.info("The list is : ");
-        for(Job job1:jobList) {
-            log.info(job1.getJobId()+" "+job1.getJobDescription());
-            if (job1.getCompany().getCompanyName().equals(job.getCompany().getCompanyName()) && job1.getJobLocation().getJobLocation().equals(job.getJobLocation().getJobLocation()) &&  job1.getJobTitle().getJobTitle().equals(job.getJobTitle().getJobTitle())) {
-                response.setStatusCode(HttpStatus.OK.value());
-                response.setStatusMessage("The job detail already exists in the table");
-                return response;
-            }
-        }
-
-        log.info("The job detail received for adding is {}",job);
-        try {
-            jobRepository.save(job);
-            questionnaireRepository.save(job.getQuestionnaire());
-            log.info("Successfully created Job");
-            response.setStatusCode(HttpStatus.OK.value());
-            response.setStatusMessage("Successfully created Job");
-        }catch(Exception e)
-        {
-            log.error("Exception occurred while creating Job "+e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while creating Job "+e);
-        }
-        return response;
-
+        return saveJob(job, "CREATE");
     }
 
     /**to get the list of companies to choose from the company table while creating a job posting */
@@ -139,6 +124,74 @@ public class AdminServiceImpl implements AdminServices {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    /**to get a list of work mode to choose from while creating a job posting*/
+    @Override
+    public ResponseEntity getWorkmodeList()
+    {
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try {
+            List<WorkMode> workModeList=workModeRepository.findAll();
+            log.info("The work mode list is {}",workModeList);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received all work modes names");
+            response.setData(workModeList);
+
+        }catch(Exception e)
+        {
+            log.error("Exception occurred while getting work mode list ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting work mode list "+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**to get a list of industry to choose from while creating a job posting*/
+    @Override
+    public ResponseEntity getIndustryList()
+    {
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try {
+            List<Industry> industryList=industryRepository.findAll();
+            log.info("The industry list is {}",industryList);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received all industry names");
+            response.setData(industryList);
+
+        }catch(Exception e)
+        {
+            log.error("Exception occurred while getting industry list ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting industry list "+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**to get a list of educationLevel to choose from while creating a job posting*/
+    @Override
+    public ResponseEntity getEducationLevelList()
+    {
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try {
+            List<EducationLevel> educationLevelList=educationLevelRepository.findAll();
+            log.info("The educationLevel list is {}",educationLevelList);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received all education levels");
+            response.setData(educationLevelList);
+
+        }catch(Exception e)
+        {
+            log.error("Exception occurred while getting education level list ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting education level list "+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
     /**to add a company detail from the admin page*/
     @Override
     public Response addCompany(String companyName){
@@ -171,6 +224,100 @@ public class AdminServiceImpl implements AdminServices {
         return response;
     }
 
+    /**to add a education level from the admin page*/
+    @Override
+    public Response addEducationLevel(String educationLevelName){
+        Response response=new Response();
+        String educationLevelId = UUID.randomUUID().toString();
+        EducationLevel educationLevel=new EducationLevel(educationLevelId,educationLevelName);
+
+        List<EducationLevel>educationLevelList= educationLevelRepository.findAll();
+        log.info("The list is : "+educationLevelList);
+
+        for(EducationLevel educationLevel1:educationLevelList) {
+            if (educationLevel1.getEducationLevel().equals(educationLevelName)) {
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("The education level already exists in the table");
+                return response;
+            }
+        }
+
+        try {
+            educationLevelRepository.save(educationLevel);
+            log.info("Successfully saved education level");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully saved education level");
+        }catch(Exception e)
+        {
+            log.error("Exception occurred while saving education level ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while saving education level "+e);
+        }
+        return response;
+    }
+
+    /**to add a industry from the admin page*/
+    @Override
+    public Response addIndustry(String industryName){
+        Response response=new Response();
+        String industryId = UUID.randomUUID().toString();
+        Industry industry=new Industry(industryId,industryName);
+
+        List<Industry>industryList= industryRepository.findAll();
+        log.info("The list is : "+industryList);
+
+        for(Industry industry1:industryList) {
+            if (industry1.getIndustry().equals(industryName)) {
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("The industry already exists in the table");
+                return response;
+            }
+        }
+
+        try {
+            industryRepository.save(industry);
+            log.info("Successfully saved industry");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully saved industry");
+        }catch(Exception e)
+        {
+            log.error("Exception occurred while saving industry ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while saving industry "+e);
+        }
+        return response;
+    }
+    /**to add a workmode from the admin page*/
+    @Override
+    public Response addWorkmode(String workmodeName){
+        Response response=new Response();
+        String workmodeId = UUID.randomUUID().toString();
+        WorkMode workMode=new WorkMode(workmodeId,workmodeName);
+
+        List<WorkMode>workModeList= workModeRepository.findAll();
+        log.info("The list is : "+workModeList);
+
+        for(WorkMode workMode1:workModeList) {
+            if (workMode1.getWorkMode().equals(workmodeName)) {
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("The workmode already exists in the table");
+                return response;
+            }
+        }
+
+        try {
+            workModeRepository.save(workMode);
+            log.info("Successfully saved workmode");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully saved workmode");
+        }catch(Exception e)
+        {
+            log.error("Exception occurred while saving workmode ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while saving workmode "+e);
+        }
+        return response;
+    }
     /**to add a job location from the admin page*/
     @Override
     public Response addJobLocation(String jobLocationName){
@@ -256,4 +403,92 @@ public class AdminServiceImpl implements AdminServices {
         return response;
 
     }
+
+    /* To save a job posting only if it is not a duplicate */
+    private Response saveJob(Job job, String operation) {
+        Response response=new Response();
+        //Finding if a job posting already exists
+        Job duplicateJob = jobRepository.findDuplicateJob(job.getCompany().getCompanyName(), job.getJobLocation().getJobLocation(), job.getJobTitle().getJobTitle(), job.getJobDescription());
+        log.info("The job which already exists in the table is {}", duplicateJob);
+        if (duplicateJob != null) {
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("The job detail already exists in the table");
+            response.setData(duplicateJob);
+            return response;
+        }
+
+        log.info("The job detail received for adding is {}",job);
+        try {
+            jobRepository.save(job);
+            questionnaireRepository.save(job.getQuestionnaire());
+            if (operation == "CREATE") {
+                log.info("Successfully created Job");
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("Successfully created Job");
+            } else if (operation == "UPDATE") {
+                log.info("Successfully updated Job");
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("Successfully updated Job");
+            }
+        } catch (Exception e) {
+            log.error("Exception occurred while creating Job " + e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while creating Job " + e);
+        }
+
+        return response;
+
+    }
+
+    /*to update a job posting*/
+    @Override
+    public Response updateJob(Job job){
+
+        Response response=new Response();
+        Job job1 = jobRepository.findByJobId(job.getJobId());
+        String questionnaireId = job1.getQuestionnaire().getQuestionnaireId();
+        log.info("The job before updating is {}", job1);
+
+        job.getQuestionnaire().setQuestionnaireId(questionnaireId);
+
+        job1.setQuestionnaire(job.getQuestionnaire());
+        job1.setJobDescription(job.getJobDescription());
+        job1.setJobLocation(job.getJobLocation());
+        job1.setJobTitle(job.getJobTitle());
+        job1.setExpiryDate(job.getExpiryDate());
+        job1.setJobId(job.getJobId());
+        log.info("The job after updating is {}", job1);
+        return saveJob(job1, "UPDATE");
+    }
+
+//    @Override
+//    public ResponseEntity getJobById(String jobId){
+//
+//        ResponseEntity responseEntity;
+//        Response response=new Response();
+//        try {
+//            Job job1 = jobRepository.findByJobId(jobId);
+//            if( job1!= null) {
+//                log.info("The job fetched is {}", job1);
+//                response.setStatusCode(HttpStatus.OK.value());
+//                response.setStatusMessage("Successfully received the job details");
+//                response.setData(job1);
+//                return ResponseEntity.status(HttpStatus.OK).body(response);
+//            }
+//            else {
+//                log.info("No job was found for the corresponding job ID");
+//                response.setStatusCode(HttpStatus.NOT_FOUND.value());
+//                response.setStatusMessage("No job was found for the corresponding job ID");
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+//            }
+//
+//        }catch(Exception e)
+//        {
+//            log.error("Exception occurred while getting job details ",e);
+//            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//            response.setStatusMessage("Exception occurred while getting job details "+e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+//        }
+//    }
+
 }

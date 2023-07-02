@@ -9,6 +9,7 @@ import lombok.Data;
 @Entity
 @Table(name="job_location")
 @Data
+
 public class JobLocation {
 
     @Id
