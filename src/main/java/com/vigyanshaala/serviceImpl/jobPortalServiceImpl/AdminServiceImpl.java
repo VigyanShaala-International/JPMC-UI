@@ -21,13 +21,15 @@ public class AdminServiceImpl implements AdminServices {
     private final JobRepository jobRepository;
 
     private final QuestionnaireRepository questionnaireRepository;
+    private final AdminRepository adminRepository;
 
-    public AdminServiceImpl(JobRepository jobRepository, CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, QuestionnaireRepository questionnaireRepository) {
+    public AdminServiceImpl(JobRepository jobRepository, CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, QuestionnaireRepository questionnaireRepository, AdminRepository adminRepository) {
         this.companyNameRepository = companyDetailsRepository;
         this.jobLocationRepository = jobLocationRepository;
         this.jobTitleRepository = jobTitleRepository;
         this.jobRepository=jobRepository;
         this.questionnaireRepository = questionnaireRepository;
+        this.adminRepository = adminRepository;
     }
 
 
@@ -88,6 +90,28 @@ public class AdminServiceImpl implements AdminServices {
             log.error("Exception occurred while getting company names ",e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occurred while getting company names "+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Override
+    public ResponseEntity getAdminList()
+    {
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try {
+            List<Admin> adminList=adminRepository.findAll();
+            log.info("The admin list is {}",adminList);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received all admin");
+            response.setData(adminList);
+
+        }catch(Exception e)
+        {
+            log.error("Exception occurred while getting admin list ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting admin list "+e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
         return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -234,6 +258,54 @@ public class AdminServiceImpl implements AdminServices {
         return response;
     }
 
+    @Override
+    public Response addAdmin(Admin admin)
+    {
+        Response response=new Response();
+        List<Admin>adminList= adminRepository.findAll();
+        log.info("The list is : {}",adminList);
+        for(Admin admin1:adminList){
+            if(admin1.getAdminId().equals(admin.getAdminId()))
+            {
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("The admin already exists in the table");
+                return response;
+            }}
+
+        try {
+            adminRepository.save(admin);
+            log.info("Successfully saved admin");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully saved admin");
+        }catch(Exception e)
+        {
+            log.error("Exception occurred while saving admin ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while saving admin "+e);
+        }
+        return response;
+    }
+
+    @Override
+    public ResponseEntity verifyAdmin( String email)
+    {
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try {
+            String adminName = adminRepository.getAdminName(email);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received adminName");
+            response.setData(adminName);
+        }catch(Exception e)
+        {
+            log.error("Exception occurred while getting admin name ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting admin name "+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+
+    }
     /*to create questionnaire for a job posting*/
     @Override
     public Response createQuestionnaire(Questionnaire questionnaire){

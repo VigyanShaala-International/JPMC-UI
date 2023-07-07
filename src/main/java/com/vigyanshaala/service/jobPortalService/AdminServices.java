@@ -1,4 +1,5 @@
 package com.vigyanshaala.service.jobPortalService;
+import com.vigyanshaala.entity.jobPortalEntity.Admin;
 import com.vigyanshaala.entity.jobPortalEntity.Job;
 import com.vigyanshaala.entity.jobPortalEntity.Questionnaire;
 import com.vigyanshaala.response.Response;
@@ -14,4 +15,7 @@ public interface AdminServices {
     ResponseEntity getJobLocationList();
     ResponseEntity getJobTitleList();
     Response createQuestionnaire(Questionnaire questionnaire);
+    ResponseEntity verifyAdmin( String email);
+    Response addAdmin(Admin admin);
+    ResponseEntity getAdminList();
 }

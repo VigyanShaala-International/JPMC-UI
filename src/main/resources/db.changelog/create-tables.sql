@@ -58,3 +58,8 @@ question4 varchar(255),
 question5 varchar(255),
 primary key(questionnaire_id)
 );
+
+create table admin(
+admin_id varchar(50),
+admin_email varchar(50),
+primary key (admin_id));

@@ -1,5 +1,6 @@
 package com.vigyanshaala.controller.jobPortalController;
 
+import com.vigyanshaala.entity.jobPortalEntity.Admin;
 import com.vigyanshaala.entity.jobPortalEntity.Job;
 import com.vigyanshaala.entity.jobPortalEntity.Questionnaire;
 import com.vigyanshaala.response.Response;
@@ -24,6 +25,58 @@ public class AdminController {
 
     @Autowired
     AdminServices adminServices;
+
+
+    @GetMapping(value="/verifyAdmin/{email}", produces="application/json")
+    ResponseEntity<Response> verifyAdmin( @PathVariable("email") String email) {
+
+        ResponseEntity responseEntity;
+        Response response=new Response();
+
+        try{
+            log.info(email);
+             responseEntity = adminServices.verifyAdmin(email);
+        }catch(Exception e){
+            log.error("Exception occurred while verifying admin ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occured while verifying admin"+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return responseEntity;
+
+    }
+
+    @PostMapping(value="/admin", produces="application/json")
+    Response addAdmin( Admin admin) {
+        Response response=new Response();
+
+        try{
+
+            response = adminServices.addAdmin(admin);
+        }catch(Exception e){
+            log.error("Exception occurred while verifying admin ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occured while adding admin"+e);
+            return response;
+        }
+        return response;
+
+    }
+
+    @GetMapping(value="/admin/all", produces="application/json")
+    ResponseEntity<Response> getAdminList(){
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try{
+            responseEntity= adminServices.getAdminList();
+        }catch(Exception e){
+            log.error("Exception occurred while getting admin list ",e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting admin list"+e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return responseEntity;
+    }
 
     @ApiOperation(value = "Add company details in the Company table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/company",consumes="application/json", produces="application/json")
