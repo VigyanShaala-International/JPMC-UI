@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,7 +51,8 @@ public class AdminServiceImpl implements AdminServices {
         job.setJobId(jobID);
         job.setIsActive("Y");
         job.getQuestionnaire().setQuestionnaireId(questionnaireId);
-        //job.setPostingDate(LocalDate.now());
+        job.setPostingDate(LocalDate.now());
+        job.setExpiryDate(LocalDate.now( ).plusMonths( 2 ));
 
         return saveJob(job, "CREATE");
     }
