@@ -293,9 +293,11 @@ public class AdminServiceImpl implements AdminServices {
         Response response=new Response();
         try {
             String adminName = adminRepository.getAdminName(email);
-            response.setStatusCode(HttpStatus.OK.value());
-            response.setStatusMessage("Successfully received adminName");
-            response.setData(adminName);
+
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("Successfully received adminName");
+                response.setData(adminName);
+
         }catch(Exception e)
         {
             log.error("Exception occurred while getting admin name ",e);
