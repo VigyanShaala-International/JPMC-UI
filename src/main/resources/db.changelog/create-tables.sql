@@ -50,6 +50,7 @@ job_location_id varchar(50),
 education_level_id varchar(50),
 industry_id varchar(50),
 work_mode_id varchar(50),
+hr_email varchar(50),
 primary key(job_id),
 constraint company_id foreign key (company_id) references company(company_id),
 constraint job_title_id foreign key (job_title_id) references job_title(job_title_id),
@@ -84,4 +85,32 @@ question5 varchar(255),
 primary key(questionnaire_id)
 );
 
+create table job_application(
+job_application_id varchar(50),
+student_id varchar(50),
+job_id varchar(50),
+answer1 varchar(100),
+answer2 varchar(100),
+answer3 varchar(100),
+answer4 varchar(100),
+answer5 varchar(100),
+is_job_application_posted_to_hr varchar(1),
+primary key(job_application_id),
+constraint job_id foreign key (job_id) references job(job_id)
+);
 
+create table student_document(
+student_document_id varchar(50),
+job_application_id varchar(50),
+document_type varchar(50),
+blob_data BLOB,
+primary key(student_document_id),
+constraint job_application_id foreign key (job_application_id) references job_application(job_application_id)
+);
+
+create table document_type(
+document_type_id varchar(50),
+document_type varchar(50),
+description varchar(50),
+primary key(document_type_id)
+);

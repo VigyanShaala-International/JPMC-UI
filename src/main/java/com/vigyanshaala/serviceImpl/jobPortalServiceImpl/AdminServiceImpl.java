@@ -8,7 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,11 +27,13 @@ public class AdminServiceImpl implements AdminServices {
     private final EducationLevelRepository educationLevelRepository;
 
     private final QuestionnaireRepository questionnaireRepository;
-
+    private final JobApplicationRepository jobApplicationRepository;
+    private final StudentDocumentRepository studentDocumentRepository;
+    private final DocumentTypeRepository documentTypeRepository;
 //    @PersistenceContext
 //    private EntityManager em;
 
-    public AdminServiceImpl(WorkModeRepository workModeRepository, IndustryRepository industryRepository, EducationLevelRepository educationLevelRepository, JobRepository jobRepository, CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, QuestionnaireRepository questionnaireRepository) {
+    public AdminServiceImpl(WorkModeRepository workModeRepository, IndustryRepository industryRepository, EducationLevelRepository educationLevelRepository, JobRepository jobRepository, CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, QuestionnaireRepository questionnaireRepository, JobApplicationRepository jobApplicationRepository, StudentDocumentRepository studentDocumentRepository, DocumentTypeRepository documentTypeRepository) {
         this.companyNameRepository = companyDetailsRepository;
         this.jobLocationRepository = jobLocationRepository;
         this.jobTitleRepository = jobTitleRepository;
@@ -37,6 +42,9 @@ public class AdminServiceImpl implements AdminServices {
         this.workModeRepository = workModeRepository;
         this.industryRepository = industryRepository;
         this.educationLevelRepository = educationLevelRepository;
+        this.jobApplicationRepository = jobApplicationRepository;
+        this.studentDocumentRepository = studentDocumentRepository;
+        this.documentTypeRepository = documentTypeRepository;
     }
 
 
@@ -490,5 +498,202 @@ public class AdminServiceImpl implements AdminServices {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 //        }
 //    }
+
+    /* To create a job application */
+    @Override
+    public Response createJobApplication(JobApplication jobApplication, DocumentType documentType, MultipartFile[] files) throws IOException {
+        Response response = new Response();
+        String jobApplicationId = UUID.randomUUID().toString();
+        List<byte[]> fileBlob = new ArrayList<>();
+        jobApplication.setJobApplicationId(jobApplicationId);
+        jobApplication.setIsJobApplicationPostedToHr(false);
+        List<JobApplication> jobApplicationList = jobApplicationRepository.findAll();
+        List<StudentDocument> studentDocumentList = new ArrayList<>();
+        log.info("The list is : {}", jobApplicationList);
+        for (JobApplication jobApplication1 : jobApplicationList) {
+            if (jobApplication1.getJobApplicationId().equals(jobApplication.getJobApplicationId())) {
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("The job application already exists in the table");
+                return response;
+            }
+        }
+        for (MultipartFile file : files) {
+            StudentDocument studentDocument = new StudentDocument();
+            String studentDocumentId = UUID.randomUUID().toString();
+            String documentTypeId = UUID.randomUUID().toString();
+            documentType.setDocumentTypeId(documentTypeId);
+            //studentDocument.setStudentDocumentId(studentDocumentId);
+            studentDocument.setBlobData(file.getBytes());
+            studentDocument.setStudentDocumentId(studentDocumentId);
+            studentDocument.setDocumentType(documentType);
+            studentDocument.setJobApplication(jobApplication);
+            studentDocumentList.add(studentDocument);
+            //studentDocument.setJobApplication();
+            fileBlob.add(file.getBytes());
+        }
+        jobApplication.setStudentDocumentList(studentDocumentList);
+        try {
+            jobApplicationRepository.save(jobApplication);
+            log.info("Successfully saved job application");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully saved job application");
+        } catch (Exception e) {
+            log.error("Exception occurred while saving job application ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while saving job application " + e);
+        }
+        return response;
+    }
+
+    /* To create student document */
+    @Override
+    public Response createStudentDocument(JobApplication jobApplication, MultipartFile file) throws IOException {
+        Response response = new Response();
+        String studentDocumentId = UUID.randomUUID().toString();
+        StudentDocument studentDocument = new StudentDocument();
+        //StudentDocument studentDocument = new StudentDocument();
+        studentDocument.setStudentDocumentId(studentDocumentId);
+        studentDocument.setJobApplication(jobApplication);
+        System.out.println("job appln id is " + studentDocument.getJobApplication().getJobApplicationId());
+
+        //studentDocument.setJobApplication(jobApplication);
+        studentDocument.setBlobData(file.getBytes());
+        //studentDocument.setJobApplication(jobApplication);
+        //studentDocument.setDocumentType(documentType);
+        //studentDocument.setBlobData(file.getBytes());
+        //
+        //studentDocument.setBlobData(IOUtils.toB);
+        List<StudentDocument> studentDocumentList = studentDocumentRepository.findAll();
+        log.info("The list is : {}", studentDocumentList);
+//        for(StudentDocument studentDocument1 : studentDocumentList){
+//            if(studentDocument1.getDocumentType().equals(file.getDocumentType()) && studentDocument1.getStudentDocumentId().equals(file.getStudentDocumentId()))
+//            {
+//                response.setStatusCode(HttpStatus.OK.value());
+//                response.setStatusMessage("The student document exists in the table");
+//                return response;
+//            }}
+
+        try {
+            studentDocumentRepository.save(studentDocument);
+            log.info("Successfully saved student document");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully saved student document");
+        } catch (Exception e) {
+            log.error("Exception occurred while saving student document ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while saving student document " + e);
+        }
+        return response;
+    }
+
+
+    /* To create document type */
+    @Override
+    public Response createDocumentType(DocumentType documentType) {
+        Response response = new Response();
+        String documentTypeId = UUID.randomUUID().toString();
+        documentType.setDocumentTypeId(documentTypeId);
+        List<DocumentType> documentTypeList = documentTypeRepository.findAll();
+        log.info("The list is : {}", documentTypeList);
+        for (DocumentType documentType1 : documentTypeList) {
+            if (documentType1.getDocumentType().equals(documentType.getDocumentType()) && documentType1.getDescription().equals(documentType.getDescription())) {
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("The document type in the table");
+                return response;
+            }
+        }
+
+        try {
+            documentTypeRepository.save(documentType);
+            log.info("Successfully saved document type");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully saved document type");
+        } catch (Exception e) {
+            log.error("Exception occurred while saving document type ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while saving document type " + e);
+        }
+        return response;
+    }
+
+    /**
+     * to get the list of job applications to choose from the jobApplication table
+     */
+    @Override
+    public ResponseEntity getJobApplicationList() {
+        ResponseEntity responseEntity;
+        Response response = new Response();
+        try {
+            List<JobApplication> jobApplicationList = jobApplicationRepository.findAll();
+            log.info("The job applications list is {}", jobApplicationList);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received all job applications");
+            response.setData(jobApplicationList);
+
+        } catch (Exception e) {
+            log.error("Exception occurred while getting job applications ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting job applications " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * to get the list of student documents to choose from the studentDocument table
+     */
+    @Override
+    public ResponseEntity getStudentDocumentList() {
+        ResponseEntity responseEntity;
+        Response response = new Response();
+        try {
+            List<StudentDocument> studentDocumentList = studentDocumentRepository.findAll();
+            log.info("The student documents list is {}", studentDocumentList);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received all student documents");
+            response.setData(studentDocumentList);
+
+        } catch (Exception e) {
+            log.error("Exception occurred while getting student documents ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting student documents " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * to get the list of document types to choose from the documentType table
+     */
+    @Override
+    public ResponseEntity getDocumentTypeList() {
+        ResponseEntity responseEntity;
+        Response response = new Response();
+        try {
+            List<DocumentType> documentTypeList = documentTypeRepository.findAll();
+            log.info("The document types list is {}", documentTypeList);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received all document types");
+            response.setData(documentTypeList);
+
+        } catch (Exception e) {
+            log.error("Exception occurred while getting document types ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting document types " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    public StudentDocument uploadFile(MultipartFile file) throws IOException {
+        StudentDocument studentDocument = new StudentDocument();
+        //studentDocument.setDocumentType(file.getContentType());
+        studentDocument.setBlobData(file.getBytes());
+
+        //pImage.setName(file.getOriginalFilename());
+        //pImage.setType(file.getContentType());
+        //pImage.setImageData(ImageUtil.compressImage(file.getBytes()));
+        return studentDocumentRepository.save(studentDocument);
+    }
 
 }

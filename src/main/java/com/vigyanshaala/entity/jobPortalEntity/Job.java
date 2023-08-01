@@ -1,19 +1,25 @@
 package com.vigyanshaala.entity.jobPortalEntity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.LocalDate;
 
 
 @Entity
 @Table(name = "job")
-@Data
 
 public class Job {
 
     private @Id
     String jobId;
+
+    public String getHrEmail() {
+        return hrEmail;
+    }
+
+    public void setHrEmail(String hrEmail) {
+        this.hrEmail = hrEmail;
+    }
 
     private LocalDate postingDate;
 
@@ -36,6 +42,7 @@ public class Job {
     private WorkMode workMode;
 
     private String jobDescription;
+    private String hrEmail;
 
     public EducationLevel getEducationLevel() {
         return educationLevel;
@@ -157,6 +164,7 @@ public class Job {
         this.educationLevel = educationLevel;
     }
 
+
     public Job(Company company, JobTitle jobTitle, JobLocation jobLocation, WorkMode workMode, EducationLevel educationLevel, Industry industry) {
         this.company = company;
         this.jobTitle = jobTitle;
@@ -166,18 +174,25 @@ public class Job {
         this.educationLevel = educationLevel;
     }
 
-    public Job(String company, String jobTitle, String jobLocation, String workMode, String educationLevel, String industry) {
-
-
+    public Job(String jobId, LocalDate postingDate, LocalDate expiryDate, String isActive, Company company, JobTitle jobTitle, String jobDescription, JobLocation jobLocation, Questionnaire questionnaire, WorkMode workMode, EducationLevel educationLevel, Industry industry, String hrEmail) {
+        this.jobId = jobId;
+        this.postingDate = postingDate;
+        this.expiryDate = expiryDate;
+        this.isActive = isActive;
+        this.company = company;
+        this.jobTitle = jobTitle;
+        this.jobDescription = jobDescription;
+        this.jobLocation = jobLocation;
+        this.questionnaire = questionnaire;
+        this.workMode = workMode;
+        this.industry = industry;
+        this.educationLevel = educationLevel;
+        this.hrEmail = hrEmail;
     }
 
 
-
-
-
-
-
-
-
-
 }
+
+
+
+
