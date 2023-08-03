@@ -3,6 +3,8 @@ package com.vigyanshaala.controller.jobPortalController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.vigyanshaala.entity.jobPortalEntity.*;
+import com.vigyanshaala.entity.jobPortalEntity.Job;
+import com.vigyanshaala.entity.jobPortalEntity.Questionnaire;
 import com.vigyanshaala.repository.jobPortalRepository.CustomJobRepositoryImpl;
 import com.vigyanshaala.repository.jobPortalRepository.JobFilter;
 import com.vigyanshaala.response.Response;
@@ -37,16 +39,16 @@ public class AdminController {
     CustomJobRepositoryImpl customJobRepository;
 
     @ApiOperation(value = "Add work mode in the WorkMode table", notes = "Returns a response with status code 200 for successful addition in the table.")
-    @PostMapping(value = "/workmode", produces = "application/json")
-    Response addWorkmode(@RequestBody String workmode) {
-        Response response = new Response();
-        try {
+    @PostMapping(value="/workmode", produces="application/json")
+    Response addWorkmode(@RequestBody WorkMode workmode){
+        Response response=new Response();
+        try{
             log.info("The work mode is : {}", workmode);
-            response = adminServices.addWorkmode(workmode);
-        } catch (Exception e) {
-            log.error("Exception occurred while adding workmode name ", e);
+            response= adminServices.addWorkmode(workmode);
+        }catch(Exception e){
+            log.error("Exception occurred while adding workmode name ",e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding workmode name " + e);
+            response.setStatusMessage("Exception occurred while adding workmode name "+e);
         }
         return response;
     }
@@ -68,7 +70,7 @@ public class AdminController {
     }
     @ApiOperation(value = "Add education level in the EducationLevel table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/educationLevel", produces="application/json")
-    Response addEducationLevel(@RequestBody String educationLevel){
+    Response addEducationLevel(@RequestBody EducationLevel educationLevel){
         Response response=new Response();
         try{
             log.info("The education level is : {}", educationLevel);
@@ -99,7 +101,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add industry in the Industry table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/industry", produces="application/json")
-    Response addIndustry(@RequestBody String industry){
+    Response addIndustry(@RequestBody Industry industry){
         Response response=new Response();
         try{
             log.info("The industry is : {}", industry);
@@ -130,7 +132,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add company details in the Company table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/company", produces="application/json")
-    Response addCompany(@RequestBody String company){
+    Response addCompany(@RequestBody Company company){
         Response response=new Response();
         try{
             log.info("The company name is : {}", company);
@@ -161,7 +163,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job title in the JobTitle table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/title", produces="application/json")
-    Response addJobTitle(@RequestBody String jobTitle){
+    Response addJobTitle(@RequestBody JobTitle jobTitle){
         Response response=new Response();
         try{
             log.info("The company name list is : {}",jobTitle);
@@ -194,7 +196,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job location in the JobLocation table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/location", produces="application/json")
-    Response addJobLocationList(@RequestBody String jobLocation){
+    Response addJobLocationList(@RequestBody JobLocation jobLocation){
         Response response=new Response();
         try{
             log.info("The company name list is : {}",jobLocation);
@@ -225,7 +227,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job in the job table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/job",consumes="application/json", produces="application/json")
-    Response addJob(@RequestBody Job job){
+    Response addCompany(@RequestBody Job job){
         Response response=new Response();
         try{
             log.info("The Job detail is : "+ job.toString());
@@ -258,13 +260,13 @@ public class AdminController {
     @PostMapping(value="/questionnaire",consumes="application/json", produces="application/json")
     Response createQuestionnaire(@RequestBody Questionnaire questionnaire){
         Response response=new Response();
-        try {
-            log.info("The questionnaire received is : " + questionnaire.toString());
-            response = adminServices.createQuestionnaire(questionnaire);
-        } catch (Exception e) {
-            log.error("Exception occurred while adding job  " + e);
+        try{
+            log.info("The questionnaire received is : "+ questionnaire.toString());
+            response= adminServices.createQuestionnaire(questionnaire);
+        }catch(Exception e){
+            log.error("Exception occurred while adding job  "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding job  " + e);
+            response.setStatusMessage("Exception occurred while adding job  "+e);
         }
         return response;
     }

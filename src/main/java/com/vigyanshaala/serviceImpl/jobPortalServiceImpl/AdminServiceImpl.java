@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,7 +59,8 @@ public class AdminServiceImpl implements AdminServices {
         job.setJobId(jobID);
         job.setIsActive("Y");
         job.getQuestionnaire().setQuestionnaireId(questionnaireId);
-        //job.setPostingDate(LocalDate.now());
+        job.setPostingDate(LocalDate.now());
+        job.setExpiryDate(LocalDate.now( ).plusMonths( 2 ));
 
         return saveJob(job, "CREATE");
     }
@@ -202,16 +204,16 @@ public class AdminServiceImpl implements AdminServices {
     }
     /**to add a company detail from the admin page*/
     @Override
-    public Response addCompany(String companyName){
+    public Response addCompany(Company company){
         Response response=new Response();
         String companyId = UUID.randomUUID().toString();
-        Company company=new Company(companyId,companyName);
+        company.setCompanyId(companyId);
 
         List<Company> companyList = companyNameRepository.findAll();
         log.info("The list is : ");
         for(Company company1:companyList) {
             log.info(company1.getCompanyId()+" "+company1.getCompanyName());
-            if (company1.getCompanyName().equals(companyName)) {
+            if (company1.getCompanyName().equals(company.getCompanyName())) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The company detail already exists in the table");
                 return response;
@@ -234,16 +236,16 @@ public class AdminServiceImpl implements AdminServices {
 
     /**to add a education level from the admin page*/
     @Override
-    public Response addEducationLevel(String educationLevelName){
+    public Response addEducationLevel(EducationLevel educationLevel){
         Response response=new Response();
         String educationLevelId = UUID.randomUUID().toString();
-        EducationLevel educationLevel=new EducationLevel(educationLevelId,educationLevelName);
+        educationLevel.setEducationLevelId(educationLevelId);
 
         List<EducationLevel>educationLevelList= educationLevelRepository.findAll();
         log.info("The list is : "+educationLevelList);
 
         for(EducationLevel educationLevel1:educationLevelList) {
-            if (educationLevel1.getEducationLevel().equals(educationLevelName)) {
+            if (educationLevel1.getEducationLevel().equals(educationLevel.getEducationLevel())) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The education level already exists in the table");
                 return response;
@@ -266,16 +268,15 @@ public class AdminServiceImpl implements AdminServices {
 
     /**to add a industry from the admin page*/
     @Override
-    public Response addIndustry(String industryName){
+    public Response addIndustry(Industry industry){
         Response response=new Response();
         String industryId = UUID.randomUUID().toString();
-        Industry industry=new Industry(industryId,industryName);
-
+        industry.setIndustryId(industryId);
         List<Industry>industryList= industryRepository.findAll();
         log.info("The list is : "+industryList);
 
         for(Industry industry1:industryList) {
-            if (industry1.getIndustry().equals(industryName)) {
+            if (industry1.getIndustry().equals(industry.getIndustry())) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The industry already exists in the table");
                 return response;
@@ -297,16 +298,16 @@ public class AdminServiceImpl implements AdminServices {
     }
     /**to add a workmode from the admin page*/
     @Override
-    public Response addWorkmode(String workmodeName){
+    public Response addWorkmode(WorkMode workmode){
         Response response=new Response();
         String workmodeId = UUID.randomUUID().toString();
-        WorkMode workMode=new WorkMode(workmodeId,workmodeName);
+        workmode.setWorkModeId(workmodeId);
 
         List<WorkMode>workModeList= workModeRepository.findAll();
         log.info("The list is : "+workModeList);
 
         for(WorkMode workMode1:workModeList) {
-            if (workMode1.getWorkMode().equals(workmodeName)) {
+            if (workMode1.getWorkMode().equals(workmode.getWorkMode())) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The workmode already exists in the table");
                 return response;
@@ -314,7 +315,7 @@ public class AdminServiceImpl implements AdminServices {
         }
 
         try {
-            workModeRepository.save(workMode);
+            workModeRepository.save(workmode);
             log.info("Successfully saved workmode");
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully saved workmode");
@@ -328,16 +329,16 @@ public class AdminServiceImpl implements AdminServices {
     }
     /**to add a job location from the admin page*/
     @Override
-    public Response addJobLocation(String jobLocationName){
+    public Response addJobLocation(JobLocation jobLocation){
         Response response=new Response();
         String jobLocationId = UUID.randomUUID().toString();
-        JobLocation jobLocation=new JobLocation(jobLocationId,jobLocationName);
+        jobLocation.setJobLocationId(jobLocationId);
 
         List<JobLocation>jobLocationList= jobLocationRepository.findAll();
         log.info("The list is : "+jobLocationList);
 
         for(JobLocation jobLocation1:jobLocationList) {
-            if (jobLocation1.getJobLocation().equals(jobLocationName)) {
+            if (jobLocation1.getJobLocation().equals(jobLocation.getJobLocation())) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The job location already exists in the table");
                 return response;
@@ -360,15 +361,15 @@ public class AdminServiceImpl implements AdminServices {
 
     /**to add a job title from the admin page*/
     @Override
-    public Response addJobTitle(String jobTitleName){
+    public Response addJobTitle(JobTitle jobTitle){
         Response response=new Response();
         String jobTitleId = UUID.randomUUID().toString();
-        JobTitle jobTitle=new JobTitle(jobTitleId,jobTitleName);
+        jobTitle.setJobTitleId(jobTitleId);
 
         List<JobTitle>jobTitleList= jobTitleRepository.findAll();
         log.info("The list is : {}",jobTitleList);
         for(JobTitle jobTitle1:jobTitleList){
-            if(jobTitle1.getJobTitle().equals(jobTitleName))
+            if(jobTitle1.getJobTitle().equals(jobTitle.getJobTitle()))
             {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The jobTitle already exists in the table");
