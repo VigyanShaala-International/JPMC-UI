@@ -1,4 +1,12 @@
 spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 817648875048-r3k4nf2okkfhtpptm9ulf77idt19tiiu.apps.googleusercontent.com
+            client-secret: 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
+
   h2:
     console:
       enabled: true
@@ -13,3 +21,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto : create-drop
+
+
+
