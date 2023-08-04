@@ -3,23 +3,19 @@ package com.vigyanshaala.repository.jobPortalRepository;
 import com.vigyanshaala.entity.user.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Repository
-public interface UserRoleRepository extends CrudRepository<UserRole, String>{
+public interface UserRoleRepository extends JpaRepository<UserRole, String>{
 
-//    @Transactional
-//    @Query(value="SELECT student_name FROM student s where s.student_id=:studentEmail", nativeQuery = true)
-//    String getStudentName (
-//            @Param("studentEmail") String studentEmail);
-//
+    @Transactional
+    @Query(value="SELECT * FROM user_role u where u.email_id=:emailId", nativeQuery = true)
+    UserRole findByEmail (
+            @Param("emailId") String emailId);
 
-    @Override
-    Optional<UserRole> findById(String emailId);
+
+
 }
 
