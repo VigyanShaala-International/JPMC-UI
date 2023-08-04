@@ -16,28 +16,26 @@ import java.util.List;
 public class StudentServiceImpl implements StudentServices {
 
     private final JobRepository jobRepository;
-    public StudentServiceImpl(JobRepository jobRepository)
-    {
+
+    public StudentServiceImpl(JobRepository jobRepository) {
         this.jobRepository = jobRepository;
     }
 
     @Override
-    public ResponseEntity getAllJobs()
-    {
+    public ResponseEntity getAllJobs() {
         ResponseEntity responseEntity;
-        Response response=new Response();
+        Response response = new Response();
         try {
-            List<Job> jobList=jobRepository.findAll();
-            log.info("The job list is {}",jobList);
+            List<Job> jobList = jobRepository.findAll();
+            log.info("The job list is {}", jobList);
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully received all job locations");
             response.setData(jobList);
 
-        }catch(Exception e)
-        {
-            log.error("Exception occurred while getting job locations ",e);
+        } catch (Exception e) {
+            log.error("Exception occurred while getting job locations ", e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while getting job locations "+e);
+            response.setStatusMessage("Exception occurred while getting job locations " + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
         return ResponseEntity.status(HttpStatus.OK).body(response);
