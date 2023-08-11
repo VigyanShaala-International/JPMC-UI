@@ -41,7 +41,7 @@ public interface AdminServices {
     Response updateJob(Job job);
 
     //ResponseEntity getJobById(String jobId);
-    Response createJobApplication(JobApplication jobApplication, DocumentType documentType, MultipartFile[] files) throws IOException;
+    Response createJobApplication(JobApplication jobApplication, MultipartFile[] files) throws IOException;
 
     Response createStudentDocument(JobApplication jobApplication, MultipartFile file) throws IOException;
 

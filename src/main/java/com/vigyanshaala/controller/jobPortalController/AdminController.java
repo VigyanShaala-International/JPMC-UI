@@ -318,7 +318,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job application in the JobApplication table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @RequestMapping(path = "/jobApplication/", method = RequestMethod.POST, consumes = {"multipart/form-data"})
-    Response createJobApplication(@RequestPart("jobApplication") String jobApplication, @RequestPart("documentType") String documentType, @RequestPart("files") MultipartFile[] files) {
+    Response createJobApplication(@RequestPart("jobApplication") String jobApplication, @RequestPart("files") MultipartFile[] files) {
         //Response createJobApplication(@RequestBody JobApplication jobApplication) {
         Response response = new Response();
         try {
@@ -327,9 +327,9 @@ public class AdminController {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule());
             JobApplication jobApplication1 = objectMapper.readValue(jobApplication, JobApplication.class);
-            DocumentType documentType1 = objectMapper.readValue(documentType, DocumentType.class);
+            //DocumentType documentType1 = objectMapper.readValue(documentType, DocumentType.class);
             //jobApplication.setJobApplication(jobApplication1);
-            response = adminServices.createJobApplication(jobApplication1, documentType1, files);
+            response = adminServices.createJobApplication(jobApplication1, files);
         } catch (Exception e) {
             log.error("Exception occurred while adding job application ", e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
