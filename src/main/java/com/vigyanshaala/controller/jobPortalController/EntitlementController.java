@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * The following Admin Controller contains all the get and post calls for the Admin tasks
@@ -25,7 +26,7 @@ public class EntitlementController {
     UserController userController;
 
     @GetMapping(value="/getRoles", produces="application/json")
-    public String role(@AuthenticationPrincipal OAuth2User principal)
+    public RedirectView role(@AuthenticationPrincipal OAuth2User principal)
     {
         log.info("principal"+principal);
 
@@ -34,12 +35,10 @@ public class EntitlementController {
 
         log.info("Name and email "+name+" "+email);
         String role = userController.getRole(email);
-        String msg="";
-        if(!role.equalsIgnoreCase("None"))
-        msg= " Hi "+name+" , email "+email+" has role "+role;
-        else
-            msg= " Hi "+name+" , email "+email+" has no role attached. Please contact vigyanshaala team.";
-        return msg;
+
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl("http://localhost:8080/role="+role);
+        return redirectView;
     }
 }
 
