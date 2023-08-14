@@ -13,8 +13,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf->csrf.disable()).authorizeHttpRequests(authReq->
-                authReq.anyRequest().authenticated())
+        http.csrf(csrf->csrf.disable()).authorizeHttpRequests(authReq->authReq.requestMatchers("/job/entitlement/**").authenticated())
                 .oauth2Login(Customizer.withDefaults())
         ;
         return http.build();
