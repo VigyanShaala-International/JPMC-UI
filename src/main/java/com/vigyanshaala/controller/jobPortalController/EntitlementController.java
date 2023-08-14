@@ -37,7 +37,7 @@ public class EntitlementController {
         String role = userController.getRole(email);
 
         RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("http://localhost:8080/role="+role);
+        redirectView.setUrl("http://localhost:3000/role="+role);
         return redirectView;
     }
 }
