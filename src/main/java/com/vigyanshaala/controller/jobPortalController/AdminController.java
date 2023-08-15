@@ -11,284 +11,428 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 /**
  * The following Admin Controller contains all the get and post calls for the Admin tasks
  * POST : saving the company details, job titles, job locations, job postings
  * GET : get company details,job titles, job locations
  */
-
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/job/admin")
 @Slf4j
 public class AdminController {
-
     @Autowired
     AdminServices adminServices;
-
     @Autowired
     CustomJobRepositoryImpl customJobRepository;
+    @Autowired
+    UserController userController;
 
+    String getRole(@AuthenticationPrincipal OAuth2User principal)
+    {
+        log.info("principal"+principal);
+        String name= principal.getAttribute("name");
+        String email= principal.getAttribute("email");
+        log.info("Name and email "+name+" "+email);
+        String role = userController.getRole(email);
+        return role;
+    }
     @ApiOperation(value = "Add work mode in the WorkMode table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value = "/workmode", produces = "application/json")
-    Response addWorkmode(@RequestBody String workmode) {
+    Response addWorkmode(@AuthenticationPrincipal OAuth2User principal,@RequestBody String workmode) {
         Response response = new Response();
-        try {
-            log.info("The work mode is : {}", workmode);
-            response = adminServices.addWorkmode(workmode);
-        } catch (Exception e) {
-            log.error("Exception occurred while adding workmode name ", e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding workmode name " + e);
+        String role=getRole(principal);
+        log.info(role);
+        if(role.equalsIgnoreCase("Admin")) {
+            try {
+                log.info("The work mode is : {}", workmode);
+                response = adminServices.addWorkmode(workmode);
+            } catch (Exception e) {
+                log.error("Exception occurred while adding workmode name ", e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occurred while adding workmode name " + e);
+            }
+            return response;
         }
-        return response;
+        else {
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return response;
+        }
     }
 
     @ApiOperation(value = "Get workmode list from the Workmode table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all workmodes.")
     @GetMapping(value="/workmode/all", produces="application/json")
-    ResponseEntity<Response> getWorkmodeList(){
+    ResponseEntity<Response> getWorkmodeList(@AuthenticationPrincipal OAuth2User principal){
+        String role=getRole(principal);
+        log.info(role);
         ResponseEntity responseEntity;
         Response response=new Response();
-        try{
-            responseEntity= adminServices.getWorkmodeList();
-        }catch(Exception e){
-            log.error("Exception occurred while getting workmode name list ",e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while getting workmode name list"+e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        if(role.equalsIgnoreCase("Admin")) {
+            try {
+                responseEntity = adminServices.getWorkmodeList();
+            } catch (Exception e) {
+                log.error("Exception occurred while getting workmode name list ", e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occured while getting workmode name list" + e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+            return responseEntity;
         }
-        return responseEntity;
+        else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
     }
     @ApiOperation(value = "Add education level in the EducationLevel table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/educationLevel", produces="application/json")
-    Response addEducationLevel(@RequestBody String educationLevel){
+    Response addEducationLevel(@AuthenticationPrincipal OAuth2User principal,@RequestBody String educationLevel){
+        String role=getRole(principal);
+        log.info(role);
         Response response=new Response();
-        try{
-            log.info("The education level is : {}", educationLevel);
-            response= adminServices.addEducationLevel(educationLevel);
-        }catch(Exception e){
-            log.error("Exception occurred while adding educationLevel name ",e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding educationLevel name "+e);
+        if(role.equalsIgnoreCase("Admin")) {
+            try {
+                log.info("The education level is : {}", educationLevel);
+                response = adminServices.addEducationLevel(educationLevel);
+            } catch (Exception e) {
+                log.error("Exception occurred while adding educationLevel name ", e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occurred while adding educationLevel name " + e);
+            }
+            return response;
         }
-        return response;
+        else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return response;
+        }
     }
 
     @ApiOperation(value = "Get education Level list from the educationLevel table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all education levls.")
     @GetMapping(value="/educationLevel/all", produces="application/json")
-    ResponseEntity<Response> getEducationLevelList(){
+    ResponseEntity<Response> getEducationLevelList(@AuthenticationPrincipal OAuth2User principal){
+        String role=getRole(principal);
+        log.info(role);
         ResponseEntity responseEntity;
         Response response=new Response();
-        try{
-            responseEntity= adminServices.getEducationLevelList();
-        }catch(Exception e){
-            log.error("Exception occurred while getting education level list ",e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while getting education level list"+e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        if(role.equalsIgnoreCase("Admin")) {
+            try {
+                responseEntity = adminServices.getEducationLevelList();
+            } catch (Exception e) {
+                log.error("Exception occurred while getting education level list ", e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occurred while getting education level list" + e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+            return responseEntity;
+        }else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
-        return responseEntity;
     }
 
     @ApiOperation(value = "Add industry in the Industry table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/industry", produces="application/json")
-    Response addIndustry(@RequestBody String industry){
-        Response response=new Response();
-        try{
-            log.info("The industry is : {}", industry);
-            response= adminServices.addIndustry(industry);
-        }catch(Exception e){
-            log.error("Exception occurred while adding industry name ",e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding industry name "+e);
+    Response addIndustry(@AuthenticationPrincipal OAuth2User principal,@RequestBody String industry){
+        String role=getRole(principal);
+        log.info(role);
+        Response response = new Response();
+        if(role.equalsIgnoreCase("Admin")) {
+            try {
+                log.info("The industry is : {}", industry);
+                response = adminServices.addIndustry(industry);
+            } catch (Exception e) {
+                log.error("Exception occurred while adding industry name ", e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occurred while adding industry name " + e);
+            }
+            return response;
+        }else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return response;
         }
-        return response;
     }
 
     @ApiOperation(value = "Get industry list from the Industry table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all industry.")
     @GetMapping(value="/industry/all", produces="application/json")
-    ResponseEntity<Response> getIndustryList(){
+    ResponseEntity<Response> getIndustryList(@AuthenticationPrincipal OAuth2User principal){
+        String role=getRole(principal);
+        log.info(role);
         ResponseEntity responseEntity;
         Response response=new Response();
-        try{
-            responseEntity= adminServices.getIndustryList();
-        }catch(Exception e){
-            log.error("Exception occurred while getting industry name list ",e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while getting industry name list"+e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        if(role.equalsIgnoreCase("Admin")) {
+            try {
+                responseEntity = adminServices.getIndustryList();
+            } catch (Exception e) {
+                log.error("Exception occurred while getting industry name list ", e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occured while getting industry name list" + e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+            return responseEntity;
+        }else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
-        return responseEntity;
     }
 
     @ApiOperation(value = "Add company details in the Company table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/company", produces="application/json")
-    Response addCompany(@RequestBody String company){
+    Response addCompany(@AuthenticationPrincipal OAuth2User principal,@RequestBody String company){
+
+        String role=getRole(principal);
+        log.info(role);
         Response response=new Response();
-        try{
-            log.info("The company name is : {}", company);
-            response= adminServices.addCompany(company);
-        }catch(Exception e){
-            log.error("Exception occurred while adding company name ",e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding company name "+e);
+        if(role.equalsIgnoreCase("Admin")) {
+            try {
+                log.info("The company name is : {}", company);
+                response = adminServices.addCompany(company);
+            } catch (Exception e) {
+                log.error("Exception occurred while adding company name ", e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occurred while adding company name " + e);
+            }
+            return response;
         }
-        return response;
+        else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return response;
+        }
     }
 
     @ApiOperation(value = "Get company list from the Company table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all companies.")
     @GetMapping(value="/company/all", produces="application/json")
-    ResponseEntity<Response> getCompanyList(){
+    ResponseEntity<Response> getCompanyList(@AuthenticationPrincipal OAuth2User principal){
+
+        String role=getRole(principal);
+        log.info(role);
         ResponseEntity responseEntity;
         Response response=new Response();
-        try{
-            responseEntity= adminServices.getCompanyList();
-        }catch(Exception e){
-            log.error("Exception occurred while getting company name list ",e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while getting company name list"+e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        if(role.equalsIgnoreCase("Admin")) {
+            try {
+                responseEntity = adminServices.getCompanyList();
+            } catch (Exception e) {
+                log.error("Exception occurred while getting company name list ", e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occured while getting company name list" + e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+            return responseEntity;
+        }else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
-        return responseEntity;
     }
 
     @ApiOperation(value = "Add job title in the JobTitle table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/title", produces="application/json")
-    Response addJobTitle(@RequestBody String jobTitle){
-        Response response=new Response();
-        try{
-            log.info("The company name list is : {}",jobTitle);
-            response= adminServices.addJobTitle(jobTitle);
-        }catch(Exception e){
-            log.error("Exception occurred while adding job title "+e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding job title "+e);
+    Response addJobTitle(@AuthenticationPrincipal OAuth2User principal,@RequestBody String jobTitle){
+
+        String role=getRole(principal);
+        log.info(role);
+        Response response = new Response();
+        if(role.equalsIgnoreCase("Admin")) {
+            try {
+                log.info("The company name list is : {}", jobTitle);
+                response = adminServices.addJobTitle(jobTitle);
+            } catch (Exception e) {
+                log.error("Exception occurred while adding job title " + e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occurred while adding job title " + e);
+            }
+            return response;
+        }else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return response;
         }
-        return response;
     }
 
     @ApiOperation(value = "Get job title list from the JobTitle table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all job titles.")
     @GetMapping(value="/title/all", produces="application/json")
-    ResponseEntity<Response> getJobTitleList(){
+    ResponseEntity<Response> getJobTitleList(@AuthenticationPrincipal OAuth2User principal){
+        String role=getRole(principal);
+        log.info(role);
         ResponseEntity responseEntity;
-        Response response=new Response();
-        try{
-            responseEntity= adminServices.getJobTitleList();
-        }catch(Exception e){
-            log.error("Exception occurred while getting job title list ",e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while getting job title list"+e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        Response response = new Response();
+        if(role.equalsIgnoreCase("Admin")){
+            try {
+                responseEntity = adminServices.getJobTitleList();
+            } catch (Exception e) {
+                log.error("Exception occurred while getting job title list ", e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occured while getting job title list" + e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+            return responseEntity;
+        }else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
-        return responseEntity;
     }
 
 
 
     @ApiOperation(value = "Add job location in the JobLocation table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/location", produces="application/json")
-    Response addJobLocationList(@RequestBody String jobLocation){
+    Response addJobLocationList(@AuthenticationPrincipal OAuth2User principal,@RequestBody String jobLocation){
+        String role=getRole(principal);
+        log.info(role);
         Response response=new Response();
-        try{
-            log.info("The company name list is : {}",jobLocation);
-            response= adminServices.addJobLocation(jobLocation);
-        }catch(Exception e){
-            log.error("Exception occurred while adding job location ",e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while adding job location "+e);
+        if(role.equalsIgnoreCase("Admin")) {
+            try {
+                log.info("The company name list is : {}", jobLocation);
+                response = adminServices.addJobLocation(jobLocation);
+            } catch (Exception e) {
+                log.error("Exception occurred while adding job location ", e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occured while adding job location " + e);
+            }
+            return response;
+        }else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return response;
         }
-        return response;
     }
 
     @ApiOperation(value = "Get job location list from the JobLocation table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all job locations.")
     @GetMapping(value="/location/all", produces="application/json")
-    ResponseEntity<Response> getJobLocationList(){
+    ResponseEntity<Response> getJobLocationList(@AuthenticationPrincipal OAuth2User principal){
+
+        String role=getRole(principal);
+        log.info(role);
         ResponseEntity responseEntity;
         Response response=new Response();
-        try{
-            responseEntity= adminServices.getJobLocationList();
-        }catch(Exception e){
-            log.error("Exception occurred while getting job location list ",e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while getting job location list"+e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        if(role.equalsIgnoreCase("Admin")) {
+            try {
+                responseEntity = adminServices.getJobLocationList();
+            } catch (Exception e) {
+                log.error("Exception occurred while getting job location list ", e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occurred while getting job location list" + e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+            return responseEntity;
+        }else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
-        return responseEntity;
     }
 
     @ApiOperation(value = "Add job in the job table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/job",consumes="application/json", produces="application/json")
-    Response addJob(@RequestBody Job job){
+    Response addJob(@AuthenticationPrincipal OAuth2User principal,@RequestBody Job job){
+
+        String role=getRole(principal);
+        log.info(role);
         Response response=new Response();
-        try{
-            log.info("The Job detail is : "+ job.toString());
-            response= adminServices.createJob(job);
-        }catch(Exception e){
-            log.error("Exception occurred while adding job  "+e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding job  "+e);
+        if(role.equalsIgnoreCase("Admin")) {
+            try {
+                log.info("The Job detail is : " + job.toString());
+                response = adminServices.createJob(job);
+            } catch (Exception e) {
+                log.error("Exception occurred while adding job  " + e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occurred while adding job  " + e);
+            }
+            return response;
         }
-        return response;
+        else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return response;
+        }
     }
 
 
     @ApiOperation(value = "Update job in the job table", notes = "Returns a response with status code 200 for successful updation in the table.")
     @PostMapping(value="/job/update",consumes="application/json", produces="application/json")
-    Response updateJob(@RequestBody Job job){
+    Response updateJob(@AuthenticationPrincipal OAuth2User principal,@RequestBody Job job){
+
+        String role=getRole(principal);
         Response response=new Response();
-        try{
-            log.info("The Job ID is : "+ job);
-            response= adminServices.updateJob(job);
-        }catch(Exception e){
-            log.error("Exception occurred while adding job  "+e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding job  "+e);
+        if(role.equalsIgnoreCase("admin")) {
+            try {
+                log.info("The Job ID is : " + job);
+                response = adminServices.updateJob(job);
+            } catch (Exception e) {
+                log.error("Exception occurred while adding job  " + e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occurred while adding job  " + e);
+            }
+            return response;
+        }else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return response;
         }
-        return response;
     }
 
     @ApiOperation(value = "Add questions for a job posting in the questionnaire table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/questionnaire",consumes="application/json", produces="application/json")
-    Response createQuestionnaire(@RequestBody Questionnaire questionnaire){
+    Response createQuestionnaire(@AuthenticationPrincipal OAuth2User principal,@RequestBody Questionnaire questionnaire){
+
+        String role= getRole(principal);
+        log.info(role);
+
         Response response=new Response();
-        try {
-            log.info("The questionnaire received is : " + questionnaire.toString());
-            response = adminServices.createQuestionnaire(questionnaire);
-        } catch (Exception e) {
-            log.error("Exception occurred while adding job  " + e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding job  " + e);
+        if(role.equalsIgnoreCase("Admin")) {
+            try {
+                log.info("The questionnaire received is : " + questionnaire.toString());
+                response = adminServices.createQuestionnaire(questionnaire);
+            } catch (Exception e) {
+                log.error("Exception occurred while adding job  " + e);
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Exception occurred while adding job  " + e);
+            }
+            return response;
+        }else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return response;
         }
-        return response;
     }
 
 
-//    @ApiOperation(value = "Fetch job from the job table", notes = "Returns a response with status code 200 for successful fetch from the job table.")
-//    @GetMapping(value="/job/{jobId}", produces="application/json")
-//    ResponseEntity getJobById(@PathVariable("jobId") String jobId){
-//        ResponseEntity responseEntity;
-//        Response response=new Response();
-//        try{
-//            responseEntity = adminServices.getJobById(jobId);
-//            log.info("The Job is : "+ response);
-//        }catch(Exception e){
-//            log.error("Exception occurred while fetching job  "+e);
-//            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-//            response.setStatusMessage("Exception occurred while fetching job"+e);
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//        }
-//        return responseEntity;
-//    }
 
     @ApiOperation(value = "Fetch job from the job table", notes = "Returns a response with status code 200 for successful fetch from the job table.")
     @GetMapping(value = "/jobs/", produces = "application/json")
-    ResponseEntity<Response> getJob(JobFilter jobFilter) {
+    ResponseEntity<Response> getJob(@AuthenticationPrincipal OAuth2User principal, JobFilter jobFilter) {
+        String role=getRole(principal);
+        log.info(role);
         ResponseEntity responseEntity;
         Response response = new Response();
+
+        if(role.equalsIgnoreCase("Admin"))
         try {
             List<Job> jobList = customJobRepository.fetchAll(jobFilter);
             if (jobList.size() != 0) {
@@ -310,6 +454,11 @@ public class AdminController {
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occurred while getting job details " + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }else{
+            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
     }
 

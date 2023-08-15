@@ -22,8 +22,6 @@ public class SystemController {
 
     @Autowired
     SystemServices systemServices;
-
-
     @PostMapping(value="/deleteExpiredJobs", produces="application/json")
     ResponseEntity<Response> deleteExpiredJobs() {
         ResponseEntity responseEntity;

@@ -1,4 +1,4 @@
-package com.vigyanshaala.serviceImpl.userServiceImpl;
+package com.vigyanshaala.serviceImpl.jobPortalServiceImpl;
 
 import com.vigyanshaala.entity.user.UserRole;
 import com.vigyanshaala.repository.jobPortalRepository.UserRoleRepository;

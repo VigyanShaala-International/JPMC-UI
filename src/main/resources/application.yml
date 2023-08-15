@@ -22,5 +22,7 @@ spring:
     hibernate:
       ddl-auto : create-drop
 
-
+adminLandingPage: http://localhost:3000
+studentLandingPage: http://localhost:3000/student
+errorLandingPage: http://localhost:3000/error
 
