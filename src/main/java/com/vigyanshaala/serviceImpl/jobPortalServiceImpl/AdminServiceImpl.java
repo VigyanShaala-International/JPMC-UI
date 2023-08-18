@@ -502,7 +502,7 @@ public class AdminServiceImpl implements AdminServices {
 
     /* To create a job application */
     @Override
-    public Response createJobApplication(JobApplication jobApplication, DocumentType documentType, MultipartFile[] files) throws IOException {
+    public Response createJobApplication(JobApplication jobApplication, MultipartFile[] files) throws IOException {
         Response response = new Response();
         String jobApplicationId = UUID.randomUUID().toString();
         List<byte[]> fileBlob = new ArrayList<>();
@@ -522,11 +522,11 @@ public class AdminServiceImpl implements AdminServices {
             StudentDocument studentDocument = new StudentDocument();
             String studentDocumentId = UUID.randomUUID().toString();
             String documentTypeId = UUID.randomUUID().toString();
-            documentType.setDocumentTypeId(documentTypeId);
+            //documentType.setDocumentTypeId(documentTypeId);
             //studentDocument.setStudentDocumentId(studentDocumentId);
             studentDocument.setBlobData(file.getBytes());
             studentDocument.setStudentDocumentId(studentDocumentId);
-            studentDocument.setDocumentType(documentType);
+            studentDocument.setDocumentType(file.getContentType());
             studentDocument.setJobApplication(jobApplication);
             studentDocumentList.add(studentDocument);
             //studentDocument.setJobApplication();

@@ -21,11 +21,11 @@ public class StudentDocument {
         this.jobApplication = jobApplication;
     }
 
-    public DocumentType getDocumentType() {
+    public String getDocumentType() {
         return documentType;
     }
 
-    public void setDocumentType(DocumentType documentType) {
+    public void setDocumentType(String documentType) {
         this.documentType = documentType;
     }
 
@@ -37,7 +37,7 @@ public class StudentDocument {
         this.blobData = blobData;
     }
 
-    public StudentDocument(String studentDocumentId, JobApplication jobApplication, byte[] blobData) {
+    public StudentDocument(String studentDocumentId, JobApplication jobApplication, String documentType, byte[] blobData) {
         this.studentDocumentId = studentDocumentId;
         this.jobApplication = jobApplication;
         this.documentType = documentType;
@@ -51,8 +51,7 @@ public class StudentDocument {
     private String studentDocumentId;
     @ManyToOne(cascade = CascadeType.MERGE)
     private JobApplication jobApplication;
-    @OneToOne(cascade = CascadeType.MERGE)
-    private DocumentType documentType;
+    private String documentType;
     @Lob
     private byte[] blobData;
 }

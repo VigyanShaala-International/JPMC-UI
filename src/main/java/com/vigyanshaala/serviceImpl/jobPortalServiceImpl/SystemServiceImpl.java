@@ -352,7 +352,7 @@ public class SystemServiceImpl implements SystemServices {
 
                                 List<StudentDocument> studentDocumentList = j.getStudentDocumentList();
                                 for (StudentDocument studentDocument : studentDocumentList) {
-                                    File fileStructure = new File(studentFolder + "\\" + studentDocument.getDocumentType().getDocumentType() + ".pdf");
+                                    File fileStructure = new File(studentFolder + "\\" + studentDocument.getDocumentType() + ".pdf");
                                     if (!fileStructure.exists()) {
                                         fileStructure.createNewFile();
                                         //Blob blob = studentDocument.getBlobData();
