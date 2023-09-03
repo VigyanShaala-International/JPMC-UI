@@ -15,8 +15,7 @@ public class RiasecTemplate {
 
         public RiasecTemplate(){}
 
-    RiasecTemplate(String realisticScore, String investigativeScore, String artisticScore, String socialScore, String enterprisingScore
-            ,String conventionalScore, String firstInterest, String secondInterest, String thirdInterest, String studentEmail){
+        RiasecTemplate(String realisticScore, String investigativeScore, String artisticScore, String socialScore, String enterprisingScore, String conventionalScore, String firstInterest, String secondInterest, String thirdInterest, String studentEmail){
 
 
         this.realisticScore = realisticScore;
@@ -48,47 +47,47 @@ public class RiasecTemplate {
         public String getArtisticScore() {return artisticScore;}
 
         public void setArtisticScore(String artisticScore) {
-            this.realisticScore = artisticScore;
+            this.artisticScore = artisticScore;
         }
 
 
         public String getSocialScore() {return socialScore;}
 
         public void setSocialScore(String socialScore) {
-            this.realisticScore = socialScore;
+            this.socialScore = socialScore;
         }
 
         public String getEnterprisingScore() {return enterprisingScore;}
 
         public void setEnterprisingScore(String enterprisingScore) {
-            this.realisticScore = enterprisingScore;
+            this.enterprisingScore = enterprisingScore;
         }
 
 
         public String getConventionalScore() {return conventionalScore;}
 
         public void setConventionalScore(String conventionalScore) {
-            this.realisticScore = conventionalScore;
+            this.conventionalScore = conventionalScore;
         }
 
 
         public String getFirstInterest() {return firstInterest;}
 
         public void setFirstInterest(String firstInterest) {
-            this.realisticScore = firstInterest;
+            this.firstInterest = firstInterest;
         }
 
         public String getSecondInterest() {return secondInterest;}
 
         public void setSecondInterest(String secondInterest) {
-            this.realisticScore = secondInterest;
+            this.secondInterest = secondInterest;
         }
 
 
         public String getThirdInterest() {return thirdInterest;}
 
         public void setThirdInterest(String thirdInterest) {
-            this.realisticScore = thirdInterest;
+            this.thirdInterest = thirdInterest;
         }
 
 

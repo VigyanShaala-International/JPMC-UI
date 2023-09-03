@@ -34,7 +34,7 @@ public class RiasecController {
     }
     @ApiOperation(value = "Get riasec template latest version from the riasec template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all swot versions.")
     @GetMapping(value="/version/{studentEmail}", produces="application/json")
-    ResponseEntity getRILatestVersion(@PathVariable("studentEmail") String studentEmail){
+    ResponseEntity getRiasecLatestVersion(@PathVariable("studentEmail") String studentEmail){
         ResponseEntity responseEntity;
         Response response=new Response();
         try{

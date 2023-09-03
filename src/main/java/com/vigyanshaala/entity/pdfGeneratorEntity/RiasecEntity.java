@@ -1,12 +1,11 @@
 package com.vigyanshaala.entity.pdfGeneratorEntity;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name="riasec_template")  // Todo: create a table or attach correct table
+@Table(name="ria_template")
 @Data
 public class RiasecEntity {
 

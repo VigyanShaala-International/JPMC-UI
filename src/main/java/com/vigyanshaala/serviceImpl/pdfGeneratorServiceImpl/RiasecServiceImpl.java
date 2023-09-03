@@ -16,6 +16,7 @@ import java.util.Objects;
 @Service
 @Slf4j
 public class RiasecServiceImpl implements RiasecServices{
+
     private final RiasecRepository riasecRepository;
     public RiasecServiceImpl(RiasecRepository riasecRepository){
         this.riasecRepository = riasecRepository;
@@ -37,12 +38,12 @@ public class RiasecServiceImpl implements RiasecServices{
 
             riasecEntity.setStudentId(riasecTemplate.getStudentEmail() + "_" + version);
             riasecEntity.setStudentEmail(riasecTemplate.getStudentEmail());
-            riasecEntity.setRealisticScore(riasecEntity.getRealisticScore());
-            riasecEntity.setInvestigativeScore(riasecEntity.getInvestigativeScore());
-            riasecEntity.setArtisticScore(riasecEntity.getArtisticScore());
+            riasecEntity.setRealisticScore(riasecTemplate.getRealisticScore());
+            riasecEntity.setInvestigativeScore(riasecTemplate.getInvestigativeScore());
+            riasecEntity.setArtisticScore(riasecTemplate.getArtisticScore());
             riasecEntity.setSocialScore(riasecTemplate.getSocialScore()      );
             riasecEntity.setEnterprisingScore(riasecTemplate.getEnterprisingScore());
-            riasecEntity.setConventionalScore(riasecEntity.getConventionalScore());
+            riasecEntity.setConventionalScore(riasecTemplate.getConventionalScore());
             riasecEntity.setFirstInterest(riasecTemplate.getFirstInterest());
             riasecEntity.setSecondInterest(riasecTemplate.getSecondInterest());
             riasecEntity.setThirdInterest(riasecTemplate.getThirdInterest());
