@@ -38,15 +38,13 @@ public class RiasecServiceImpl implements RiasecServices{
 
             riasecEntity.setStudentId(riasecTemplate.getStudentEmail() + "_" + version);
             riasecEntity.setStudentEmail(riasecTemplate.getStudentEmail());
-            riasecEntity.setRealisticScore(riasecTemplate.getRealisticScore());
-            riasecEntity.setInvestigativeScore(riasecTemplate.getInvestigativeScore());
-            riasecEntity.setArtisticScore(riasecTemplate.getArtisticScore());
-            riasecEntity.setSocialScore(riasecTemplate.getSocialScore()      );
-            riasecEntity.setEnterprisingScore(riasecTemplate.getEnterprisingScore());
-            riasecEntity.setConventionalScore(riasecTemplate.getConventionalScore());
-            riasecEntity.setFirstInterest(riasecTemplate.getFirstInterest());
-            riasecEntity.setSecondInterest(riasecTemplate.getSecondInterest());
-            riasecEntity.setThirdInterest(riasecTemplate.getThirdInterest());
+            riasecEntity.setRealistic(riasecTemplate.getRealistic());
+            riasecEntity.setInvestigative(riasecTemplate.getInvestigative());
+            riasecEntity.setArtistic(riasecTemplate.getArtistic());
+            riasecEntity.setSocial(riasecTemplate.getSocial()      );
+            riasecEntity.setEnterprising(riasecTemplate.getEnterprising());
+            riasecEntity.setConventional(riasecTemplate.getConventional());
+            riasecEntity.setHollandCode(riasecTemplate.getHollandCode());
             riasecEntity.setVersion(version);
 
 

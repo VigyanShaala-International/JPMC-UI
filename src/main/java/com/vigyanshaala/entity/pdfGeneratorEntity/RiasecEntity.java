@@ -13,15 +13,13 @@ public class RiasecEntity {
     private  String studentId;
     private  String studentEmail;
     private  Long version;
-    private  String realisticScore;
-    private  String investigativeScore;
-    private  String artisticScore;
-    private  String socialScore;
-    private  String enterprisingScore;
-    private  String conventionalScore;
-    private  String firstInterest;
-    private  String secondInterest;
-    private  String thirdInterest;
+    private  String realistic;
+    private  String investigative;
+    private  String artistic;
+    private  String social;
+    private  String enterprising;
+    private  String conventional;
+    private  String hollandCode;
 
     public RiasecEntity(){
     }

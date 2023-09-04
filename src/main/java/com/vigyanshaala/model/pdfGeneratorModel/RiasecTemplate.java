@@ -2,92 +2,75 @@ package com.vigyanshaala.model.pdfGeneratorModel;
 
 public class RiasecTemplate {
 
-        private  String realisticScore;
-        private  String investigativeScore;
-        private  String artisticScore;
-        private  String socialScore;
-        private  String enterprisingScore;
-        private  String conventionalScore;
-        private  String firstInterest;
-        private  String secondInterest;
-        private  String thirdInterest;
+        private  String realistic;
+        private  String investigative;
+        private  String artistic;
+        private  String social;
+        private  String enterprising;
+        private  String conventional;
+        private  String hollandCode;
         private  String studentEmail;
 
         public RiasecTemplate(){}
 
-        RiasecTemplate(String realisticScore, String investigativeScore, String artisticScore, String socialScore, String enterprisingScore, String conventionalScore, String firstInterest, String secondInterest, String thirdInterest, String studentEmail){
+        RiasecTemplate(String realistic, String investigative, String artistic, String social, String enterprising, String conventional, String hollandCode, String studentEmail){
 
 
-        this.realisticScore = realisticScore;
-        this.investigativeScore = investigativeScore;
-        this.artisticScore = artisticScore;
-        this.socialScore = socialScore;
-        this.enterprisingScore = enterprisingScore;
-        this.conventionalScore = conventionalScore;
-        this.firstInterest = firstInterest;
-        this.secondInterest = secondInterest;
-        this.thirdInterest = thirdInterest;
+        this.realistic = realistic;
+        this.investigative = investigative;
+        this.artistic = artistic;
+        this.social = social;
+        this.enterprising = enterprising;
+        this.conventional = conventional;
+        this.hollandCode = hollandCode;
         this.studentEmail = studentEmail;
 
         }
 
-        public String getRealisticScore() {return realisticScore;}
+        public String getRealistic() {return realistic;}
 
-        public void setRealisticScore(String realisticScore) {
-            this.realisticScore = realisticScore;
+        public void setRealistic(String realistic) {
+            this.realistic = realistic;
         }
 
 
-        public String getInvestigativeScore() {return investigativeScore;}
+        public String getInvestigative() {return investigative;}
 
-        public void setInvestigativeScore(String investigativeScore) {
-            this.investigativeScore = investigativeScore;
+        public void setInvestigative(String investigative) {
+            this.investigative = investigative;
         }
 
-        public String getArtisticScore() {return artisticScore;}
+        public String getArtistic() {return artistic;}
 
-        public void setArtisticScore(String artisticScore) {
-            this.artisticScore = artisticScore;
-        }
-
-
-        public String getSocialScore() {return socialScore;}
-
-        public void setSocialScore(String socialScore) {
-            this.socialScore = socialScore;
-        }
-
-        public String getEnterprisingScore() {return enterprisingScore;}
-
-        public void setEnterprisingScore(String enterprisingScore) {
-            this.enterprisingScore = enterprisingScore;
+        public void setArtistic(String artistic) {
+            this.artistic = artistic;
         }
 
 
-        public String getConventionalScore() {return conventionalScore;}
+        public String getSocial() {return social;}
 
-        public void setConventionalScore(String conventionalScore) {
-            this.conventionalScore = conventionalScore;
+        public void setSocial(String social) {
+            this.social = social;
+        }
+
+        public String getEnterprising() {return enterprising;}
+
+        public void setEnterprising(String enterprising) {
+            this.enterprising = enterprising;
         }
 
 
-        public String getFirstInterest() {return firstInterest;}
+        public String getConventional() {return conventional;}
 
-        public void setFirstInterest(String firstInterest) {
-            this.firstInterest = firstInterest;
-        }
-
-        public String getSecondInterest() {return secondInterest;}
-
-        public void setSecondInterest(String secondInterest) {
-            this.secondInterest = secondInterest;
+        public void setConventional(String conventional) {
+            this.conventional = conventional;
         }
 
 
-        public String getThirdInterest() {return thirdInterest;}
+        public String getHollandCode() {return hollandCode;}
 
-        public void setThirdInterest(String thirdInterest) {
-            this.thirdInterest = thirdInterest;
+        public void setHollandCode(String hollandCode) {
+            this.hollandCode = hollandCode;
         }
 
 
