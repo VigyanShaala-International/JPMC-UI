@@ -1,17 +1,21 @@
 package com.vigyanshaala.controller.jobPortalController;
 
+
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.vigyanshaala.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,31 +30,50 @@ import java.util.Map;
 public class EntitlementController {
     @Autowired
     UserController userController;
+    @Value("${client-id}")
+    private String clientId;
+
 
     @GetMapping(value="/getRoles", produces="application/json")
-    public ResponseEntity<Response> role(@AuthenticationPrincipal OAuth2User principal)
-    {
+    public ResponseEntity<Response> role(@RequestHeader("Authorization") String bearerToken) throws IOException {
         Response response=new Response();
+        String name="";
+        String email="";
         try {
-            log.info("principal" + principal);
-            String name = principal.getAttribute("name");
-            String email = principal.getAttribute("email");
-            log.info("Name and email " + name + " " + email);
-            String role = userController.getRole(email);
-            response.setStatusCode(HttpStatus.OK.value());
-            response.setStatusMessage("Successfully got the role for email "+email);
-            Map<String,String>entitlementMap=new HashMap<>();
-            entitlementMap.put("name",name);
-            entitlementMap.put("email",email);
-            entitlementMap.put("role",role);
-            response.setData(entitlementMap);
+            String token=bearerToken.substring(7);
+            NetHttpTransport transport = new NetHttpTransport();
+            JsonFactory jsonFactory = new GsonFactory();
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+                    .setAudience(Collections.singletonList(clientId))
+                    .build();
+            GoogleIdToken idToken = GoogleIdToken.parse(verifier.getJsonFactory(), token);
+            boolean tokenIsValid = (idToken != null) && verifier.verify(idToken);
+            if (tokenIsValid) {
+                GoogleIdToken.Payload payload = idToken.getPayload();
+                email=payload.getEmail();
+                name=(String) payload.get("name");
+                log.info("Name and email " + name + " " + email);
+                String role = userController.getRole(email);
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("Successfully got the role for email "+email);
+                Map<String,String>entitlementMap=new HashMap<>();
+                entitlementMap.put("name",name);
+                entitlementMap.put("email",email);
+                entitlementMap.put("role",role);
+                response.setData(entitlementMap);
+
+            } else {
+                log.info("Invalid ID token.");
+                throw new Exception("Invalid ID token");
+            }
+
         }catch(Exception e)
         {
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception "+e.getMessage()+" occured while getting entitlement for email "+principal.getAttribute("email") );
+            response.setStatusMessage("Exception "+e.getMessage()+" occured while getting entitlement for email "+email );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-    }
-}
+
+    }}
 

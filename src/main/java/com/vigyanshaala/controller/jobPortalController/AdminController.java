@@ -1,5 +1,10 @@
 package com.vigyanshaala.controller.jobPortalController;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.vigyanshaala.entity.jobPortalEntity.Job;
 import com.vigyanshaala.entity.jobPortalEntity.Questionnaire;
 import com.vigyanshaala.repository.jobPortalRepository.CustomJobRepositoryImpl;
@@ -9,13 +14,17 @@ import com.vigyanshaala.service.jobPortalService.AdminServices;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 /**
  * The following Admin Controller contains all the get and post calls for the Admin tasks
  * POST : saving the company details, job titles, job locations, job postings
@@ -31,200 +40,310 @@ public class AdminController {
     @Autowired
     CustomJobRepositoryImpl customJobRepository;
     @Autowired
+    EntitlementController entitlement;
+    @Autowired
     UserController userController;
+    @Value("${client-id")
+    String clientId;
 
-    String getRole(@AuthenticationPrincipal OAuth2User principal)
+    private String decodeToken(String bearerToken) throws IOException, GeneralSecurityException {
+    try {
+        String token = bearerToken.substring(7);
+        NetHttpTransport transport = new NetHttpTransport();
+        JsonFactory jsonFactory = new GsonFactory();
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory).setAudience(Collections.singletonList(clientId)).build();
+        GoogleIdToken idToken = GoogleIdToken.parse(verifier.getJsonFactory(), token);
+        boolean tokenIsValid = (idToken != null) && verifier.verify(idToken);
+        if (tokenIsValid) {
+            GoogleIdToken.Payload payload = idToken.getPayload();
+            return payload.getEmail();
+        }
+        return null;
+    }
+    catch(Exception e)
     {
-        log.info("principal"+principal);
-        String name= principal.getAttribute("name");
-        String email= principal.getAttribute("email");
-        log.info("Name and email "+name+" "+email);
-        String role = userController.getRole(email);
-        return role;
+        log.info("Exception "+e+" occurred while decoding the bearer token");
+        return null;
+    }
     }
     @ApiOperation(value = "Add work mode in the WorkMode table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value = "/workmode", produces = "application/json")
-    Response addWorkmode(@AuthenticationPrincipal OAuth2User principal,@RequestBody String workmode) {
+    Response addWorkmode (@RequestHeader("Authorization") String bearerToken,@RequestBody String workmode) {
         Response response = new Response();
-        String role=getRole(principal);
-        log.info(role);
-        if(role.equalsIgnoreCase("Admin")) {
-            try {
-                log.info("The work mode is : {}", workmode);
-                response = adminServices.addWorkmode(workmode);
-            } catch (Exception e) {
-                log.error("Exception occurred while adding workmode name ", e);
-                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occurred while adding workmode name " + e);
+        try{
+            String email= decodeToken(bearerToken);
+            if(Objects.nonNull(email)) {
+                String role = userController.getRole(email);
+                log.info(role);
+                if (role.equalsIgnoreCase("Admin")) {
+                    try {
+                        log.info("The work mode is : {}", workmode);
+                        response = adminServices.addWorkmode(workmode);
+                        }
+                    catch (Exception e) {
+                        log.error("Exception occurred while adding workmode name ", e);
+                        response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                        response.setStatusMessage("Exception occurred while adding workmode name " + e);
+                        }
+                    return response;
+                }
+                else {
+                    log.error("You need admin role to perform this action");
+                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                    response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                    return response;
+                    }
             }
-            return response;
-        }
-        else {
-            log.error("You need admin role to perform this action");
-            response.setStatusCode(HttpStatus.FORBIDDEN.value());
-            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            else{
+                log.info("There is issue with the bearer token");
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Bearer token is invalid");
+                return response;
+            }}
+        catch(Exception e){
+            log.info("Exception "+e.getMessage()+" occurred in addWorkMode controller");
+            response.setStatusMessage("Exception "+e.getMessage()+" occurred in addWorkMode controller");
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             return response;
         }
     }
 
     @ApiOperation(value = "Get workmode list from the Workmode table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all workmodes.")
     @GetMapping(value="/workmode/all", produces="application/json")
-    ResponseEntity<Response> getWorkmodeList(@AuthenticationPrincipal OAuth2User principal){
-        String role=getRole(principal);
-        log.info(role);
+    ResponseEntity<Response> getWorkmodeList(@RequestHeader ("Authorization") String bearerToken) {
         ResponseEntity responseEntity;
-        Response response=new Response();
-        if(role.equalsIgnoreCase("Admin")) {
-            try {
-                responseEntity = adminServices.getWorkmodeList();
-            } catch (Exception e) {
-                log.error("Exception occurred while getting workmode name list ", e);
-                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occured while getting workmode name list" + e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        Response response = new Response();
+        try{
+            String email= decodeToken(bearerToken);
+            if(Objects.nonNull(email)) {
+                String role = userController.getRole(email);
+                log.info(role);
+            if (role.equalsIgnoreCase("Admin")) {
+                try {
+                    responseEntity = adminServices.getWorkmodeList();
+                } catch (Exception e) {
+                    log.error("Exception occurred while getting workmode name list ", e);
+                    response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.setStatusMessage("Exception occured while getting workmode name list" + e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+                }
+                return responseEntity;
+            } else {
+                log.error("You need admin role to perform this action");
+                response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
             }
-            return responseEntity;
-        }
-        else{
-            log.error("You need admin role to perform this action");
-            response.setStatusCode(HttpStatus.FORBIDDEN.value());
-            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }else{
+            log.info("There is issue with the bearer token");
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }}catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occured in get workmode controller" + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
     @ApiOperation(value = "Add education level in the EducationLevel table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/educationLevel", produces="application/json")
-    Response addEducationLevel(@AuthenticationPrincipal OAuth2User principal,@RequestBody String educationLevel){
-        String role=getRole(principal);
-        log.info(role);
+    Response addEducationLevel(@RequestHeader("Authorization") String bearerToken,@RequestBody String educationLevel) {
         Response response=new Response();
-        if(role.equalsIgnoreCase("Admin")) {
-            try {
-                log.info("The education level is : {}", educationLevel);
-                response = adminServices.addEducationLevel(educationLevel);
-            } catch (Exception e) {
-                log.error("Exception occurred while adding educationLevel name ", e);
-                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occurred while adding educationLevel name " + e);
+        try{
+        String email=decodeToken(bearerToken);
+        if(Objects.nonNull(email)) {
+            String role = userController.getRole(email);
+            log.info(role);
+            if (role.equalsIgnoreCase("Admin")) {
+                try {
+                    log.info("The education level is : {}", educationLevel);
+                    response = adminServices.addEducationLevel(educationLevel);
+                } catch (Exception e) {
+                    log.error("Exception occurred while adding educationLevel name ", e);
+                    response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.setStatusMessage("Exception occurred while adding educationLevel name " + e);
+                }
+                return response;
+            } else {
+                log.error("You need admin role to perform this action");
+                response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                return response;
             }
+        }else{
+            log.error("Invalid bearer token");
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
             return response;
-        }
-        else{
-            log.error("You need admin role to perform this action");
-            response.setStatusCode(HttpStatus.FORBIDDEN.value());
-            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+        }}catch(Exception e){
+            log.error("Exception occurred while adding educationLevel name ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while adding educationLevel name " + e);
             return response;
         }
     }
 
+
     @ApiOperation(value = "Get education Level list from the educationLevel table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all education levls.")
     @GetMapping(value="/educationLevel/all", produces="application/json")
-    ResponseEntity<Response> getEducationLevelList(@AuthenticationPrincipal OAuth2User principal){
-        String role=getRole(principal);
-        log.info(role);
+    ResponseEntity<Response> getEducationLevelList(@RequestHeader("Authorization") String bearerToken) {
+
         ResponseEntity responseEntity;
         Response response=new Response();
-        if(role.equalsIgnoreCase("Admin")) {
-            try {
-                responseEntity = adminServices.getEducationLevelList();
-            } catch (Exception e) {
-                log.error("Exception occurred while getting education level list ", e);
-                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occurred while getting education level list" + e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        try{
+        String email=decodeToken(bearerToken);
+        if(Objects.nonNull(email)) {
+            String role = userController.getRole(email);
+            if (role.equalsIgnoreCase("Admin")) {
+                try {
+                    responseEntity = adminServices.getEducationLevelList();
+                } catch (Exception e) {
+                    log.error("Exception occurred while getting education level list ", e);
+                    response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.setStatusMessage("Exception occurred while getting education level list" + e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+                }
+                return responseEntity;
+            } else {
+                log.error("You need admin role to perform this action");
+                response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
             }
-            return responseEntity;
         }else{
-            log.error("You need admin role to perform this action");
-            response.setStatusCode(HttpStatus.FORBIDDEN.value());
-            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }}catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     @ApiOperation(value = "Add industry in the Industry table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/industry", produces="application/json")
-    Response addIndustry(@AuthenticationPrincipal OAuth2User principal,@RequestBody String industry){
-        String role=getRole(principal);
-        log.info(role);
+    Response addIndustry(@RequestHeader("Authorization") String bearerToken,@RequestBody String industry) {
         Response response = new Response();
-        if(role.equalsIgnoreCase("Admin")) {
-            try {
-                log.info("The industry is : {}", industry);
-                response = adminServices.addIndustry(industry);
-            } catch (Exception e) {
-                log.error("Exception occurred while adding industry name ", e);
-                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occurred while adding industry name " + e);
+        try{
+        String email=decodeToken(bearerToken);
+        if(Objects.nonNull(email)) {
+            String role = userController.getRole(email);
+            log.info(role);
+            if (role.equalsIgnoreCase("Admin")) {
+                try {
+                    log.info("The industry is : {}", industry);
+                    response = adminServices.addIndustry(industry);
+                } catch (Exception e) {
+                    log.error("Exception occurred while adding industry name ", e);
+                    response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.setStatusMessage("Exception occurred while adding industry name " + e);
+                }
+                return response;
+            } else {
+                log.error("You need admin role to perform this action");
+                response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                return response;
             }
-            return response;
         }else{
-            log.error("You need admin role to perform this action");
-            response.setStatusCode(HttpStatus.FORBIDDEN.value());
-            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            log.error("Bearer token is invalid");
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
+            return response;
+        }}catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
             return response;
         }
     }
 
     @ApiOperation(value = "Get industry list from the Industry table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all industry.")
     @GetMapping(value="/industry/all", produces="application/json")
-    ResponseEntity<Response> getIndustryList(@AuthenticationPrincipal OAuth2User principal){
-        String role=getRole(principal);
-        log.info(role);
+    ResponseEntity<Response> getIndustryList(@RequestHeader("Authorization") String bearerToken){
         ResponseEntity responseEntity;
         Response response=new Response();
-        if(role.equalsIgnoreCase("Admin")) {
-            try {
-                responseEntity = adminServices.getIndustryList();
-            } catch (Exception e) {
-                log.error("Exception occurred while getting industry name list ", e);
-                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occured while getting industry name list" + e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        try{
+        String email=decodeToken(bearerToken);
+        if(Objects.nonNull(email)) {
+            String role = userController.getRole(email);
+            if (role.equalsIgnoreCase("Admin")) {
+                try {
+                    responseEntity = adminServices.getIndustryList();
+                } catch (Exception e) {
+                    log.error("Exception occurred while getting industry name list ", e);
+                    response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.setStatusMessage("Exception occured while getting industry name list" + e);
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+                }
+                return responseEntity;
+            } else {
+                log.error("You need admin role to perform this action");
+                response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
             }
-            return responseEntity;
         }else{
-            log.error("You need admin role to perform this action");
-            response.setStatusCode(HttpStatus.FORBIDDEN.value());
-            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }}catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     @ApiOperation(value = "Add company details in the Company table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/company", produces="application/json")
-    Response addCompany(@AuthenticationPrincipal OAuth2User principal,@RequestBody String company){
+    Response addCompany(@RequestHeader("Authorization") String bearerToken,@RequestBody String company){
 
-        String role=getRole(principal);
-        log.info(role);
         Response response=new Response();
-        if(role.equalsIgnoreCase("Admin")) {
-            try {
-                log.info("The company name is : {}", company);
-                response = adminServices.addCompany(company);
-            } catch (Exception e) {
-                log.error("Exception occurred while adding company name ", e);
+        try
+        {
+            String email=decodeToken(bearerToken);
+            if(Objects.nonNull(email)) {
+                String role = userController.getRole(email);
+                log.info(role);
+
+                if (role.equalsIgnoreCase("Admin")) {
+                    try {
+                        log.info("The company name is : {}", company);
+                        response = adminServices.addCompany(company);
+                    } catch (Exception e) {
+                        log.error("Exception occurred while adding company name ", e);
+                        response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                        response.setStatusMessage("Exception occurred while adding company name " + e);
+                    }
+                    return response;
+                } else {
+                    log.error("You need admin role to perform this action");
+                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                    response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                    return response;
+                }
+            }else{
                 response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occurred while adding company name " + e);
-            }
-            return response;
-        }
-        else{
-            log.error("You need admin role to perform this action");
-            response.setStatusCode(HttpStatus.FORBIDDEN.value());
-            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                response.setStatusMessage("Bearer token is invalid");
+                return response;
+            }}catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
             return response;
         }
     }
 
     @ApiOperation(value = "Get company list from the Company table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all companies.")
     @GetMapping(value="/company/all", produces="application/json")
-    ResponseEntity<Response> getCompanyList(@AuthenticationPrincipal OAuth2User principal){
+    ResponseEntity<Response> getCompanyList(@RequestHeader("Authorization") String bearerToken){
 
-        String role=getRole(principal);
-        log.info(role);
         ResponseEntity responseEntity;
         Response response=new Response();
+        try{
+        String email=decodeToken(bearerToken);
+        if(Objects.nonNull(email)){
+        String role= userController.getRole(email);
+        log.info(role);
         if(role.equalsIgnoreCase("Admin")) {
             try {
                 responseEntity = adminServices.getCompanyList();
@@ -240,16 +359,29 @@ public class AdminController {
             response.setStatusCode(HttpStatus.FORBIDDEN.value());
             response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }}else{
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }}catch(Exception e)
+        {
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     @ApiOperation(value = "Add job title in the JobTitle table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/title", produces="application/json")
-    Response addJobTitle(@AuthenticationPrincipal OAuth2User principal,@RequestBody String jobTitle){
+    Response addJobTitle(@RequestHeader("Authorization") String bearerToken,@RequestBody String jobTitle){
 
-        String role=getRole(principal);
-        log.info(role);
         Response response = new Response();
+        try{
+            String email=decodeToken(bearerToken);
+            if(Objects.nonNull(email)){
+        String role= userController.getRole(email);
+        log.info(role);
+
         if(role.equalsIgnoreCase("Admin")) {
             try {
                 log.info("The company name list is : {}", jobTitle);
@@ -265,16 +397,28 @@ public class AdminController {
             response.setStatusCode(HttpStatus.FORBIDDEN.value());
             response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
             return response;
-        }
+        }}else{
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Bearer token is invalid");
+                return response;
+            }}catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
+            return response;
+            }
     }
 
     @ApiOperation(value = "Get job title list from the JobTitle table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all job titles.")
     @GetMapping(value="/title/all", produces="application/json")
-    ResponseEntity<Response> getJobTitleList(@AuthenticationPrincipal OAuth2User principal){
-        String role=getRole(principal);
-        log.info(role);
+    ResponseEntity<Response> getJobTitleList(@RequestHeader("Authorization") String bearerToken){
         ResponseEntity responseEntity;
         Response response = new Response();
+        try {
+            String email=decodeToken(bearerToken);
+            if(Objects.nonNull(email)){
+            String role= userController.getRole(email);
+            log.info(role);
+
         if(role.equalsIgnoreCase("Admin")){
             try {
                 responseEntity = adminServices.getJobTitleList();
@@ -290,6 +434,15 @@ public class AdminController {
             response.setStatusCode(HttpStatus.FORBIDDEN.value());
             response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }}else{
+                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatusMessage("Bearer token is invalid");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }}catch(Exception e)
+        {
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occured while getting job title list" + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
@@ -297,10 +450,14 @@ public class AdminController {
 
     @ApiOperation(value = "Add job location in the JobLocation table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/location", produces="application/json")
-    Response addJobLocationList(@AuthenticationPrincipal OAuth2User principal,@RequestBody String jobLocation){
-        String role=getRole(principal);
-        log.info(role);
+    Response addJobLocationList(@RequestHeader("Authorization") String bearerToken,@RequestBody String jobLocation){
         Response response=new Response();
+        try{
+
+        String email=decodeToken(bearerToken);
+        if(Objects.nonNull(email)){
+        String role= userController.getRole(email);
+        log.info(role);
         if(role.equalsIgnoreCase("Admin")) {
             try {
                 log.info("The company name list is : {}", jobLocation);
@@ -316,17 +473,28 @@ public class AdminController {
             response.setStatusCode(HttpStatus.FORBIDDEN.value());
             response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
             return response;
+        }}else{
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
+            return response;
+        }}catch(Exception e)
+        {
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
+            return response;
         }
     }
 
     @ApiOperation(value = "Get job location list from the JobLocation table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all job locations.")
     @GetMapping(value="/location/all", produces="application/json")
-    ResponseEntity<Response> getJobLocationList(@AuthenticationPrincipal OAuth2User principal){
-
-        String role=getRole(principal);
-        log.info(role);
+    ResponseEntity<Response> getJobLocationList(@RequestHeader("Authorization") String bearerToken){
         ResponseEntity responseEntity;
         Response response=new Response();
+        try{
+        String email=decodeToken(bearerToken);
+        if(Objects.nonNull(email)){
+        String role= userController.getRole(email);
+        log.info(role);
         if(role.equalsIgnoreCase("Admin")) {
             try {
                 responseEntity = adminServices.getJobLocationList();
@@ -342,16 +510,29 @@ public class AdminController {
             response.setStatusCode(HttpStatus.FORBIDDEN.value());
             response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }}else{
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Bearer token is invalid");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }}catch(Exception e)
+        {
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting job location list" + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
     @ApiOperation(value = "Add job in the job table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/job",consumes="application/json", produces="application/json")
-    Response addJob(@AuthenticationPrincipal OAuth2User principal,@RequestBody Job job){
-
-        String role=getRole(principal);
-        log.info(role);
+    Response addJob(@RequestHeader("Authorization") String bearerToken,@RequestBody Job job){
         Response response=new Response();
+
+        try{
+            String email=decodeToken(bearerToken);
+            if(Objects.nonNull(email)){
+        String role= userController.getRole(email);
+        log.info(role);
+
         if(role.equalsIgnoreCase("Admin")) {
             try {
                 log.info("The Job detail is : " + job.toString());
@@ -368,28 +549,50 @@ public class AdminController {
             response.setStatusCode(HttpStatus.FORBIDDEN.value());
             response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
             return response;
+        }}else{
+                response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                return response;
+            }}catch(Exception e)
+        {
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return response;
         }
     }
 
 
     @ApiOperation(value = "Update job in the job table", notes = "Returns a response with status code 200 for successful updation in the table.")
     @PostMapping(value="/job/update",consumes="application/json", produces="application/json")
-    Response updateJob(@AuthenticationPrincipal OAuth2User principal,@RequestBody Job job){
+    Response updateJob(@RequestHeader("Authorization") String bearerToken,@RequestBody Job job){
 
-        String role=getRole(principal);
         Response response=new Response();
-        if(role.equalsIgnoreCase("admin")) {
-            try {
-                log.info("The Job ID is : " + job);
-                response = adminServices.updateJob(job);
-            } catch (Exception e) {
-                log.error("Exception occurred while adding job  " + e);
-                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occurred while adding job  " + e);
+        try{
+
+        String email=decodeToken(bearerToken);
+        if(Objects.nonNull(email)) {
+            String role = userController.getRole(email);
+            if (role.equalsIgnoreCase("admin")) {
+                try {
+                    log.info("The Job ID is : " + job);
+                    response = adminServices.updateJob(job);
+                } catch (Exception e) {
+                    log.error("Exception occurred while adding job  " + e);
+                    response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    response.setStatusMessage("Exception occurred while adding job  " + e);
+                }
+                return response;
+            } else {
+                log.error("You need admin role to perform this action");
+                response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                return response;
             }
-            return response;
         }else{
-            log.error("You need admin role to perform this action");
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return response;
+        }}catch (Exception e){
             response.setStatusCode(HttpStatus.FORBIDDEN.value());
             response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
             return response;
@@ -398,12 +601,13 @@ public class AdminController {
 
     @ApiOperation(value = "Add questions for a job posting in the questionnaire table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/questionnaire",consumes="application/json", produces="application/json")
-    Response createQuestionnaire(@AuthenticationPrincipal OAuth2User principal,@RequestBody Questionnaire questionnaire){
-
-        String role= getRole(principal);
-        log.info(role);
-
+    Response createQuestionnaire(@RequestHeader("Authorization") String bearerToken,@RequestBody Questionnaire questionnaire){
         Response response=new Response();
+        try{
+        String email=decodeToken(bearerToken);
+        if(Objects.nonNull(email)){
+        String role= userController.getRole(email);
+        log.info(role);
         if(role.equalsIgnoreCase("Admin")) {
             try {
                 log.info("The questionnaire received is : " + questionnaire.toString());
@@ -419,6 +623,15 @@ public class AdminController {
             response.setStatusCode(HttpStatus.FORBIDDEN.value());
             response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
             return response;
+        }}else{
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return response;
+        }}catch(Exception e)
+        {
+            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+            return response;
         }
     }
 
@@ -426,12 +639,14 @@ public class AdminController {
 
     @ApiOperation(value = "Fetch job from the job table", notes = "Returns a response with status code 200 for successful fetch from the job table.")
     @GetMapping(value = "/jobs/", produces = "application/json")
-    ResponseEntity<Response> getJob(@AuthenticationPrincipal OAuth2User principal, JobFilter jobFilter) {
-        String role=getRole(principal);
-        log.info(role);
+    ResponseEntity<Response> getJob(@RequestHeader("Authorization") String bearerToken, JobFilter jobFilter) {
         ResponseEntity responseEntity;
         Response response = new Response();
-
+        try{
+        String email=decodeToken(bearerToken);
+        if(Objects.nonNull(email)){
+        String role= userController.getRole(email);
+        log.info(role);
         if(role.equalsIgnoreCase("Admin"))
         try {
             List<Job> jobList = customJobRepository.fetchAll(jobFilter);
@@ -460,7 +675,16 @@ public class AdminController {
             response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
-    }
+    }else{
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting job details " );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }}catch(Exception e)
+        {
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting job details " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
 
 
-}
+}}

@@ -22,7 +22,5 @@ spring:
     hibernate:
       ddl-auto : create-drop
 
-adminLandingPage: http://localhost:3000
-studentLandingPage: http://localhost:3000/student
-errorLandingPage: http://localhost:3000/error
+client-id: "817648875048-r3k4nf2okkfhtpptm9ulf77idt19tiiu.apps.googleusercontent.com"
 

@@ -1,16 +1,23 @@
 package com.vigyanshaala.controller.jobPortalController;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import com.vigyanshaala.entity.user.UserRole;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.UserServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.Objects;
 
 @RestController
@@ -21,6 +28,8 @@ public class UserController {
 
     @Autowired
     UserServices userServices;
+    @Value("${client-id")
+    String clientId;
 
     String getRole(@PathVariable("encryptedEmail") String email) {
         log.info(email);
@@ -36,15 +45,36 @@ public class UserController {
         }
         return "None";
     }
+    private String decodeToken(String bearerToken) throws IOException, GeneralSecurityException {
+        try {
+            String token = bearerToken.substring(7);
+            NetHttpTransport transport = new NetHttpTransport();
+            JsonFactory jsonFactory = new GsonFactory();
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory).setAudience(Collections.singletonList(clientId)).build();
+            GoogleIdToken idToken = GoogleIdToken.parse(verifier.getJsonFactory(), token);
+            boolean tokenIsValid = (idToken != null) && verifier.verify(idToken);
+            if (tokenIsValid) {
+                GoogleIdToken.Payload payload = idToken.getPayload();
+                return payload.getEmail();
+            }
+            return null;
+        }
+        catch(Exception e)
+        {
+            log.info("Exception "+e+" occurred while decoding the bearer token");
+            return null;
+        }
+    }
 
     @PostMapping(value="/userRole", produces="application/json")
-    Response addUserRole( @AuthenticationPrincipal OAuth2User principal, UserRole userRole) {
+    Response addUserRole( @RequestHeader("Authorization") String bearerToken, UserRole userRole) {
+
         Response response=new Response();
-        log.info("principal"+principal);
-        String name= principal.getAttribute("name");
-        String email= principal.getAttribute("email");
-        log.info("Name and email "+name+" "+email);
-        String role=getRole(name);
+        try{
+
+        String email=decodeToken(bearerToken);
+        if(Objects.nonNull(email)){
+        String role=getRole(email);
         if(role.equalsIgnoreCase("Admin"))
         {
         log.info("inside adduser role controlleer");
@@ -65,5 +95,13 @@ public class UserController {
             response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
             return response;
         }
-    }
-}
+    }else{
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occured while adding user");
+            return response;
+        }}catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occured while adding user"+e);
+            return response;
+        }
+}}

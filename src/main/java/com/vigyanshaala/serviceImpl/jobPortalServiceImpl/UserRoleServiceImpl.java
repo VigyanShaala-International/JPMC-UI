@@ -49,6 +49,7 @@ public class UserRoleServiceImpl implements UserServices {
         }
         return response;
     }
+
     public ResponseEntity getRole(String email)
     {
         ResponseEntity responseEntity;
