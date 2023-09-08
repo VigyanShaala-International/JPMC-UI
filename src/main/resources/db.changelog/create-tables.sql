@@ -95,6 +95,8 @@ answer3 varchar(100),
 answer4 varchar(100),
 answer5 varchar(100),
 is_job_application_posted_to_hr varchar(1),
+student_name varchar(50),
+student_email varchar(50),
 primary key(job_application_id),
 constraint job_id foreign key (job_id) references job(job_id)
 );

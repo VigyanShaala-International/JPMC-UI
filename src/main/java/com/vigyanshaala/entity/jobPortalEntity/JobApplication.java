@@ -23,6 +23,22 @@ public class JobApplication {
         this.studentId = studentId;
     }
 
+    public String getStudentName() {
+        return studentName;
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
+    public String getStudentEmail() {
+        return studentEmail;
+    }
+
+    public void setStudentEmail(String studentEmail) {
+        this.studentEmail = studentEmail;
+    }
+
     public Job getJob() {
         return job;
     }
@@ -76,7 +92,7 @@ public class JobApplication {
     }
 
 
-    public JobApplication(String jobApplicationId, String studentId, Job job, String answer1, String answer2, String answer3, String answer4, String answer5, boolean isJobApplicationPostedToHr, List<StudentDocument> studentDocumentList) {
+    public JobApplication(String jobApplicationId, String studentId, Job job, String answer1, String answer2, String answer3, String answer4, String answer5, boolean isJobApplicationPostedToHr, List<StudentDocument> studentDocumentList, String studentName, String studentEmail) {
         this.jobApplicationId = jobApplicationId;
         this.studentId = studentId;
         this.job = job;
@@ -87,6 +103,8 @@ public class JobApplication {
         this.answer5 = answer5;
         this.isJobApplicationPostedToHr = isJobApplicationPostedToHr;
         this.studentDocumentList = studentDocumentList;
+        this.studentName = studentName;
+        this.studentEmail= studentEmail;
     }
 
     public JobApplication() {
@@ -98,11 +116,15 @@ public class JobApplication {
     @ManyToOne(cascade = CascadeType.MERGE)
     private Job job;
     private String answer1;
+
     private String answer2;
     private String answer3;
     private String answer4;
     private String answer5;
     private boolean isJobApplicationPostedToHr;
+
+    private String studentName;
+    private String studentEmail;
 
     public List<StudentDocument> getStudentDocumentList() {
         return studentDocumentList;

@@ -324,7 +324,7 @@ public class AdminController {
         //Response createJobApplication(@RequestBody JobApplication jobApplication) {
         Response response = new Response();
         try {
-            //JobApplication jobApplication1 = new JobApplication();
+//            JobApplication jobApplication1 = new JobApplication();
             log.info("The job application is : {}", jobApplication);
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule());
