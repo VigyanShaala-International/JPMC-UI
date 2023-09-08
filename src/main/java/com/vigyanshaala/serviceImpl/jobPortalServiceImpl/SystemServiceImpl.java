@@ -25,16 +25,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.zeroturnaround.zip.ZipUtil;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipOutputStream;
 
 @Service
 @Slf4j
@@ -165,21 +161,13 @@ public class SystemServiceImpl implements SystemServices {
             for (String s : jobIdList) {
                 studentIDs = new ArrayList<>();
                 for (JobApplication jobApplication : jobApplicationList) {
-                    for (String sid : studentIDList) {
-                        if (jobApplication.getStudentId().equals(sid))
-                            studentIDs.add(jobApplication.getStudentId());
-                    }
-                    jobIdtoStudentIdMap.put(s, studentIDs);
-
+                    if (jobApplication.getJob().getJobId().equals(s))
+                        studentIDs.add(jobApplication.getStudentId());
                 }
-                //jobIdtoStudentIdMap.put(s, studentIDs);
+                jobIdtoStudentIdMap.put(s, studentIDs);
+
             }
-//
-//            for(Map.Entry<String, List<JobApplication>> entry : hrToJobApplicationMap.entrySet()) {
-//                if(entry.getValue().size() != 0)
-//                    generate(entry.getValue(), entry.getKey());
-//            }
-//
+
             for (Map.Entry<String, List<String>> entry : jobIdtoStudentIdMap.entrySet()) {
                 if (entry.getValue().size() != 0) {
                     generate(entry.getKey(), entry.getValue());
@@ -188,9 +176,6 @@ public class SystemServiceImpl implements SystemServices {
             System.out.println(hrEmailList);
             log.info("HR Email list is " + hrEmailList);
 
-//            for(String email : hrEmailList) {
-//               // j
-//            }
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully flagged expired jobs");
         } catch (Exception e) {
@@ -352,7 +337,7 @@ public class SystemServiceImpl implements SystemServices {
 
                                 List<StudentDocument> studentDocumentList = j.getStudentDocumentList();
                                 for (StudentDocument studentDocument : studentDocumentList) {
-                                    File fileStructure = new File(studentFolder + "\\" + studentDocument.getDocumentType() + ".pdf");
+                                    File fileStructure = new File(studentFolder + "\\" + studentDocument.getStudentDocumentId() + ".pdf");
                                     if (!fileStructure.exists()) {
                                         fileStructure.createNewFile();
                                         //Blob blob = studentDocument.getBlobData();
@@ -379,28 +364,33 @@ public class SystemServiceImpl implements SystemServices {
                     }
                     // Creating the Object of Document
 
-                    FileOutputStream fos = new FileOutputStream(directory + "\\" + jobId);
-                    ZipOutputStream zos = new ZipOutputStream(fos);
+                    //FileOutputStream fos = new FileOutputStream(directory + "\\" + jobId);
+                    //FileOutputStream fos = new FileOutputStream(directory);
+                    //ZipOutputStream zos = new ZipOutputStream(fos);
 
                     //zos.putNextEntry(new ZipEntry(jobId)); commenting now
-                    ZipUtil.pack(new File("JobApplications\\" + jobId), new File("JobApplications\\" + jobId + ".zip"));
+                    //ZipUtil.pack(directory, new File("JobApplications\\" + jobId + ".zip"));
 
                     //String filePath = "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new"
-                    byte[] bytes = Files.readAllBytes(Paths.get(jobId));
-                    zos.write(bytes, 0, bytes.length);
+                    //InputStream in = Files.newInputStream(Paths.get("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId));
+
+                    //byte[] bytes = Files.readAllBytes(Paths.get("JobApplications\\" + jobId));
+                    //zos.write(bytes, 0, bytes.length);
+                    //zos.write(in.readAllBytes(), 0, in.readAllBytes().length);
                     //zos.closeEntry();
                     EmailDetails details = new EmailDetails();
                     details.setSubject("Details of job applications");
                     details.setRecipient(job.getHrEmail());
                     details.setMsgBody("Hi, PFA responses to the list of job applications you have posted. Best regards, Team VigyanShaala ");
                     details.setAttachment("JobApplications\\" + jobId + ".zip");
-                    zos.close();
+                    //zos.close();
                     //sendMailWithAttachment(details);
                 }
             }
         } catch (FileNotFoundException ex) {
             System.err.format("The file does not exist");
         } catch (IOException ex) {
+            System.out.println(ex.getStackTrace());
             System.err.println("I/O error: " + ex);
         }
         // Getting instance of PdfWriter
