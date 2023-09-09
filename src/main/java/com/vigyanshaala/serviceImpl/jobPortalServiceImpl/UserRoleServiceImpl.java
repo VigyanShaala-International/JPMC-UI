@@ -5,6 +5,7 @@ import com.vigyanshaala.repository.jobPortalRepository.UserRoleRepository;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.UserServices;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -50,15 +51,13 @@ public class UserRoleServiceImpl implements UserServices {
         return response;
     }
 
+    @Cacheable("rolesResponseEntity")
     public ResponseEntity getRole(String email)
     {
         ResponseEntity responseEntity;
         Response response=new Response();
         try {
             UserRole userRole = userRoleRepository.findByEmail(email);
-
-
-
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully received userRole");
             response.setData(userRole);

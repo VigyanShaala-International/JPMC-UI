@@ -25,7 +25,6 @@ import java.util.Objects;
 @Slf4j
 @RequestMapping("/user")
 public class UserController {
-
     @Autowired
     UserServices userServices;
     @Value("${client-id")
@@ -68,40 +67,25 @@ public class UserController {
 
     @PostMapping(value="/userRole", produces="application/json")
     Response addUserRole( @RequestHeader("Authorization") String bearerToken, UserRole userRole) {
-
         Response response=new Response();
         try{
-
-        String email=decodeToken(bearerToken);
-        if(Objects.nonNull(email)){
-        String role=getRole(email);
-        if(role.equalsIgnoreCase("Admin"))
-        {
-        log.info("inside adduser role controlleer");
-        log.info("userRole"+userRole);
-        try{
-            response = userServices.addUserRole(userRole);
-        }catch(Exception e){
-            log.error("Exception occurred while adding user ",e);
+            String email=decodeToken(bearerToken);
+            if(Objects.nonNull(email)){
+                String role=getRole(email);
+                if(role.equalsIgnoreCase("Admin"))
+                {
+                    response = userServices.addUserRole(userRole);
+                }else{
+                    log.error("You need admin role to perform this action");
+                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                    response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                }
+            }
+            else throw new Exception("bearer token is invalid");
+        }
+        catch(Exception e){
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occured while adding user"+e);
-            return response;
         }
         return response;
-
-    }else{
-            log.error("You need admin role to perform this action");
-            response.setStatusCode(HttpStatus.FORBIDDEN.value());
-            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
-            return response;
-        }
-    }else{
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while adding user");
-            return response;
-        }}catch(Exception e){
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while adding user"+e);
-            return response;
-        }
 }}

@@ -34,7 +34,6 @@ public class StudentController {
     String clientId;
 
     private String decodeToken(String bearerToken) throws IOException, GeneralSecurityException {
-
         try {
             String token = bearerToken.substring(7);
             NetHttpTransport transport = new NetHttpTransport();
@@ -48,8 +47,7 @@ public class StudentController {
             }
             return null;
         }
-        catch(Exception e)
-        {
+        catch(Exception e) {
             log.info("Exception "+e+" occurred while decoding the bearer token");
             return null;
         }
@@ -60,34 +58,25 @@ public class StudentController {
         ResponseEntity responseEntity;
         Response response = new Response();
         try{
-        String email=decodeToken(bearerToken);
-        if(Objects.nonNull(email)){
-        String role= userController.getRole(email);
-        log.info(role);
-        if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")) {
-            try {
-                responseEntity = studentServices.getAllJobs();
-            } catch (Exception e) {
-                log.error("Exception occurred while getting all the jobs ", e);
-                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occurred while getting all the jobs" + e);
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            String email=decodeToken(bearerToken);
+            if(Objects.nonNull(email)){
+                String role= userController.getRole(email);
+                log.info(role);
+                if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")) {
+                    responseEntity = studentServices.getAllJobs();
+                }else{
+                    log.error("You need admin or student role to perform this action");
+                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                    response.setStatusMessage("Student/Admin role is missing, please contact the vigyanshaala team");
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                }
             }
-            return responseEntity;
-        }else{
-            log.error("You need admin or student role to perform this action");
-            response.setStatusCode(HttpStatus.FORBIDDEN.value());
-            response.setStatusMessage("Student/Admin role is missing, please contact the vigyanshaala team");
+            else throw new Exception("bearer token is invalid");
+        }
+        catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred in getAllJobs controller : "+e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-        }}else{
-            response.setStatusCode(HttpStatus.FORBIDDEN.value());
-            response.setStatusMessage("Student/Admin role is missing, please contact the vigyanshaala team");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-        }}catch(Exception e){
-            response.setStatusCode(HttpStatus.FORBIDDEN.value());
-            response.setStatusMessage("Student/Admin role is missing, please contact the vigyanshaala team");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-
-
     }
-}}
+        return responseEntity;
+    }}

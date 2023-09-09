@@ -44,8 +44,7 @@ public class SwotController {
             }
             return null;
         }
-        catch(Exception e)
-        {
+        catch(Exception e) {
             log.info("Exception "+e+" occurred while decoding the bearer token");
             return null;
         }
@@ -56,19 +55,10 @@ public class SwotController {
         try {
             String email = decodeToken(bearerToken);
             if(Objects.nonNull(email)){
-            try {
-                log.info("The swot template  is : {}", swotTemplate.toString());
                 response = swotTemplateServices.saveSwotTemplate(swotTemplate);
-            } catch (Exception e) {
-                log.error("Exception occurred while adding swotTemplateData  ", e);
-                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occurred while adding swotTemplateData  " + e);
-            }}else{
-                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occurred while adding swotTemplateData  " );
-            }
-
-        }catch(Exception e){
+            } else throw new Exception("bearer token is invalid");
+        }
+        catch(Exception e){
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occurred while adding swotTemplateData  " + e);
         }
@@ -80,21 +70,12 @@ public class SwotController {
         ResponseEntity responseEntity;
         Response response=new Response();
         try{
-
-        String email=decodeToken(bearerToken);
-        if(Objects.nonNull(email)){
-        try{
-            responseEntity= swotTemplateServices.getSwotLatestVersion(studentEmail);
-        }catch(Exception e){
-            log.error("Exception occurred while getting swot latest version "+e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while getting swot latest version"+e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }}else{
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while getting swot latest version");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }}catch(Exception e){
+            String email=decodeToken(bearerToken);
+            if(Objects.nonNull(email)) {
+                responseEntity = swotTemplateServices.getSwotLatestVersion(studentEmail);
+            } else throw new Exception("bearer token is invalid");
+        }
+        catch(Exception e){
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occured while getting swot latest version"+e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -108,21 +89,11 @@ public class SwotController {
         ResponseEntity responseEntity;
         Response response=new Response();
         try{
-
-        String email=decodeToken(bearerToken);
-        if(Objects.nonNull(email)){
-        try{
-            responseEntity= swotTemplateServices.getSwotTemplate(studentEmail,version);
+            String email=decodeToken(bearerToken);
+            if(Objects.nonNull(email)){
+                responseEntity= swotTemplateServices.getSwotTemplate(studentEmail,version);
+            }else throw new Exception("bearer token is invalid");
         }catch(Exception e){
-            log.error("Exception occurred while getting Swot Template data "+e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while getting Swot Template data"+e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }}else{
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while getting Swot Template data");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }}catch(Exception e){
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occured while getting Swot Template data"+e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

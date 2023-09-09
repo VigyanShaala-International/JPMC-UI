@@ -46,35 +46,25 @@ public class CriticalThinkingController {
             }
             return null;
         }
-        catch(Exception e)
-        {
+        catch(Exception e) {
             log.info("Exception "+e+" occurred while decoding the bearer token");
             return null;
         }
     }
-
 
     @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
     Response createCriticalThinkingTemplate(@RequestHeader("Authorization") String bearerToken,@RequestBody CriticalThinking criticalThinking) {
         Response response = new Response();
         try{
             String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)){
-        try {
-            log.info("The critical thinking template  is : {}" , criticalThinking.toString());
-            response = criticalThinkingServices.saveCriticalThinkingTemplate(criticalThinking);
-        } catch (Exception e) {
-            log.error("Exception occurred while adding criticalThinking template data  " , e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding critical thinking template  " + e);
+            if(Objects.nonNull(email)) {
+                response = criticalThinkingServices.saveCriticalThinkingTemplate(criticalThinking);
+            }
+            else throw new Exception("bearer token is invalid");
         }
-        }
-        else{
-                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occurred while adding critical thinking template  " );
-            }}catch (Exception e){
+        catch (Exception e){
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding critical thinking template  " + e);
+            response.setStatusMessage("Exception occurred while adding critical thinking template  " + e.getMessage());
         }
         return response;
     }
@@ -86,21 +76,10 @@ public class CriticalThinkingController {
         try {
             String email = decodeToken(bearerToken);
             if (Objects.nonNull(email)) {
-
-                try {
-                    responseEntity = criticalThinkingServices.getCriticalThinkingLatestVersion(studentEmail);
-                } catch (Exception e) {
-                    log.error("Exception occurred while getting ct latest version " + e);
-                    response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    response.setStatusMessage("Exception occured while getting CT latest version" + e);
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-                }
-            } else {
-                response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                response.setStatusMessage("Exception occured while getting CT latest version" );
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-            }
-        }catch(Exception e){
+                responseEntity = criticalThinkingServices.getCriticalThinkingLatestVersion(studentEmail);
+            } else throw new Exception("bearer token is invalid");
+        }
+        catch(Exception e){
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occured while getting CT latest version" + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -114,21 +93,12 @@ public class CriticalThinkingController {
         ResponseEntity responseEntity;
         Response response=new Response();
         try{
-
-        String email=decodeToken(bearerToken);
-        if(Objects.nonNull(email)){
-        try{
-            responseEntity= criticalThinkingServices.getCriticalThinkingTemplate(studentEmail,version);
-        }catch(Exception e){
-            log.error("Exception occurred while getting CT Template data "+e);
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while getting CT Template data"+e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }}else{
-            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occured while getting CT Template data");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }}catch (Exception e){
+            String email=decodeToken(bearerToken);
+            if(Objects.nonNull(email)){
+                responseEntity= criticalThinkingServices.getCriticalThinkingTemplate(studentEmail,version);
+            }else throw new Exception("bearer token is invlid");
+        }
+        catch (Exception e){
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occured while getting CT Template data"+e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
