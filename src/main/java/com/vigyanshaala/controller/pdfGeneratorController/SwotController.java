@@ -5,6 +5,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
+import com.vigyanshaala.controller.jobPortalController.UserController;
 import com.vigyanshaala.model.pdfGeneratorModel.SwotTemplate;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.pdfGeneratorService.SwotTemplateServices;
@@ -28,6 +29,8 @@ import java.util.Objects;
 public class SwotController {
     @Autowired
     SwotTemplateServices swotTemplateServices;
+    @Autowired
+    UserController userController;
     @Value("${client-id")
     String clientId;
     private String decodeToken(String bearerToken) throws IOException, GeneralSecurityException {
@@ -55,7 +58,12 @@ public class SwotController {
         try {
             String email = decodeToken(bearerToken);
             if(Objects.nonNull(email)){
-                response = swotTemplateServices.saveSwotTemplate(swotTemplate);
+                if(userController.getRole(email).equalsIgnoreCase("student")) {
+                    response = swotTemplateServices.saveSwotTemplate(swotTemplate);
+                }else{
+                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                    response.setStatusMessage("TESTING : Student role not present, it's forbidden....");
+                }
             } else throw new Exception("bearer token is invalid");
         }
         catch(Exception e){

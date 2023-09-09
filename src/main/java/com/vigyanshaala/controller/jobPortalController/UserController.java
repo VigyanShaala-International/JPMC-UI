@@ -30,7 +30,7 @@ public class UserController {
     @Value("${client-id")
     String clientId;
 
-    String getRole(@PathVariable("encryptedEmail") String email) {
+    public String getRole(@PathVariable("encryptedEmail") String email) {
         log.info(email);
         ResponseEntity responseEntity;
         Response response = new Response();
