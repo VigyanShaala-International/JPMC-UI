@@ -2,9 +2,10 @@ package com.vigyanshaala.controller.jobPortalController;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.vigyanshaala.entity.user.UserRole;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.UserServices;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Objects;
 
 @RestController
@@ -46,13 +47,18 @@ public class UserController {
     }
     private String decodeToken(String bearerToken) throws IOException, GeneralSecurityException {
         try {
-            String token = bearerToken.substring(7);
-            NetHttpTransport transport = new NetHttpTransport();
-            JsonFactory jsonFactory = new GsonFactory();
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory).setAudience(Collections.singletonList(clientId)).build();
-            GoogleIdToken idToken = GoogleIdToken.parse(verifier.getJsonFactory(), token);
-            boolean tokenIsValid = (idToken != null) && verifier.verify(idToken);
-            if (tokenIsValid) {
+            String token=bearerToken.substring(7);
+            log.info("token"+token);
+            HttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
+            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory )
+                    .setAudience(Arrays.asList(clientId))
+                    .setIssuer("https://accounts.google.com")
+                    .build();
+
+            GoogleIdToken idToken = verifier.verify(token);
+            log.info("ID token:"+idToken);
+            if (idToken != null) {
                 GoogleIdToken.Payload payload = idToken.getPayload();
                 return payload.getEmail();
             }
