@@ -38,13 +38,13 @@ public class EntitlementController {
     @GetMapping(value="/getRoles", produces="application/json")
     public ResponseEntity<Response> role(@RequestHeader("Authorization") String bearerToken) throws IOException {
         log.info("client id "+clientId);
-        log.info("bearer token"+bearerToken);
+        log.info("bearer token "+bearerToken);
         Response response=new Response();
         String name="";
         String email="";
         try {
             String token=bearerToken.substring(7);
-            log.info("token"+token);
+            log.info("token "+token);
             HttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory )
@@ -78,7 +78,7 @@ public class EntitlementController {
             response.setStatusMessage("Exception "+e.getMessage()+" occured while getting entitlement for email "+email );
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }}
 
