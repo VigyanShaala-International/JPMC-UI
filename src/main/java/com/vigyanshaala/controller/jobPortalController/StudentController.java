@@ -19,16 +19,16 @@ public class StudentController {
 
 
     @ApiOperation(value = "Get all jobs from the job table without a filter", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all jobs.")
-    @GetMapping(value="/job/all", produces="application/json")
-    ResponseEntity<Response> getAllJobs(){
+    @GetMapping(value = "/job/all", produces = "application/json")
+    ResponseEntity<Response> getAllJobs() {
         ResponseEntity responseEntity;
-        Response response=new Response();
-        try{
-            responseEntity= studentServices.getAllJobs();
-        }catch(Exception e){
-            log.error("Exception occurred while getting all the jobs ",e);
+        Response response = new Response();
+        try {
+            responseEntity = studentServices.getAllJobs();
+        } catch (Exception e) {
+            log.error("Exception occurred while getting all the jobs ", e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while getting all the jobs"+e);
+            response.setStatusMessage("Exception occurred while getting all the jobs" + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
         return responseEntity;

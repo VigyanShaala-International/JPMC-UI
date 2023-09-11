@@ -85,6 +85,12 @@ question5 varchar(255),
 primary key(questionnaire_id)
 );
 
+create table user_role(
+ email_id varchar(50),
+ role varchar(50),
+ primary key (email_id));
+
+
 create table job_application(
 job_application_id varchar(50),
 student_id varchar(50),
