@@ -1,26 +1,17 @@
 package com.vigyanshaala.controller.pdfGeneratorController;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.vigyanshaala.controller.jobPortalController.UserController;
+import com.vigyanshaala.controller.EntitlementController;
 import com.vigyanshaala.model.pdfGeneratorModel.SwotTemplate;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.pdfGeneratorService.SwotTemplateServices;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import java.util.Objects;
 
 @RestController
@@ -31,45 +22,16 @@ public class SwotController {
     @Autowired
     SwotTemplateServices swotTemplateServices;
     @Autowired
-    UserController userController;
-    @Value("${client-id")
-    String clientId;
-    private String decodeToken(String bearerToken) throws IOException, GeneralSecurityException {
-        try {
-            String token=bearerToken.substring(7);
-            log.info("token"+token);
-            HttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
-            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory )
-                    .setAudience(Arrays.asList(clientId))
-                    .setIssuer("https://accounts.google.com")
-                    .build();
+    EntitlementController entitlementController;
 
-            GoogleIdToken idToken = verifier.verify(token);
-            log.info("ID token:"+idToken);
-            if (idToken != null) {
-                GoogleIdToken.Payload payload = idToken.getPayload();
-                return payload.getEmail();
-            }
-            return null;
-        }
-        catch(Exception e) {
-            log.info("Exception "+e+" occurred while decoding the bearer token");
-            return null;
-        }
-    }
     @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
     Response createSwotTemplate(@RequestHeader("Authorization") String bearerToken,@RequestBody SwotTemplate swotTemplate) {
         Response response = new Response();
+        log.info("createSwotTemplate");
         try {
-            String email = decodeToken(bearerToken);
-            if(Objects.nonNull(email)){
-                if(userController.getRole(email).equalsIgnoreCase("student")) {
+            GoogleIdToken idToken= entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)){
                     response = swotTemplateServices.saveSwotTemplate(swotTemplate);
-                }else{
-                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
-                    response.setStatusMessage("TESTING : Student role not present, it's forbidden....");
-                }
             } else throw new Exception("bearer token is invalid");
         }
         catch(Exception e){
@@ -83,9 +45,10 @@ public class SwotController {
     ResponseEntity getSwotLatestVersion(@RequestHeader("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail){
         ResponseEntity responseEntity;
         Response response=new Response();
+        log.info("getSwotLatestVersion");
         try{
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)) {
+            GoogleIdToken idToken= entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
                 responseEntity = swotTemplateServices.getSwotLatestVersion(studentEmail);
             } else throw new Exception("bearer token is invalid");
         }
@@ -102,9 +65,10 @@ public class SwotController {
     ResponseEntity<Response> getSwotTemplate(@RequestHeader("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail,@PathVariable("version") Long version){
         ResponseEntity responseEntity;
         Response response=new Response();
+        log.info("getSwotTemplate");
         try{
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)){
+            GoogleIdToken idToken= entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)){
                 responseEntity= swotTemplateServices.getSwotTemplate(studentEmail,version);
             }else throw new Exception("bearer token is invalid");
         }catch(Exception e){

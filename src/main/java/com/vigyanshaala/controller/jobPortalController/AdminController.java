@@ -1,11 +1,7 @@
 package com.vigyanshaala.controller.jobPortalController;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.vigyanshaala.controller.EntitlementController;
 import com.vigyanshaala.entity.jobPortalEntity.Job;
 import com.vigyanshaala.entity.jobPortalEntity.Questionnaire;
 import com.vigyanshaala.repository.jobPortalRepository.CustomJobRepositoryImpl;
@@ -15,14 +11,10 @@ import com.vigyanshaala.service.jobPortalService.AdminServices;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,41 +34,17 @@ public class AdminController {
     CustomJobRepositoryImpl customJobRepository;
     @Autowired
     UserController userController;
-    @Value("${client-id")
-    String clientId;
 
-    private String decodeToken(String bearerToken) throws IOException, GeneralSecurityException {
-    try {
-        String token=bearerToken.substring(7);
-        log.info("token"+token);
-        HttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
-        JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory )
-                .setAudience(Arrays.asList(clientId))
-                .setIssuer("https://accounts.google.com")
-                .build();
-
-        GoogleIdToken idToken = verifier.verify(token);
-        log.info("ID token:"+idToken);
-        if (idToken != null) {
-            GoogleIdToken.Payload payload = idToken.getPayload();
-            return payload.getEmail();
-        }
-        return null;
-    }
-    catch(Exception e)
-    {
-        log.info("Exception "+e+" occurred while decoding the bearer token");
-        return null;
-    }
-    }
+    @Autowired
+    EntitlementController entitlementController;
     @ApiOperation(value = "Add work mode in the WorkMode table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value = "/workmode", produces = "application/json")
     Response addWorkmode (@RequestHeader("Authorization") String bearerToken,@RequestBody String workmode) {
         Response response = new Response();
         try{
-            String email= decodeToken(bearerToken);
-            if(Objects.nonNull(email)) {
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
                 String role = userController.getRole(email);
                 log.info(role);
                 if(role.equalsIgnoreCase("Admin")) {
@@ -103,8 +71,9 @@ public class AdminController {
         ResponseEntity responseEntity;
         Response response = new Response();
         try{
-            String email= decodeToken(bearerToken);
-            if(Objects.nonNull(email)) {
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
                 String role = userController.getRole(email);
                 log.info(role);
                 if (role.equalsIgnoreCase("Admin")) {
@@ -130,8 +99,9 @@ public class AdminController {
     Response addEducationLevel(@RequestHeader("Authorization") String bearerToken,@RequestBody String educationLevel) {
         Response response=new Response();
         try{
-        String email=decodeToken(bearerToken);
-        if(Objects.nonNull(email)) {
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
             String role = userController.getRole(email);
             log.info(role);
             if (role.equalsIgnoreCase("Admin")) {
@@ -159,8 +129,9 @@ public class AdminController {
         ResponseEntity responseEntity;
         Response response=new Response();
         try{
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)) {
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
                 String role = userController.getRole(email);
                 if (role.equalsIgnoreCase("Admin")) {
                     responseEntity = adminServices.getEducationLevelList();
@@ -186,8 +157,9 @@ public class AdminController {
     Response addIndustry(@RequestHeader("Authorization") String bearerToken,@RequestBody String industry) {
         Response response = new Response();
         try {
-            String email = decodeToken(bearerToken);
-            if (Objects.nonNull(email)) {
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
                 String role = userController.getRole(email);
                 log.info(role);
                 if (role.equalsIgnoreCase("Admin")) {
@@ -212,8 +184,9 @@ public class AdminController {
         ResponseEntity responseEntity;
         Response response=new Response();
         try{
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)) {
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
                 String role = userController.getRole(email);
                 if (role.equalsIgnoreCase("Admin")) {
                     responseEntity = adminServices.getIndustryList();
@@ -239,8 +212,9 @@ public class AdminController {
     Response addCompany(@RequestHeader("Authorization") String bearerToken,@RequestBody String company){
         Response response=new Response();
         try {
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)) {
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
                 String role = userController.getRole(email);
                 log.info(role);
                 if (role.equalsIgnoreCase("Admin")) {
@@ -267,8 +241,9 @@ public class AdminController {
         ResponseEntity responseEntity;
         Response response=new Response();
         try{
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)){
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
             String role= userController.getRole(email);
             log.info(role);
             if(role.equalsIgnoreCase("Admin")) {
@@ -295,8 +270,9 @@ public class AdminController {
 
         Response response = new Response();
         try{
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)){
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
                 String role= userController.getRole(email);
                 log.info(role);
                 if(role.equalsIgnoreCase("Admin")) {
@@ -322,8 +298,9 @@ public class AdminController {
         ResponseEntity responseEntity;
         Response response = new Response();
         try {
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)){
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
                 String role= userController.getRole(email);
                 log.info(role);
                 if(role.equalsIgnoreCase("Admin")){
@@ -351,8 +328,9 @@ public class AdminController {
     Response addJobLocationList(@RequestHeader("Authorization") String bearerToken,@RequestBody String jobLocation){
         Response response=new Response();
         try{
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)){
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
                 String role= userController.getRole(email);
                 log.info(role);
                 if(role.equalsIgnoreCase("Admin")) {
@@ -377,8 +355,9 @@ public class AdminController {
         ResponseEntity responseEntity;
         Response response=new Response();
         try{
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)){
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
             String role= userController.getRole(email);
             log.info(role);
             if(role.equalsIgnoreCase("Admin")) {
@@ -403,8 +382,9 @@ public class AdminController {
     Response addJob(@RequestHeader("Authorization") String bearerToken,@RequestBody Job job){
         Response response=new Response();
         try{
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)){
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
                 String role= userController.getRole(email);
                 log.info(role);
                 if(role.equalsIgnoreCase("Admin")) {
@@ -430,8 +410,9 @@ public class AdminController {
     Response updateJob(@RequestHeader("Authorization") String bearerToken,@RequestBody Job job){
         Response response=new Response();
         try{
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)) {
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
                 String role = userController.getRole(email);
                 if(role.equalsIgnoreCase("admin")) {
                     response = adminServices.updateJob(job);
@@ -456,8 +437,9 @@ public class AdminController {
     Response createQuestionnaire(@RequestHeader("Authorization") String bearerToken,@RequestBody Questionnaire questionnaire){
         Response response=new Response();
         try{
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)){
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
                 String role= userController.getRole(email);
                 log.info(role);
                 if(role.equalsIgnoreCase("Admin")) {
@@ -484,8 +466,9 @@ public class AdminController {
         ResponseEntity responseEntity;
         Response response = new Response();
         try{
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)){
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email=idToken.getPayload().getEmail();
                 String role= userController.getRole(email);
                 log.info(role);
                 if(role.equalsIgnoreCase("Admin")){

@@ -1,24 +1,16 @@
 package com.vigyanshaala.controller.jobPortalController;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.vigyanshaala.controller.EntitlementController;
 import com.vigyanshaala.entity.user.UserRole;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.UserServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Arrays;
 import java.util.Objects;
 
 @RestController
@@ -28,9 +20,8 @@ import java.util.Objects;
 public class UserController {
     @Autowired
     UserServices userServices;
-    @Value("${client-id")
-    String clientId;
-
+    @Autowired
+    EntitlementController entitlementController;
     public String getRole(@PathVariable("encryptedEmail") String email) {
         log.info(email);
         ResponseEntity responseEntity;
@@ -45,38 +36,15 @@ public class UserController {
         }
         return "None";
     }
-    private String decodeToken(String bearerToken) throws IOException, GeneralSecurityException {
-        try {
-            String token=bearerToken.substring(7);
-            log.info("token"+token);
-            HttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
-            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory )
-                    .setAudience(Arrays.asList(clientId))
-                    .setIssuer("https://accounts.google.com")
-                    .build();
 
-            GoogleIdToken idToken = verifier.verify(token);
-            log.info("ID token:"+idToken);
-            if (idToken != null) {
-                GoogleIdToken.Payload payload = idToken.getPayload();
-                return payload.getEmail();
-            }
-            return null;
-        }
-        catch(Exception e)
-        {
-            log.info("Exception "+e+" occurred while decoding the bearer token");
-            return null;
-        }
-    }
 
     @PostMapping(value="/userRole", produces="application/json")
     Response addUserRole( @RequestHeader("Authorization") String bearerToken, UserRole userRole) {
         Response response=new Response();
         try{
-            String email=decodeToken(bearerToken);
-            if(Objects.nonNull(email)){
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)){
+                String email=idToken.getPayload().getEmail();
                 String role=getRole(email);
                 if(role.equalsIgnoreCase("Admin"))
                 {

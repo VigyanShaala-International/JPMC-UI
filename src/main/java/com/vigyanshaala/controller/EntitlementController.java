@@ -1,12 +1,11 @@
-package com.vigyanshaala.controller.jobPortalController;
-
-
+package com.vigyanshaala.controller;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.vigyanshaala.controller.jobPortalController.UserController;
 import com.vigyanshaala.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/job/entitlement")
+@RequestMapping("/entitlement")
 @Slf4j
 public class EntitlementController {
     @Autowired
@@ -34,6 +33,28 @@ public class EntitlementController {
     @Value("${client-id}")
     private String clientId;
 
+    public GoogleIdToken decodeToken(String bearerToken)
+    {
+        GoogleIdToken idToken;
+        try {
+            String token = bearerToken.substring(7);
+            log.info("token " + token);
+            HttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
+            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+                    .setAudience(Arrays.asList(clientId))
+                    .setIssuer("https://accounts.google.com")
+                    .build();
+
+            idToken = verifier.verify(token);
+            log.info("ID token:" + idToken);
+        }catch(Exception e)
+        {
+            log.info("Exception occurred in decodeToken : "+e.getMessage());
+            return null;
+        }
+        return idToken;
+    }
 
     @GetMapping(value="/getRoles", produces="application/json")
     public ResponseEntity<Response> role(@RequestHeader("Authorization") String bearerToken) throws IOException {
@@ -43,17 +64,7 @@ public class EntitlementController {
         String name="";
         String email="";
         try {
-            String token=bearerToken.substring(7);
-            log.info("token "+token);
-            HttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
-            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory )
-                    .setAudience(Arrays.asList(clientId))
-                    .setIssuer("https://accounts.google.com")
-                    .build();
-
-            GoogleIdToken idToken = verifier.verify(token);
-            log.info("ID token:"+idToken);
+            GoogleIdToken idToken=decodeToken(bearerToken);
             if (idToken != null) {
                 GoogleIdToken.Payload payload = idToken.getPayload();
                 email=payload.getEmail();
