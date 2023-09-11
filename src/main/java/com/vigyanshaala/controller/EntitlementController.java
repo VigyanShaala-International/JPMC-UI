@@ -1,12 +1,14 @@
 package com.vigyanshaala.controller;
+
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.vigyanshaala.controller.jobPortalController.UserController;
+import com.vigyanshaala.entity.user.UserRole;
 import com.vigyanshaala.response.Response;
+import com.vigyanshaala.service.jobPortalService.UserServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * The following Entitlement Controller contains all the get call for the entitlement
@@ -28,10 +31,10 @@ import java.util.Map;
 @RequestMapping("/entitlement")
 @Slf4j
 public class EntitlementController {
-    @Autowired
-    UserController userController;
     @Value("${client-id}")
     private String clientId;
+    @Autowired
+    UserServices userServices;
 
     public GoogleIdToken decodeToken(String bearerToken)
     {
@@ -55,6 +58,20 @@ public class EntitlementController {
         }
         return idToken;
     }
+    public String getRole(@PathVariable("encryptedEmail") String email) {
+        log.info(email);
+        ResponseEntity responseEntity;
+        Response response = new Response();
+        responseEntity = userServices.getRole(email);
+        log.info("responseEntity" + responseEntity);
+        response = (Response) responseEntity.getBody();
+        log.info("response" + response.getData());
+        if(Objects.nonNull(response.getData())) {
+            UserRole userRole = (UserRole) response.getData();
+            return userRole.getRole();
+        }
+        return "None";
+    }
 
     @GetMapping(value="/getRoles", produces="application/json")
     public ResponseEntity<Response> role(@RequestHeader("Authorization") String bearerToken) throws IOException {
@@ -70,7 +87,7 @@ public class EntitlementController {
                 email=payload.getEmail();
                 name=(String) payload.get("name");
                 log.info("Name and email " + name + " " + email);
-                String role = userController.getRole(email);
+                String role = getRole(email);
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("Successfully got the role for email "+email);
                 Map<String,String>entitlementMap=new HashMap<>();
