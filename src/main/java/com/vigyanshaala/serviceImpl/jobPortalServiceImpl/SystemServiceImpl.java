@@ -27,10 +27,16 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service
 @Slf4j
@@ -191,11 +197,11 @@ public class SystemServiceImpl implements SystemServices {
     public void generate(String jobId, List<String> studentIds) throws DocumentException, IOException {
 
         try {
-            File jobApplication = new File("JobApplications");
-            if (!jobApplication.exists())
-                jobApplication.mkdir();
+//            File jobApplication = new File("JobApplications");
+//            if (!jobApplication.exists())
+//                jobApplication.mkdir();
             Job job = jobRepository.findByJobId(jobId);
-            File directory = new File("JobApplications\\" + jobId);
+            File directory = new File(jobId);
             if (!directory.exists()) {
                 directory.mkdir();
             }
@@ -362,28 +368,15 @@ public class SystemServiceImpl implements SystemServices {
                         }
 
                     }
-                    // Creating the Object of Document
+                    // Zipping folders
+                    zip("C:\\Users\\harini\\IdeaProjects\\vigyanshaala-server\\" + jobId, "C:\\Users\\harini\\IdeaProjects\\vigyanshaala-server\\JobApplications\\" + jobId + ".zip");
 
-                    //FileOutputStream fos = new FileOutputStream(directory + "\\" + jobId);
-                    //FileOutputStream fos = new FileOutputStream(directory);
-                    //ZipOutputStream zos = new ZipOutputStream(fos);
-
-                    //zos.putNextEntry(new ZipEntry(jobId)); commenting now
-                    //ZipUtil.pack(directory, new File("JobApplications\\" + jobId + ".zip"));
-
-                    //String filePath = "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new"
-                    //InputStream in = Files.newInputStream(Paths.get("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId));
-
-                    //byte[] bytes = Files.readAllBytes(Paths.get("JobApplications\\" + jobId));
-                    //zos.write(bytes, 0, bytes.length);
-                    //zos.write(in.readAllBytes(), 0, in.readAllBytes().length);
-                    //zos.closeEntry();
                     EmailDetails details = new EmailDetails();
                     details.setSubject("Details of job applications");
                     details.setRecipient(job.getHrEmail());
                     details.setMsgBody("Hi, PFA responses to the list of job applications you have posted. Best regards, Team VigyanShaala ");
-                    details.setAttachment("JobApplications\\" + jobId + ".zip");
-                    //zos.close();
+                    details.setAttachment(jobId + ".zip");
+                    // Todo : Outlook configs in application.yml file, hence commenting out sendMailWithAttachment
                     //sendMailWithAttachment(details);
                 }
             }
@@ -395,6 +388,28 @@ public class SystemServiceImpl implements SystemServices {
         }
         // Getting instance of PdfWriter
     }
+
+    public static void zip(final String sourcNoteseDirPath, final String zipFilePath) throws IOException {
+        Path zipFile = Files.createFile(Paths.get(zipFilePath));
+
+        Path sourceDirPath = Paths.get(sourcNoteseDirPath);
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(zipFile));
+             Stream<Path> paths = Files.walk(sourceDirPath)) {
+            paths
+                    .filter(path -> !Files.isDirectory(path))
+                    .forEach(path -> {
+                        ZipEntry zipEntry = new ZipEntry(sourceDirPath.relativize(path).toString());
+                        try {
+                            zipOutputStream.putNextEntry(zipEntry);
+                            Files.copy(path, zipOutputStream);
+                            zipOutputStream.closeEntry();
+                        } catch (IOException e) {
+                            System.err.println(e);
+                        }
+                    });
+        }
+    }
+
 
     public String sendMailWithAttachment(EmailDetails details) {
         // Creating a mime message
