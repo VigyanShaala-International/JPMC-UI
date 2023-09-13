@@ -64,13 +64,27 @@ create table swot_template(
 student_id varchar(50),
 student_email varchar(255),
 version long,
-strength varchar(255),
-weakness varchar(255),
-opportunity varchar(255),
-threat varchar(255),
+strength varchar(1255),
+weakness varchar(1255),
+opportunity varchar(12255),
+threat varchar(1255),
 student_name varchar(255),
 student_degree varchar(255),
-goal varchar(255),
+goal varchar(1255),
+primary key(student_id)
+);
+
+create table ria_template(
+student_id varchar(50),
+student_email varchar(255),
+version long,
+realistic varchar(255),
+investigative varchar(255),
+artistic varchar(255),
+social varchar(255),
+enterprising varchar(255),
+conventional varchar(255),
+hollandCode varchar(255),
 primary key(student_id)
 );
 
