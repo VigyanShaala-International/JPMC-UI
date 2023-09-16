@@ -53,17 +53,31 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
         return responseEntity;
-    }}
+
     }
 
     @ApiOperation(value = "Get all jobs from the job table without a filter", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all jobs.")
     @GetMapping(value="/job/{id}", produces="application/json")
-    ResponseEntity<Response> getJobByID(@PathVariable String id){
+    ResponseEntity<Response> getJobByID(@RequestHeader("Authorization") String bearerToken,@PathVariable String id){
         ResponseEntity responseEntity;
         Response response=new Response();
-        try{
-            responseEntity= studentServices.getJobByID(id);
-        }catch(Exception e){
+        try {
+            GoogleIdToken idToken = entitlementController.decodeToken(bearerToken);
+            if (Objects.nonNull(idToken)) {
+                String email = idToken.getPayload().getEmail();
+                String role = userController.getRole(email);
+                log.info(role);
+                if (role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")) {
+                    responseEntity = studentServices.getJobByID(id);
+                } else {
+                    log.error("You need admin or student role to perform this action");
+                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                    response.setStatusMessage("Student/Admin role is missing, please contact the vigyanshaala team");
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                }
+            } else throw new Exception("bearer token is invalid");
+        }
+        catch(Exception e){
             log.error("Exception occurred while getting all the jobs ",e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occurred while getting all the jobs"+e);

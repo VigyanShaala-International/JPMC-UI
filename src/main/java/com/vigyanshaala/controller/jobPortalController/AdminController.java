@@ -2,12 +2,9 @@ package com.vigyanshaala.controller.jobPortalController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.vigyanshaala.entity.jobPortalEntity.*;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.vigyanshaala.controller.EntitlementController;
-import com.vigyanshaala.entity.jobPortalEntity.Job;
-import com.vigyanshaala.entity.jobPortalEntity.JobTitle;
-import com.vigyanshaala.entity.jobPortalEntity.Questionnaire;
+import com.vigyanshaala.entity.jobPortalEntity.*;
 import com.vigyanshaala.repository.jobPortalRepository.CustomJobRepositoryImpl;
 import com.vigyanshaala.repository.jobPortalRepository.JobFilter;
 import com.vigyanshaala.response.Response;
@@ -45,7 +42,7 @@ public class AdminController {
     EntitlementController entitlementController;
     @ApiOperation(value = "Add work mode in the WorkMode table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value = "/workmode", produces = "application/json")
-    Response addWorkmode (@RequestHeader("Authorization") String bearerToken,@RequestBody String workmode) {
+    Response addWorkmode (@RequestHeader("Authorization") String bearerToken,@RequestBody WorkMode workmode) {
         Response response = new Response();
         try{
             GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
@@ -510,18 +507,28 @@ public class AdminController {
 
     @ApiOperation(value = "Add job application in the JobApplication table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @RequestMapping(path = "/jobApplication/", method = RequestMethod.POST, consumes = {"multipart/form-data"})
-    Response createJobApplication(@RequestPart("jobApplication") String jobApplication, @RequestPart("files") MultipartFile[] files) {
-        //Response createJobApplication(@RequestBody JobApplication jobApplication) {
+    Response createJobApplication(@RequestHeader("Authorization") String bearerToken,@RequestPart("jobApplication") String jobApplication, @RequestPart("files") MultipartFile[] files) {
+
         Response response = new Response();
-        try {
-//            JobApplication jobApplication1 = new JobApplication();
-            log.info("The job application is : {}", jobApplication);
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new JavaTimeModule());
-            JobApplication jobApplication1 = objectMapper.readValue(jobApplication, JobApplication.class);
-            //DocumentType documentType1 = objectMapper.readValue(documentType, DocumentType.class);
-            //jobApplication.setJobApplication(jobApplication1);
-            response = adminServices.createJobApplication(jobApplication1, files);
+        try{
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email = idToken.getPayload().getEmail();
+                String role = userController.getRole(email);
+                log.info(role);
+                if (role.equalsIgnoreCase("Admin")) {
+//
+                    log.info("The job application is : {}", jobApplication);
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.registerModule(new JavaTimeModule());
+                    JobApplication jobApplication1 = objectMapper.readValue(jobApplication, JobApplication.class);
+                    response = adminServices.createJobApplication(jobApplication1, files);
+                } else {
+                    log.error("You need admin role to perform this action");
+                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                    response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                }
+            }else throw new Exception("bearer token is invalid");
         } catch (Exception e) {
             log.error("Exception occurred while adding job application ", e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -529,46 +536,60 @@ public class AdminController {
         }
         return response;
     }
-//
-//    @ApiOperation(value = "Add student document in the StudentDocument table", notes = "Returns a response with status code 200 for successful addition in the table.")
-//    @RequestMapping(value = "/studentDocument", method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE} )
-//    Response createStudentDocument(final @ModelAttribute("jobApplication") JobApplication jobApplication, final @RequestParam(value = "file") MultipartFile file) {
-//        Response response = new Response();
-//        try {
-//            //log.info("The student document is : {}", studentDocument);
-//            response = adminServices.createStudentDocument(jobApplication, file);
-//        } catch (Exception e) {
-//            log.error("Exception occurred while adding student document ", e);
-//            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-//            response.setStatusMessage("Exception occurred while adding student document " + e);
-//        }
-//        return response;
-//    }
+
 
     @RequestMapping(path = "/studentDocument/", method = RequestMethod.POST, consumes = {"multipart/form-data"})
     @ResponseBody
-    public Response createStudentDocument(@RequestPart("jobApplication") String jobApplication, @RequestPart("file") MultipartFile file) throws IOException {
+    public Response createStudentDocument(@RequestHeader("Authorization") String bearerToken,@RequestPart("jobApplication") String jobApplication, @RequestPart("file") MultipartFile file) throws IOException {
         StudentDocument studentDocument = new StudentDocument();
         Response response = new Response<>();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        JobApplication jobApplication1 = objectMapper.readValue(jobApplication, JobApplication.class);
-        studentDocument.setJobApplication(jobApplication1);
-        studentDocument.setBlobData(file.getBytes());
-        //studentDocument.setJobApplication(jobApplication);
-        //adminServices.createStudentDocument(jobApplication, document);
-        adminServices.createStudentDocument(jobApplication1, file);
+        try{
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)) {
+                String email = idToken.getPayload().getEmail();
+                String role = userController.getRole(email);
+                log.info(role);
+                if (role.equalsIgnoreCase("Admin")) {
+                    JobApplication jobApplication1 = objectMapper.readValue(jobApplication, JobApplication.class);
+                    studentDocument.setJobApplication(jobApplication1);
+                    studentDocument.setBlobData(file.getBytes());
+                    adminServices.createStudentDocument(jobApplication1, file);
+                }else {
+                    log.error("You need admin role to perform this action");
+                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                    response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                }
+            }else throw new Exception("bearer token is invalid");
+        } catch (Exception e) {
+            log.error("Exception occurred in createStudentDocument ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred in createStudentDocument " + e);
+        }
         return response;
     }
 
     @ApiOperation(value = "Add document type in the DocumentType table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value = "/documentType", produces = "application/json")
-    Response createDocumentType(@RequestBody DocumentType documentType) {
+    Response createDocumentType(@RequestHeader("Authorization") String bearerToken,@RequestBody DocumentType documentType) {
         Response response = new Response();
         try {
-            log.info("The document type is : {}", documentType);
-            response = adminServices.createDocumentType(documentType);
-        } catch (Exception e) {
+            GoogleIdToken idToken = entitlementController.decodeToken(bearerToken);
+            if (Objects.nonNull(idToken)) {
+                String email = idToken.getPayload().getEmail();
+                String role = userController.getRole(email);
+                log.info(role);
+                if (role.equalsIgnoreCase("Admin")) {
+                    log.info("The document type is : {}", documentType);
+                    response = adminServices.createDocumentType(documentType);
+                } else {
+                    log.error("You need admin role to perform this action");
+                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                    response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                }
+            } else throw new Exception("bearer token is invalid");
+        }catch (Exception e) {
             log.error("Exception occurred while adding document type ", e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.setStatusMessage("Exception occurred while adding document type " + e);
@@ -578,11 +599,24 @@ public class AdminController {
 
     @ApiOperation(value = "Get job application list from the jobApplication table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all job applications.")
     @GetMapping(value = "/jobApplication/all", produces = "application/json")
-    ResponseEntity<Response> getJobApplicationList() {
+    ResponseEntity<Response> getJobApplicationList(@RequestHeader("Authorization") String bearerToken) {
         ResponseEntity responseEntity;
         Response response = new Response();
         try {
-            responseEntity = adminServices.getJobApplicationList();
+            GoogleIdToken idToken = entitlementController.decodeToken(bearerToken);
+            if (Objects.nonNull(idToken)) {
+                String email = idToken.getPayload().getEmail();
+                String role = userController.getRole(email);
+                log.info(role);
+                if (role.equalsIgnoreCase("Admin")) {
+                    responseEntity = adminServices.getJobApplicationList();
+                } else {
+                    log.error("You need admin role to perform this action");
+                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                    response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                }
+            } else throw new Exception("bearer token is invalid");
         } catch (Exception e) {
             log.error("Exception occurred while getting job application list ", e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -594,11 +628,24 @@ public class AdminController {
 
     @ApiOperation(value = "Get document type list from the documentType table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all document types.")
     @GetMapping(value = "/documentType/all", produces = "application/json")
-    ResponseEntity<Response> getDocumentTypeList() {
+    ResponseEntity<Response> getDocumentTypeList(@RequestHeader("Authorization") String bearerToken) {
         ResponseEntity responseEntity;
         Response response = new Response();
-        try {
-            responseEntity = adminServices.getDocumentTypeList();
+                try {
+                    GoogleIdToken idToken = entitlementController.decodeToken(bearerToken);
+                    if (Objects.nonNull(idToken)) {
+                        String email = idToken.getPayload().getEmail();
+                        String role = userController.getRole(email);
+                        log.info(role);
+                        if (role.equalsIgnoreCase("Admin")) {
+                            responseEntity = adminServices.getDocumentTypeList();
+                        } else {
+                            log.error("You need admin role to perform this action");
+                            response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                            response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                        }
+                    } else throw new Exception("bearer token is invalid");
         } catch (Exception e) {
             log.error("Exception occurred while getting document type list ", e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -611,11 +658,24 @@ public class AdminController {
 
     @ApiOperation(value = "Get student document list from the studentDocument table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all student documents.")
     @GetMapping(value = "/studentDocument/all", produces = "application/json")
-    ResponseEntity<Response> getStudentDocumentList() {
+    ResponseEntity<Response> getStudentDocumentList(@RequestHeader("Authorization") String bearerToken) {
         ResponseEntity responseEntity;
         Response response = new Response();
         try {
-            responseEntity = adminServices.getStudentDocumentList();
+            GoogleIdToken idToken = entitlementController.decodeToken(bearerToken);
+            if (Objects.nonNull(idToken)) {
+                String email = idToken.getPayload().getEmail();
+                String role = userController.getRole(email);
+                log.info(role);
+                if (role.equalsIgnoreCase("Admin")) {
+                    responseEntity = adminServices.getStudentDocumentList();
+                } else {
+                    log.error("You need admin role to perform this action");
+                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                    response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                }
+            } else throw new Exception("bearer token is invalid");
         } catch (Exception e) {
             log.error("Exception occurred while getting student document list ", e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -627,8 +687,22 @@ public class AdminController {
 
     @ResponseStatus(value = HttpStatus.OK)
     @PostMapping("/upload")
-    public void uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-        adminServices.uploadFile(file);
+    public void uploadFile(@RequestHeader("Authorization") String bearerToken,@RequestParam("file") MultipartFile file) throws IOException {
+        try {
+            GoogleIdToken idToken = entitlementController.decodeToken(bearerToken);
+            if (Objects.nonNull(idToken)) {
+                String email = idToken.getPayload().getEmail();
+                String role = userController.getRole(email);
+                log.info(role);
+                if (role.equalsIgnoreCase("Admin")) {
+                    adminServices.uploadFile(file);
+                } else {
+                    log.error("You need admin role to perform this action");
+                }
+            } else throw new Exception("bearer token is invalid");
+        } catch (Exception e) {
+            log.error("Exception occurred in upload File", e);
+        }
     }
 
 }
