@@ -51,9 +51,10 @@ public class UserRoleServiceImpl implements UserServices {
         return response;
     }
 
-    @Cacheable("rolesResponseEntity")
+    @Cacheable(value="role-cache")
     public ResponseEntity getRole(String email)
     {
+        log.info("inside get Role method");
         ResponseEntity responseEntity;
         Response response=new Response();
         try {
