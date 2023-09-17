@@ -1,5 +1,8 @@
 package com.vigyanshaala.controller.jobPortalController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.vigyanshaala.entity.jobPortalEntity.*;
 import com.vigyanshaala.entity.jobPortalEntity.Job;
 import com.vigyanshaala.entity.jobPortalEntity.Questionnaire;
 import com.vigyanshaala.repository.jobPortalRepository.CustomJobRepositoryImpl;
@@ -12,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -34,16 +39,16 @@ public class AdminController {
     CustomJobRepositoryImpl customJobRepository;
 
     @ApiOperation(value = "Add work mode in the WorkMode table", notes = "Returns a response with status code 200 for successful addition in the table.")
-    @PostMapping(value = "/workmode", produces = "application/json")
-    Response addWorkmode(@RequestBody String workmode) {
-        Response response = new Response();
-        try {
+    @PostMapping(value="/workmode", produces="application/json")
+    Response addWorkmode(@RequestBody WorkMode workmode){
+        Response response=new Response();
+        try{
             log.info("The work mode is : {}", workmode);
-            response = adminServices.addWorkmode(workmode);
-        } catch (Exception e) {
-            log.error("Exception occurred while adding workmode name ", e);
+            response= adminServices.addWorkmode(workmode);
+        }catch(Exception e){
+            log.error("Exception occurred while adding workmode name ",e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding workmode name " + e);
+            response.setStatusMessage("Exception occurred while adding workmode name "+e);
         }
         return response;
     }
@@ -65,7 +70,7 @@ public class AdminController {
     }
     @ApiOperation(value = "Add education level in the EducationLevel table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/educationLevel", produces="application/json")
-    Response addEducationLevel(@RequestBody String educationLevel){
+    Response addEducationLevel(@RequestBody EducationLevel educationLevel){
         Response response=new Response();
         try{
             log.info("The education level is : {}", educationLevel);
@@ -96,7 +101,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add industry in the Industry table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/industry", produces="application/json")
-    Response addIndustry(@RequestBody String industry){
+    Response addIndustry(@RequestBody Industry industry){
         Response response=new Response();
         try{
             log.info("The industry is : {}", industry);
@@ -127,7 +132,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add company details in the Company table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/company", produces="application/json")
-    Response addCompany(@RequestBody String company){
+    Response addCompany(@RequestBody Company company){
         Response response=new Response();
         try{
             log.info("The company name is : {}", company);
@@ -158,7 +163,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job title in the JobTitle table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/title", produces="application/json")
-    Response addJobTitle(@RequestBody String jobTitle){
+    Response addJobTitle(@RequestBody JobTitle jobTitle){
         Response response=new Response();
         try{
             log.info("The company name list is : {}",jobTitle);
@@ -191,7 +196,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job location in the JobLocation table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/location", produces="application/json")
-    Response addJobLocationList(@RequestBody String jobLocation){
+    Response addJobLocationList(@RequestBody JobLocation jobLocation){
         Response response=new Response();
         try{
             log.info("The company name list is : {}",jobLocation);
@@ -222,7 +227,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job in the job table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/job",consumes="application/json", produces="application/json")
-    Response addJob(@RequestBody Job job){
+    Response addCompany(@RequestBody Job job){
         Response response=new Response();
         try{
             log.info("The Job detail is : "+ job.toString());
@@ -255,13 +260,13 @@ public class AdminController {
     @PostMapping(value="/questionnaire",consumes="application/json", produces="application/json")
     Response createQuestionnaire(@RequestBody Questionnaire questionnaire){
         Response response=new Response();
-        try {
-            log.info("The questionnaire received is : " + questionnaire.toString());
-            response = adminServices.createQuestionnaire(questionnaire);
-        } catch (Exception e) {
-            log.error("Exception occurred while adding job  " + e);
+        try{
+            log.info("The questionnaire received is : "+ questionnaire.toString());
+            response= adminServices.createQuestionnaire(questionnaire);
+        }catch(Exception e){
+            log.error("Exception occurred while adding job  "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while adding job  " + e);
+            response.setStatusMessage("Exception occurred while adding job  "+e);
         }
         return response;
     }
@@ -313,5 +318,127 @@ public class AdminController {
         }
     }
 
+    @ApiOperation(value = "Add job application in the JobApplication table", notes = "Returns a response with status code 200 for successful addition in the table.")
+    @RequestMapping(path = "/jobApplication/", method = RequestMethod.POST, consumes = {"multipart/form-data"})
+    Response createJobApplication(@RequestPart("jobApplication") String jobApplication, @RequestPart("files") MultipartFile[] files) {
+        //Response createJobApplication(@RequestBody JobApplication jobApplication) {
+        Response response = new Response();
+        try {
+//            JobApplication jobApplication1 = new JobApplication();
+            log.info("The job application is : {}", jobApplication);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            JobApplication jobApplication1 = objectMapper.readValue(jobApplication, JobApplication.class);
+            //DocumentType documentType1 = objectMapper.readValue(documentType, DocumentType.class);
+            //jobApplication.setJobApplication(jobApplication1);
+            response = adminServices.createJobApplication(jobApplication1, files);
+        } catch (Exception e) {
+            log.error("Exception occurred while adding job application ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while adding job application " + e);
+        }
+        return response;
+    }
+//
+//    @ApiOperation(value = "Add student document in the StudentDocument table", notes = "Returns a response with status code 200 for successful addition in the table.")
+//    @RequestMapping(value = "/studentDocument", method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE} )
+//    Response createStudentDocument(final @ModelAttribute("jobApplication") JobApplication jobApplication, final @RequestParam(value = "file") MultipartFile file) {
+//        Response response = new Response();
+//        try {
+//            //log.info("The student document is : {}", studentDocument);
+//            response = adminServices.createStudentDocument(jobApplication, file);
+//        } catch (Exception e) {
+//            log.error("Exception occurred while adding student document ", e);
+//            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//            response.setStatusMessage("Exception occurred while adding student document " + e);
+//        }
+//        return response;
+//    }
+
+    @RequestMapping(path = "/studentDocument/", method = RequestMethod.POST, consumes = {"multipart/form-data"})
+    @ResponseBody
+    public Response createStudentDocument(@RequestPart("jobApplication") String jobApplication, @RequestPart("file") MultipartFile file) throws IOException {
+        StudentDocument studentDocument = new StudentDocument();
+        Response response = new Response<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        JobApplication jobApplication1 = objectMapper.readValue(jobApplication, JobApplication.class);
+        studentDocument.setJobApplication(jobApplication1);
+        studentDocument.setBlobData(file.getBytes());
+        //studentDocument.setJobApplication(jobApplication);
+        //adminServices.createStudentDocument(jobApplication, document);
+        adminServices.createStudentDocument(jobApplication1, file);
+        return response;
+    }
+
+    @ApiOperation(value = "Add document type in the DocumentType table", notes = "Returns a response with status code 200 for successful addition in the table.")
+    @PostMapping(value = "/documentType", produces = "application/json")
+    Response createDocumentType(@RequestBody DocumentType documentType) {
+        Response response = new Response();
+        try {
+            log.info("The document type is : {}", documentType);
+            response = adminServices.createDocumentType(documentType);
+        } catch (Exception e) {
+            log.error("Exception occurred while adding document type ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while adding document type " + e);
+        }
+        return response;
+    }
+
+    @ApiOperation(value = "Get job application list from the jobApplication table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all job applications.")
+    @GetMapping(value = "/jobApplication/all", produces = "application/json")
+    ResponseEntity<Response> getJobApplicationList() {
+        ResponseEntity responseEntity;
+        Response response = new Response();
+        try {
+            responseEntity = adminServices.getJobApplicationList();
+        } catch (Exception e) {
+            log.error("Exception occurred while getting job application list ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting job application list" + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return responseEntity;
+    }
+
+    @ApiOperation(value = "Get document type list from the documentType table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all document types.")
+    @GetMapping(value = "/documentType/all", produces = "application/json")
+    ResponseEntity<Response> getDocumentTypeList() {
+        ResponseEntity responseEntity;
+        Response response = new Response();
+        try {
+            responseEntity = adminServices.getDocumentTypeList();
+        } catch (Exception e) {
+            log.error("Exception occurred while getting document type list ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting document type list" + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return responseEntity;
+    }
+
+
+    @ApiOperation(value = "Get student document list from the studentDocument table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all student documents.")
+    @GetMapping(value = "/studentDocument/all", produces = "application/json")
+    ResponseEntity<Response> getStudentDocumentList() {
+        ResponseEntity responseEntity;
+        Response response = new Response();
+        try {
+            responseEntity = adminServices.getStudentDocumentList();
+        } catch (Exception e) {
+            log.error("Exception occurred while getting student document list ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting student document list" + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return responseEntity;
+    }
+
+    @ResponseStatus(value = HttpStatus.OK)
+    @PostMapping("/upload")
+    public void uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+        adminServices.uploadFile(file);
+    }
 
 }

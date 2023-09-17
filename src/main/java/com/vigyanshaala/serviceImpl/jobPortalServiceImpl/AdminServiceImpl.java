@@ -8,7 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,11 +28,13 @@ public class AdminServiceImpl implements AdminServices {
     private final EducationLevelRepository educationLevelRepository;
 
     private final QuestionnaireRepository questionnaireRepository;
-
+    private final JobApplicationRepository jobApplicationRepository;
+    private final StudentDocumentRepository studentDocumentRepository;
+    private final DocumentTypeRepository documentTypeRepository;
 //    @PersistenceContext
 //    private EntityManager em;
 
-    public AdminServiceImpl(WorkModeRepository workModeRepository, IndustryRepository industryRepository, EducationLevelRepository educationLevelRepository, JobRepository jobRepository, CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, QuestionnaireRepository questionnaireRepository) {
+    public AdminServiceImpl(WorkModeRepository workModeRepository, IndustryRepository industryRepository, EducationLevelRepository educationLevelRepository, JobRepository jobRepository, CompanyNameRepository companyDetailsRepository, JobLocationRepository jobLocationRepository, JobTitleRepository jobTitleRepository, QuestionnaireRepository questionnaireRepository, JobApplicationRepository jobApplicationRepository, StudentDocumentRepository studentDocumentRepository, DocumentTypeRepository documentTypeRepository) {
         this.companyNameRepository = companyDetailsRepository;
         this.jobLocationRepository = jobLocationRepository;
         this.jobTitleRepository = jobTitleRepository;
@@ -37,6 +43,9 @@ public class AdminServiceImpl implements AdminServices {
         this.workModeRepository = workModeRepository;
         this.industryRepository = industryRepository;
         this.educationLevelRepository = educationLevelRepository;
+        this.jobApplicationRepository = jobApplicationRepository;
+        this.studentDocumentRepository = studentDocumentRepository;
+        this.documentTypeRepository = documentTypeRepository;
     }
 
 
@@ -50,7 +59,8 @@ public class AdminServiceImpl implements AdminServices {
         job.setJobId(jobID);
         job.setIsActive("Y");
         job.getQuestionnaire().setQuestionnaireId(questionnaireId);
-        //job.setPostingDate(LocalDate.now());
+        job.setPostingDate(LocalDate.now());
+        job.setExpiryDate(LocalDate.now( ).plusMonths( 2 ));
 
         return saveJob(job, "CREATE");
     }
@@ -194,16 +204,16 @@ public class AdminServiceImpl implements AdminServices {
     }
     /**to add a company detail from the admin page*/
     @Override
-    public Response addCompany(String companyName){
+    public Response addCompany(Company company){
         Response response=new Response();
         String companyId = UUID.randomUUID().toString();
-        Company company=new Company(companyId,companyName);
+        company.setCompanyId(companyId);
 
         List<Company> companyList = companyNameRepository.findAll();
         log.info("The list is : ");
         for(Company company1:companyList) {
             log.info(company1.getCompanyId()+" "+company1.getCompanyName());
-            if (company1.getCompanyName().equals(companyName)) {
+            if (company1.getCompanyName().equals(company.getCompanyName())) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The company detail already exists in the table");
                 return response;
@@ -226,16 +236,16 @@ public class AdminServiceImpl implements AdminServices {
 
     /**to add a education level from the admin page*/
     @Override
-    public Response addEducationLevel(String educationLevelName){
+    public Response addEducationLevel(EducationLevel educationLevel){
         Response response=new Response();
         String educationLevelId = UUID.randomUUID().toString();
-        EducationLevel educationLevel=new EducationLevel(educationLevelId,educationLevelName);
+        educationLevel.setEducationLevelId(educationLevelId);
 
         List<EducationLevel>educationLevelList= educationLevelRepository.findAll();
         log.info("The list is : "+educationLevelList);
 
         for(EducationLevel educationLevel1:educationLevelList) {
-            if (educationLevel1.getEducationLevel().equals(educationLevelName)) {
+            if (educationLevel1.getEducationLevel().equals(educationLevel.getEducationLevel())) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The education level already exists in the table");
                 return response;
@@ -258,16 +268,15 @@ public class AdminServiceImpl implements AdminServices {
 
     /**to add a industry from the admin page*/
     @Override
-    public Response addIndustry(String industryName){
+    public Response addIndustry(Industry industry){
         Response response=new Response();
         String industryId = UUID.randomUUID().toString();
-        Industry industry=new Industry(industryId,industryName);
-
+        industry.setIndustryId(industryId);
         List<Industry>industryList= industryRepository.findAll();
         log.info("The list is : "+industryList);
 
         for(Industry industry1:industryList) {
-            if (industry1.getIndustry().equals(industryName)) {
+            if (industry1.getIndustry().equals(industry.getIndustry())) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The industry already exists in the table");
                 return response;
@@ -289,16 +298,16 @@ public class AdminServiceImpl implements AdminServices {
     }
     /**to add a workmode from the admin page*/
     @Override
-    public Response addWorkmode(String workmodeName){
+    public Response addWorkmode(WorkMode workmode){
         Response response=new Response();
         String workmodeId = UUID.randomUUID().toString();
-        WorkMode workMode=new WorkMode(workmodeId,workmodeName);
+        workmode.setWorkModeId(workmodeId);
 
         List<WorkMode>workModeList= workModeRepository.findAll();
         log.info("The list is : "+workModeList);
 
         for(WorkMode workMode1:workModeList) {
-            if (workMode1.getWorkMode().equals(workmodeName)) {
+            if (workMode1.getWorkMode().equals(workmode.getWorkMode())) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The workmode already exists in the table");
                 return response;
@@ -306,7 +315,7 @@ public class AdminServiceImpl implements AdminServices {
         }
 
         try {
-            workModeRepository.save(workMode);
+            workModeRepository.save(workmode);
             log.info("Successfully saved workmode");
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully saved workmode");
@@ -320,16 +329,16 @@ public class AdminServiceImpl implements AdminServices {
     }
     /**to add a job location from the admin page*/
     @Override
-    public Response addJobLocation(String jobLocationName){
+    public Response addJobLocation(JobLocation jobLocation){
         Response response=new Response();
         String jobLocationId = UUID.randomUUID().toString();
-        JobLocation jobLocation=new JobLocation(jobLocationId,jobLocationName);
+        jobLocation.setJobLocationId(jobLocationId);
 
         List<JobLocation>jobLocationList= jobLocationRepository.findAll();
         log.info("The list is : "+jobLocationList);
 
         for(JobLocation jobLocation1:jobLocationList) {
-            if (jobLocation1.getJobLocation().equals(jobLocationName)) {
+            if (jobLocation1.getJobLocation().equals(jobLocation.getJobLocation())) {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The job location already exists in the table");
                 return response;
@@ -352,15 +361,15 @@ public class AdminServiceImpl implements AdminServices {
 
     /**to add a job title from the admin page*/
     @Override
-    public Response addJobTitle(String jobTitleName){
+    public Response addJobTitle(JobTitle jobTitle){
         Response response=new Response();
         String jobTitleId = UUID.randomUUID().toString();
-        JobTitle jobTitle=new JobTitle(jobTitleId,jobTitleName);
+        jobTitle.setJobTitleId(jobTitleId);
 
         List<JobTitle>jobTitleList= jobTitleRepository.findAll();
         log.info("The list is : {}",jobTitleList);
         for(JobTitle jobTitle1:jobTitleList){
-            if(jobTitle1.getJobTitle().equals(jobTitleName))
+            if(jobTitle1.getJobTitle().equals(jobTitle.getJobTitle()))
             {
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("The jobTitle already exists in the table");
@@ -490,5 +499,202 @@ public class AdminServiceImpl implements AdminServices {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 //        }
 //    }
+
+    /* To create a job application */
+    @Override
+    public Response createJobApplication(JobApplication jobApplication, MultipartFile[] files) throws IOException {
+        Response response = new Response();
+        String jobApplicationId = UUID.randomUUID().toString();
+        List<byte[]> fileBlob = new ArrayList<>();
+        jobApplication.setJobApplicationId(jobApplicationId);
+        jobApplication.setIsJobApplicationPostedToHr(false);
+        List<JobApplication> jobApplicationList = jobApplicationRepository.findAll();
+        List<StudentDocument> studentDocumentList = new ArrayList<>();
+        log.info("The list is : {}", jobApplicationList);
+        for (JobApplication jobApplication1 : jobApplicationList) {
+            if (jobApplication1.getJobApplicationId().equals(jobApplication.getJobApplicationId())) {
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("The job application already exists in the table");
+                return response;
+            }
+        }
+        for (MultipartFile file : files) {
+            StudentDocument studentDocument = new StudentDocument();
+            String studentDocumentId = UUID.randomUUID().toString();
+            String documentTypeId = UUID.randomUUID().toString();
+            //documentType.setDocumentTypeId(documentTypeId);
+            //studentDocument.setStudentDocumentId(studentDocumentId);
+            studentDocument.setBlobData(file.getBytes());
+            studentDocument.setStudentDocumentId(studentDocumentId);
+            studentDocument.setDocumentType(file.getContentType());
+            studentDocument.setJobApplication(jobApplication);
+            studentDocumentList.add(studentDocument);
+            //studentDocument.setJobApplication();
+            fileBlob.add(file.getBytes());
+        }
+        jobApplication.setStudentDocumentList(studentDocumentList);
+        try {
+            jobApplicationRepository.save(jobApplication);
+            log.info("Successfully saved job application");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully saved job application");
+        } catch (Exception e) {
+            log.error("Exception occurred while saving job application ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while saving job application " + e);
+        }
+        return response;
+    }
+
+    /* To create student document */
+    @Override
+    public Response createStudentDocument(JobApplication jobApplication, MultipartFile file) throws IOException {
+        Response response = new Response();
+        String studentDocumentId = UUID.randomUUID().toString();
+        StudentDocument studentDocument = new StudentDocument();
+        //StudentDocument studentDocument = new StudentDocument();
+        studentDocument.setStudentDocumentId(studentDocumentId);
+        studentDocument.setJobApplication(jobApplication);
+        System.out.println("job appln id is " + studentDocument.getJobApplication().getJobApplicationId());
+
+        //studentDocument.setJobApplication(jobApplication);
+        studentDocument.setBlobData(file.getBytes());
+        //studentDocument.setJobApplication(jobApplication);
+        //studentDocument.setDocumentType(documentType);
+        //studentDocument.setBlobData(file.getBytes());
+        //
+        //studentDocument.setBlobData(IOUtils.toB);
+        List<StudentDocument> studentDocumentList = studentDocumentRepository.findAll();
+        log.info("The list is : {}", studentDocumentList);
+//        for(StudentDocument studentDocument1 : studentDocumentList){
+//            if(studentDocument1.getDocumentType().equals(file.getDocumentType()) && studentDocument1.getStudentDocumentId().equals(file.getStudentDocumentId()))
+//            {
+//                response.setStatusCode(HttpStatus.OK.value());
+//                response.setStatusMessage("The student document exists in the table");
+//                return response;
+//            }}
+
+        try {
+            studentDocumentRepository.save(studentDocument);
+            log.info("Successfully saved student document");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully saved student document");
+        } catch (Exception e) {
+            log.error("Exception occurred while saving student document ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while saving student document " + e);
+        }
+        return response;
+    }
+
+
+    /* To create document type */
+    @Override
+    public Response createDocumentType(DocumentType documentType) {
+        Response response = new Response();
+        String documentTypeId = UUID.randomUUID().toString();
+        documentType.setDocumentTypeId(documentTypeId);
+        List<DocumentType> documentTypeList = documentTypeRepository.findAll();
+        log.info("The list is : {}", documentTypeList);
+        for (DocumentType documentType1 : documentTypeList) {
+            if (documentType1.getDocumentType().equals(documentType.getDocumentType()) && documentType1.getDescription().equals(documentType.getDescription())) {
+                response.setStatusCode(HttpStatus.OK.value());
+                response.setStatusMessage("The document type in the table");
+                return response;
+            }
+        }
+
+        try {
+            documentTypeRepository.save(documentType);
+            log.info("Successfully saved document type");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully saved document type");
+        } catch (Exception e) {
+            log.error("Exception occurred while saving document type ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while saving document type " + e);
+        }
+        return response;
+    }
+
+    /**
+     * to get the list of job applications to choose from the jobApplication table
+     */
+    @Override
+    public ResponseEntity getJobApplicationList() {
+        ResponseEntity responseEntity;
+        Response response = new Response();
+        try {
+            List<JobApplication> jobApplicationList = jobApplicationRepository.findAll();
+            log.info("The job applications list is {}", jobApplicationList);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received all job applications");
+            response.setData(jobApplicationList);
+
+        } catch (Exception e) {
+            log.error("Exception occurred while getting job applications ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting job applications " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * to get the list of student documents to choose from the studentDocument table
+     */
+    @Override
+    public ResponseEntity getStudentDocumentList() {
+        ResponseEntity responseEntity;
+        Response response = new Response();
+        try {
+            List<StudentDocument> studentDocumentList = studentDocumentRepository.findAll();
+            log.info("The student documents list is {}", studentDocumentList);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received all student documents");
+            response.setData(studentDocumentList);
+
+        } catch (Exception e) {
+            log.error("Exception occurred while getting student documents ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting student documents " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * to get the list of document types to choose from the documentType table
+     */
+    @Override
+    public ResponseEntity getDocumentTypeList() {
+        ResponseEntity responseEntity;
+        Response response = new Response();
+        try {
+            List<DocumentType> documentTypeList = documentTypeRepository.findAll();
+            log.info("The document types list is {}", documentTypeList);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received all document types");
+            response.setData(documentTypeList);
+
+        } catch (Exception e) {
+            log.error("Exception occurred while getting document types ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting document types " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    public StudentDocument uploadFile(MultipartFile file) throws IOException {
+        StudentDocument studentDocument = new StudentDocument();
+        //studentDocument.setDocumentType(file.getContentType());
+        studentDocument.setBlobData(file.getBytes());
+
+        //pImage.setName(file.getOriginalFilename());
+        //pImage.setType(file.getContentType());
+        //pImage.setImageData(ImageUtil.compressImage(file.getBytes()));
+        return studentDocumentRepository.save(studentDocument);
+    }
 
 }
