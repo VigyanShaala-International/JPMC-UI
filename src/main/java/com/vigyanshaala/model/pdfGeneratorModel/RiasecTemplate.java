@@ -2,18 +2,18 @@ package com.vigyanshaala.model.pdfGeneratorModel;
 
 public class RiasecTemplate {
 
-        private  String realistic;
-        private  String investigative;
-        private  String artistic;
-        private  String social;
-        private  String enterprising;
-        private  String conventional;
+        private  Long realistic;
+        private  Long investigative;
+        private  Long artistic;
+        private  Long social;
+        private  Long enterprising;
+        private  Long conventional;
         private  String hollandCode;
         private  String studentEmail;
 
         public RiasecTemplate(){}
 
-        RiasecTemplate(String realistic, String investigative, String artistic, String social, String enterprising, String conventional, String hollandCode, String studentEmail){
+        RiasecTemplate(Long realistic, Long investigative, Long artistic, Long social, Long enterprising, Long conventional, String hollandCode, String studentEmail){
 
 
         this.realistic = realistic;
@@ -27,42 +27,42 @@ public class RiasecTemplate {
 
         }
 
-        public String getRealistic() {return realistic;}
+        public Long getRealistic() {return realistic;}
 
-        public void setRealistic(String realistic) {
+        public void setRealistic(Long realistic) {
             this.realistic = realistic;
         }
 
 
-        public String getInvestigative() {return investigative;}
+        public Long getInvestigative() {return investigative;}
 
-        public void setInvestigative(String investigative) {
+        public void setInvestigative(Long investigative) {
             this.investigative = investigative;
         }
 
-        public String getArtistic() {return artistic;}
+        public Long getArtistic() {return artistic;}
 
-        public void setArtistic(String artistic) {
+        public void setArtistic(Long artistic) {
             this.artistic = artistic;
         }
 
 
-        public String getSocial() {return social;}
+        public Long getSocial() {return social;}
 
-        public void setSocial(String social) {
+        public void setSocial(Long social) {
             this.social = social;
         }
 
-        public String getEnterprising() {return enterprising;}
+        public Long getEnterprising() {return enterprising;}
 
-        public void setEnterprising(String enterprising) {
+        public void setEnterprising(Long enterprising) {
             this.enterprising = enterprising;
         }
 
 
-        public String getConventional() {return conventional;}
+        public Long getConventional() {return conventional;}
 
-        public void setConventional(String conventional) {
+        public void setConventional(Long conventional) {
             this.conventional = conventional;
         }
 

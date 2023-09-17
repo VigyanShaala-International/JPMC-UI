@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/pdf/raisec")
+@RequestMapping("/pdf/riasec")
 @Slf4j
 public class RiasecController {
     @Autowired
