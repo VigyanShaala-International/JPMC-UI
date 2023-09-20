@@ -14,16 +14,9 @@ import com.vigyanshaala.repository.jobPortalRepository.JobApplicationRepository;
 import com.vigyanshaala.repository.jobPortalRepository.JobRepository;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.SystemServices;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -41,11 +34,11 @@ import java.util.zip.ZipOutputStream;
 @Service
 @Slf4j
 public class SystemServiceImpl implements SystemServices {
-    @Autowired
-    private JavaMailSender javaMailSender;
+//    @Autowired
+//    private JavaMailSender javaMailSender;
 
-    @Value("${spring.mail.username}")
-    private String sender;
+//    @Value("${spring.mail.username}")
+//    private String sender;
 
     private final ExpiredJobsRepository expiredJobsRepository;
     private final JobApplicationRepository jobApplicationRepository;
@@ -411,43 +404,43 @@ public class SystemServiceImpl implements SystemServices {
     }
 
 
-    public String sendMailWithAttachment(EmailDetails details) {
-        // Creating a mime message
-        MimeMessage mimeMessage
-                = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper;
-
-        try {
-
-            // Setting multipart as true for attachments to
-            // be sent
-            mimeMessageHelper
-                    = new MimeMessageHelper(mimeMessage, true);
-            mimeMessageHelper.setFrom(sender);
-            mimeMessageHelper.setTo(details.getRecipient());
-            mimeMessageHelper.setText(details.getMsgBody());
-            mimeMessageHelper.setSubject(
-                    details.getSubject());
-
-            // Adding the attachment
-            FileSystemResource file
-                    = new FileSystemResource(
-                    new File(details.getAttachment()));
-
-            mimeMessageHelper.addAttachment(
-                    file.getFilename(), file);
-
-            // Sending the mail
-            javaMailSender.send(mimeMessage);
-            return "Mail sent Successfully";
-        }
-
-        // Catch block to handle MessagingException
-        catch (MessagingException e) {
-
-            // Display message when exception occurred
-            return "Error while sending mail!!!";
-        }
-    }
+//    public String sendMailWithAttachment(EmailDetails details) {
+//        // Creating a mime message
+////        MimeMessage mimeMessage
+////                = javaMailSender.createMimeMessage();
+//        MimeMessageHelper mimeMessageHelper;
+//
+//        try {
+//
+//            // Setting multipart as true for attachments to
+//            // be sent
+//            mimeMessageHelper
+//                    = new MimeMessageHelper(mimeMessage, true);
+//            mimeMessageHelper.setFrom(sender);
+//            mimeMessageHelper.setTo(details.getRecipient());
+//            mimeMessageHelper.setText(details.getMsgBody());
+//            mimeMessageHelper.setSubject(
+//                    details.getSubject());
+//
+//            // Adding the attachment
+//            FileSystemResource file
+//                    = new FileSystemResource(
+//                    new File(details.getAttachment()));
+//
+//            mimeMessageHelper.addAttachment(
+//                    file.getFilename(), file);
+//
+//            // Sending the mail
+//            //javaMailSender.send(mimeMessage);
+//            return "Mail sent Successfully";
+//        }
+//
+//        // Catch block to handle MessagingException
+//        catch (MessagingException e) {
+//
+//            // Display message when exception occurred
+//            return "Error while sending mail!!!";
+//        }
+//    }
 
 }
