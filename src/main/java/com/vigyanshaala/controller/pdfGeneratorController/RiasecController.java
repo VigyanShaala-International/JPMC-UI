@@ -6,6 +6,7 @@ import com.vigyanshaala.model.pdfGeneratorModel.RiasecTemplate;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.pdfGeneratorService.RiasecServices;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ public class RiasecController {
     EntitlementController entitlementController;
 
     @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response createRiasecTemplate(@RequestHeader ("Authorization") String bearerToken,@RequestBody RiasecTemplate riasecTemplate) {
         Response response = new Response();
         try {
@@ -43,6 +45,7 @@ public class RiasecController {
     }
     @ApiOperation(value = "Get riasec template latest version from the riasec template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all swot versions.")
     @GetMapping(value="/version/{studentEmail}", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity getRiasecLatestVersion(@RequestHeader ("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail){
         ResponseEntity responseEntity;
         Response response=new Response();
@@ -63,6 +66,7 @@ public class RiasecController {
 
     @ApiOperation(value = "Get Riasec template data from the Riasec template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all riasec versions.")
     @GetMapping(value="/{studentEmail}/{version}", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getRiasecTemplate(@RequestHeader ("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail,@PathVariable("version") Long version){
         ResponseEntity responseEntity;
         Response response=new Response();

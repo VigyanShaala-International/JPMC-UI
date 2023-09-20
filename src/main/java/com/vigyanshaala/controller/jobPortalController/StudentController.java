@@ -5,6 +5,7 @@ import com.vigyanshaala.controller.EntitlementController;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.StudentServices;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class StudentController {
     EntitlementController entitlementController;
     @ApiOperation(value = "Get all jobs from the job table without a filter", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all jobs.")
     @GetMapping(value = "/job/all", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getAllJobs(@RequestHeader("Authorization") String bearerToken) {
         ResponseEntity responseEntity;
         Response response = new Response();
@@ -58,6 +60,7 @@ public class StudentController {
 
     @ApiOperation(value = "Get all jobs from the job table without a filter", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all jobs.")
     @GetMapping(value="/job/{id}", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getJobByID(@RequestHeader("Authorization") String bearerToken,@PathVariable String id){
         ResponseEntity responseEntity;
         Response response=new Response();

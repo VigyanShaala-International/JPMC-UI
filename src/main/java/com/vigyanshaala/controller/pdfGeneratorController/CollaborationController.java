@@ -6,6 +6,7 @@ import com.vigyanshaala.model.pdfGeneratorModel.Collaboration;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.pdfGeneratorService.CollaborationServices;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ public class CollaborationController {
     EntitlementController entitlementController;
 
     @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response createCollaborationTemplate(@RequestHeader ("Authorization") String bearerToken,@RequestBody Collaboration collaboration) {
         Response response = new Response();
         try {
@@ -42,6 +44,7 @@ public class CollaborationController {
     }
     @ApiOperation(value = "Get collaboration template latest version from the collaboration template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all collaboration versions.")
     @GetMapping(value="/version/{studentEmail}", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity getCollaborationLatestVersion(@RequestHeader ("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail){
         ResponseEntity responseEntity;
         Response response=new Response();
@@ -61,6 +64,7 @@ public class CollaborationController {
 
     @ApiOperation(value = "Get collaboration template data from the collaboration template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all collaboration versions.")
     @GetMapping(value="/{studentEmail}/{version}", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getCollaborationTemplate(@RequestHeader ("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail,@PathVariable("version") Long version){
         ResponseEntity responseEntity;
         Response response=new Response();

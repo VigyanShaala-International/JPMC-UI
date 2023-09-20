@@ -6,6 +6,7 @@ import com.vigyanshaala.model.pdfGeneratorModel.IDPTemplate;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.pdfGeneratorService.IDPTemplateServices;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ public class IDPController {
     EntitlementController entitlementController;
 
     @PostMapping(value = "/idp", consumes = "application/json", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response createIDPTemplate(@RequestHeader("Authorization") String bearerToken,@RequestBody IDPTemplate idpTemplate) {
         Response response = new Response();
         try {
@@ -43,6 +45,7 @@ public class IDPController {
 
     @ApiOperation(value = "Get idp template latest version from the idp template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all idp versions.")
     @GetMapping(value = "/idp/version/{studentEmail}", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity getIDPLatestVersion(@RequestHeader("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail) {
         ResponseEntity responseEntity;
         Response response = new Response();
@@ -64,6 +67,7 @@ public class IDPController {
 
     @ApiOperation(value = "Get idp template data from the idp template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all idp versions.")
     @GetMapping(value = "/idp/{studentEmail}/{version}", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getIDPTemplate(@RequestHeader("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail, @PathVariable("version") Long version) {
         ResponseEntity responseEntity;
         Response response = new Response();

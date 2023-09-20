@@ -6,6 +6,7 @@ import com.vigyanshaala.model.pdfGeneratorModel.SwotTemplate;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.pdfGeneratorService.SwotTemplateServices;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ public class SwotController {
     EntitlementController entitlementController;
 
     @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response createSwotTemplate(@RequestHeader("Authorization") String bearerToken,@RequestBody SwotTemplate swotTemplate) {
         Response response = new Response();
         log.info("createSwotTemplate");
@@ -42,6 +44,7 @@ public class SwotController {
     }
     @ApiOperation(value = "Get swot template latest version from the swot template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all swot versions.")
     @GetMapping(value="/version/{studentEmail}", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity getSwotLatestVersion(@RequestHeader("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail){
         ResponseEntity responseEntity;
         Response response=new Response();
@@ -62,6 +65,7 @@ public class SwotController {
 
     @ApiOperation(value = "Get swot template data from the swot template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all swot versions.")
     @GetMapping(value="/{studentEmail}/{version}", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getSwotTemplate(@RequestHeader("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail,@PathVariable("version") Long version){
         ResponseEntity responseEntity;
         Response response=new Response();

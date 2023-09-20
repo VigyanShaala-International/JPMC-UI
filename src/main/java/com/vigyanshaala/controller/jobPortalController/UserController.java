@@ -5,6 +5,7 @@ import com.vigyanshaala.controller.EntitlementController;
 import com.vigyanshaala.entity.user.UserRole;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.UserServices;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,7 @@ public class UserController {
 
 
     @PostMapping(value="/userRole", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response addUserRole( @RequestHeader("Authorization") String bearerToken, UserRole userRole) {
         Response response=new Response();
         try{

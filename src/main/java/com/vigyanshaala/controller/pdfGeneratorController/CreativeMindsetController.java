@@ -6,6 +6,7 @@ import com.vigyanshaala.model.pdfGeneratorModel.CreativeMindset;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.pdfGeneratorService.CreativeMindsetServices;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ public class CreativeMindsetController {
     EntitlementController entitlementController;
 
     @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response createCreativeMindsetTemplate(@RequestHeader ("Authorization") String bearerToken,@RequestBody CreativeMindset creativeMindset) {
         Response response = new Response();
         try {
@@ -42,6 +44,7 @@ public class CreativeMindsetController {
     }
     @ApiOperation(value = "Get swot template latest version from the swot template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all creative mindset versions.")
     @GetMapping(value="/version/{studentEmail}", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity getCreativeMindsetLatestVersion(@RequestHeader ("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail){
         ResponseEntity responseEntity;
         Response response=new Response();
@@ -61,6 +64,7 @@ public class CreativeMindsetController {
 
     @ApiOperation(value = "Get creativemindset template data from the creativemindset template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all creativemindset versions.")
     @GetMapping(value="/{studentEmail}/{version}", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getCreativeMindsetTemplate(@RequestHeader ("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail,@PathVariable("version") Long version){
         ResponseEntity responseEntity;
         Response response=new Response();

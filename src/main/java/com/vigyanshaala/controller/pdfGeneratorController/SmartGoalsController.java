@@ -6,6 +6,7 @@ import com.vigyanshaala.model.pdfGeneratorModel.SmartGoalsTemplate;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.pdfGeneratorService.SmartGoalsTemplateServices;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ public class SmartGoalsController {
     EntitlementController entitlementController;
 
     @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response createSmartGoalsTemplate(@RequestHeader ("Authorization") String bearerToken,@RequestBody SmartGoalsTemplate smartGoalsTemplate) {
         Response response = new Response();
         try {
@@ -42,6 +44,7 @@ public class SmartGoalsController {
     }
     @ApiOperation(value = "Get smartGoals template latest version from the swot template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all smartGoals versions.")
     @GetMapping(value="/version/{studentEmail}", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity getSmartGoalsLatestVersion(@RequestHeader ("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail){
         ResponseEntity responseEntity;
         Response response=new Response();
@@ -62,6 +65,7 @@ public class SmartGoalsController {
 
     @ApiOperation(value = "Get swot template data from the smartGoals template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all smartGoals versions.")
     @GetMapping(value="/{studentEmail}/{version}", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getSmartGoalsTemplate(@RequestHeader ("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail,@PathVariable("version") Long version){
         ResponseEntity responseEntity;
         Response response=new Response();

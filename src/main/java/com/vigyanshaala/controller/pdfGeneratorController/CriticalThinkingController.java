@@ -6,6 +6,7 @@ import com.vigyanshaala.model.pdfGeneratorModel.CriticalThinking;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.pdfGeneratorService.CriticalThinkingServices;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ public class CriticalThinkingController {
 
 
     @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response createCriticalThinkingTemplate(@RequestHeader("Authorization") String bearerToken,@RequestBody CriticalThinking criticalThinking) {
         Response response = new Response();
         try{
@@ -43,6 +45,7 @@ public class CriticalThinkingController {
     }
     @ApiOperation(value = "Get swot template latest version from the critical thinking template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all swot versions.")
     @GetMapping(value="/version/{studentEmail}", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity getCTLatestVersion(@RequestHeader("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail){
         ResponseEntity responseEntity;
         Response response=new Response();
@@ -62,6 +65,7 @@ public class CriticalThinkingController {
 
     @ApiOperation(value = "Get swot template data from the critical thinking template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all swot versions.")
     @GetMapping(value="/{studentEmail}/{version}", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getCriticalThinkingTemplate(@RequestHeader("Authorization")String bearerToken,@PathVariable("studentEmail") String studentEmail,@PathVariable("version") Long version){
         ResponseEntity responseEntity;
         Response response=new Response();

@@ -10,6 +10,7 @@ import com.vigyanshaala.repository.jobPortalRepository.JobFilter;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.AdminServices;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,7 @@ public class AdminController {
     EntitlementController entitlementController;
     @ApiOperation(value = "Add work mode in the WorkMode table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value = "/workmode", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response addWorkmode (@RequestHeader("Authorization") String bearerToken,@RequestBody WorkMode workmode) {
         Response response = new Response();
         try{
@@ -69,6 +71,7 @@ public class AdminController {
     }
 
     @ApiOperation(value = "Get workmode list from the Workmode table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all workmodes.")
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping(value="/workmode/all", produces="application/json")
     ResponseEntity<Response> getWorkmodeList(@RequestHeader ("Authorization") String bearerToken) {
         ResponseEntity responseEntity;
@@ -99,6 +102,7 @@ public class AdminController {
     }
     @ApiOperation(value = "Add education level in the EducationLevel table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/educationLevel", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response addEducationLevel(@RequestHeader("Authorization") String bearerToken,@RequestBody EducationLevel educationLevel) {
         Response response=new Response();
         try{
@@ -128,6 +132,7 @@ public class AdminController {
 
     @ApiOperation(value = "Get education Level list from the educationLevel table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all education levls.")
     @GetMapping(value="/educationLevel/all", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getEducationLevelList(@RequestHeader("Authorization") String bearerToken) {
         ResponseEntity responseEntity;
         Response response=new Response();
@@ -157,6 +162,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add industry in the Industry table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/industry", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response addIndustry(@RequestHeader("Authorization") String bearerToken,@RequestBody Industry industry) {
         Response response = new Response();
         try {
@@ -183,6 +189,7 @@ public class AdminController {
 
     @ApiOperation(value = "Get industry list from the Industry table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all industry.")
     @GetMapping(value="/industry/all", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getIndustryList(@RequestHeader("Authorization") String bearerToken){
         ResponseEntity responseEntity;
         Response response=new Response();
@@ -212,6 +219,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add company details in the Company table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/company", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response addCompany(@RequestHeader("Authorization") String bearerToken,@RequestBody Company company){
         Response response=new Response();
         try {
@@ -239,6 +247,7 @@ public class AdminController {
 
     @ApiOperation(value = "Get company list from the Company table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all companies.")
     @GetMapping(value="/company/all", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getCompanyList(@RequestHeader("Authorization") String bearerToken){
 
         ResponseEntity responseEntity;
@@ -269,6 +278,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job title in the JobTitle table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/title", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response addJobTitle(@RequestHeader("Authorization") String bearerToken,@RequestBody JobTitle jobTitle){
 
         Response response = new Response();
@@ -297,6 +307,7 @@ public class AdminController {
 
     @ApiOperation(value = "Get job title list from the JobTitle table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all job titles.")
     @GetMapping(value="/title/all", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getJobTitleList(@RequestHeader("Authorization") String bearerToken){
         ResponseEntity responseEntity;
         Response response = new Response();
@@ -328,6 +339,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job location in the JobLocation table", notes = "Returns a response with status code 200 for successful addition in the table")
     @PostMapping(value="/location", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response addJobLocationList(@RequestHeader("Authorization") String bearerToken,@RequestBody JobLocation jobLocation){
         Response response=new Response();
         try{
@@ -354,6 +366,7 @@ public class AdminController {
 
     @ApiOperation(value = "Get job location list from the JobLocation table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all job locations.")
     @GetMapping(value="/location/all", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getJobLocationList(@RequestHeader("Authorization") String bearerToken){
         ResponseEntity responseEntity;
         Response response=new Response();
@@ -382,6 +395,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job in the job table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/job",consumes="application/json", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response addJob(@RequestHeader("Authorization") String bearerToken,@RequestBody Job job){
         Response response=new Response();
         try{
@@ -410,6 +424,7 @@ public class AdminController {
 
     @ApiOperation(value = "Update job in the job table", notes = "Returns a response with status code 200 for successful updation in the table.")
     @PostMapping(value="/job/update",consumes="application/json", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response updateJob(@RequestHeader("Authorization") String bearerToken,@RequestBody Job job){
         Response response=new Response();
         try{
@@ -437,6 +452,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add questions for a job posting in the questionnaire table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value="/questionnaire",consumes="application/json", produces="application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response createQuestionnaire(@RequestHeader("Authorization") String bearerToken,@RequestBody Questionnaire questionnaire){
         Response response=new Response();
         try{
@@ -465,6 +481,7 @@ public class AdminController {
 
     @ApiOperation(value = "Fetch job from the job table", notes = "Returns a response with status code 200 for successful fetch from the job table.")
     @GetMapping(value = "/jobs/", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getJob(@RequestHeader("Authorization") String bearerToken, JobFilter jobFilter) {
         ResponseEntity responseEntity;
         Response response = new Response();
@@ -507,6 +524,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add job application in the JobApplication table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @RequestMapping(path = "/jobApplication/", method = RequestMethod.POST, consumes = {"multipart/form-data"})
+    @SecurityRequirement(name = "Bearer Authentication")
     Response createJobApplication(@RequestHeader("Authorization") String bearerToken,@RequestPart("jobApplication") String jobApplication, @RequestPart("files") MultipartFile[] files) {
 
         Response response = new Response();
@@ -539,6 +557,7 @@ public class AdminController {
 
 
     @RequestMapping(path = "/studentDocument/", method = RequestMethod.POST, consumes = {"multipart/form-data"})
+    @SecurityRequirement(name = "Bearer Authentication")
     @ResponseBody
     public Response createStudentDocument(@RequestHeader("Authorization") String bearerToken,@RequestPart("jobApplication") String jobApplication, @RequestPart("file") MultipartFile file) throws IOException {
         StudentDocument studentDocument = new StudentDocument();
@@ -572,6 +591,7 @@ public class AdminController {
 
     @ApiOperation(value = "Add document type in the DocumentType table", notes = "Returns a response with status code 200 for successful addition in the table.")
     @PostMapping(value = "/documentType", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     Response createDocumentType(@RequestHeader("Authorization") String bearerToken,@RequestBody DocumentType documentType) {
         Response response = new Response();
         try {
@@ -599,6 +619,7 @@ public class AdminController {
 
     @ApiOperation(value = "Get job application list from the jobApplication table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all job applications.")
     @GetMapping(value = "/jobApplication/all", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getJobApplicationList(@RequestHeader("Authorization") String bearerToken) {
         ResponseEntity responseEntity;
         Response response = new Response();
@@ -628,6 +649,7 @@ public class AdminController {
 
     @ApiOperation(value = "Get document type list from the documentType table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all document types.")
     @GetMapping(value = "/documentType/all", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getDocumentTypeList(@RequestHeader("Authorization") String bearerToken) {
         ResponseEntity responseEntity;
         Response response = new Response();
@@ -658,6 +680,7 @@ public class AdminController {
 
     @ApiOperation(value = "Get student document list from the studentDocument table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all student documents.")
     @GetMapping(value = "/studentDocument/all", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getStudentDocumentList(@RequestHeader("Authorization") String bearerToken) {
         ResponseEntity responseEntity;
         Response response = new Response();
@@ -686,6 +709,7 @@ public class AdminController {
     }
 
     @ResponseStatus(value = HttpStatus.OK)
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/upload")
     public void uploadFile(@RequestHeader("Authorization") String bearerToken,@RequestParam("file") MultipartFile file) throws IOException {
         try {
