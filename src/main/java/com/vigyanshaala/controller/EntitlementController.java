@@ -12,6 +12,7 @@ import com.vigyanshaala.service.jobPortalService.UserServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,8 @@ public class EntitlementController {
     private String clientId;
     @Autowired
     UserServices userServices;
+    @Autowired
+    CacheManager cacheManager;
 
     public GoogleIdToken decodeToken(String bearerToken)
     {
@@ -77,6 +80,7 @@ public class EntitlementController {
     public ResponseEntity<Response> role(@RequestHeader("Authorization") String bearerToken) throws IOException {
         log.info("client id "+clientId);
         log.info("bearer token "+bearerToken);
+        cacheManager.getCache("role-cache").clear();
         Response response=new Response();
         String name="";
         String email="";
