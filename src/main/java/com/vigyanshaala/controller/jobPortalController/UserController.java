@@ -8,6 +8,7 @@ import com.vigyanshaala.service.jobPortalService.UserServices;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,10 @@ public class UserController {
     UserServices userServices;
     @Autowired
     EntitlementController entitlementController;
+
+    @Autowired
+    CacheManager cacheManager;
+
     public String getRole(@PathVariable("encryptedEmail") String email) {
         log.info(email);
         ResponseEntity responseEntity;
@@ -43,6 +48,7 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     Response addUserRole( @RequestHeader("Authorization") String bearerToken, UserRole userRole) {
         Response response=new Response();
+        cacheManager.getCache("role-cache").clear();
         try{
             GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
             if(Objects.nonNull(idToken)){
@@ -51,6 +57,7 @@ public class UserController {
                 if(role.equalsIgnoreCase("Admin"))
                 {
                     response = userServices.addUserRole(userRole);
+
                 }else{
                     log.error("You need admin role to perform this action");
                     response.setStatusCode(HttpStatus.FORBIDDEN.value());
