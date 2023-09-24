@@ -69,8 +69,8 @@ strength BYTEA,
 weakness BYTEA,
 opportunity BYTEA,
 threat BYTEA,
-student_name BYTEA,
-student_degree BYTEA,
+student_name varchar(255),
+student_degree varchar(255),
 goal BYTEA,
 primary key(student_id)
 );
