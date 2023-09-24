@@ -38,6 +38,13 @@ public class JobApplication {
     public void setStudentEmail(String studentEmail) {
         this.studentEmail = studentEmail;
     }
+    public String getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
+    }
 
     public Job getJob() {
         return job;
@@ -92,10 +99,9 @@ public class JobApplication {
     }
 
 
-    public JobApplication(String jobApplicationId, String studentId, Job job, String answer1, String answer2, String answer3, String answer4, String answer5, boolean isJobApplicationPostedToHr, List<StudentDocument> studentDocumentList, String studentName, String studentEmail) {
+    public JobApplication(String jobApplicationId, String studentId, String answer1, String answer2, String answer3, String answer4, String answer5, boolean isJobApplicationPostedToHr, List<StudentDocument> studentDocumentList, String studentName, String studentEmail) {
         this.jobApplicationId = jobApplicationId;
         this.studentId = studentId;
-        this.job = job;
         this.answer1 = answer1;
         this.answer2 = answer2;
         this.answer3 = answer3;
@@ -115,11 +121,17 @@ public class JobApplication {
     private String studentId;
     @ManyToOne(cascade = CascadeType.MERGE)
     private Job job;
-    private String answer1;
 
+    private String jobId;
+    @Lob
+    private String answer1;
+    @Lob
     private String answer2;
+    @Lob
     private String answer3;
+    @Lob
     private String answer4;
+    @Lob
     private String answer5;
     private boolean isJobApplicationPostedToHr;
 

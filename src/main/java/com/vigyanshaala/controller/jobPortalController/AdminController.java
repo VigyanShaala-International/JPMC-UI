@@ -242,7 +242,7 @@ public class AdminController {
 
 
     @ApiOperation(value = "Update job in the job table", notes = "Returns a response with status code 200 for successful updation in the table.")
-    @PostMapping(value="/job/update",consumes="application/json", produces="application/json")
+    @PutMapping(value="/job/update",consumes="application/json", produces="application/json")
     Response updateJob(@RequestBody Job job){
         Response response=new Response();
         try{
