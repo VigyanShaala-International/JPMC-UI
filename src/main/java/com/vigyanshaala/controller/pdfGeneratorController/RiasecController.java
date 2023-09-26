@@ -1,14 +1,19 @@
 package com.vigyanshaala.controller.pdfGeneratorController;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.vigyanshaala.controller.EntitlementController;
 import com.vigyanshaala.model.pdfGeneratorModel.RiasecTemplate;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.pdfGeneratorService.RiasecServices;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 
 @RestController
@@ -18,13 +23,19 @@ import org.springframework.web.bind.annotation.*;
 public class RiasecController {
     @Autowired
     RiasecServices riasecServices;
+    @Autowired
+    EntitlementController entitlementController;
 
     @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
-    Response createRiasecTemplate(@RequestBody RiasecTemplate riasecTemplate) {
+    @SecurityRequirement(name = "Bearer Authentication")
+    Response createRiasecTemplate(@RequestHeader ("Authorization") String bearerToken,@RequestBody RiasecTemplate riasecTemplate) {
         Response response = new Response();
         try {
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if (Objects.nonNull(idToken)) {
             log.info("The riasec template  is : {}" , riasecTemplate.toString());
             response = riasecServices.saveRiasecTemplate(riasecTemplate);
+            } else throw new Exception("bearer token is invalid");
         } catch (Exception e) {
             log.error("Exception occurred while adding Riasec template data  " , e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -34,11 +45,16 @@ public class RiasecController {
     }
     @ApiOperation(value = "Get riasec template latest version from the riasec template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all swot versions.")
     @GetMapping(value="/version/{studentEmail}", produces="application/json")
-    ResponseEntity getRiasecLatestVersion(@PathVariable("studentEmail") String studentEmail){
+    @SecurityRequirement(name = "Bearer Authentication")
+    ResponseEntity getRiasecLatestVersion(@RequestHeader ("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail){
         ResponseEntity responseEntity;
         Response response=new Response();
         try{
+
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if (Objects.nonNull(idToken)) {
             responseEntity= riasecServices.getRiasecLatestVersion(studentEmail);
+            } else throw new Exception("bearer token is invalid");
         }catch(Exception e){
             log.error("Exception occurred while getting RI latest version "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -50,11 +66,16 @@ public class RiasecController {
 
     @ApiOperation(value = "Get Riasec template data from the Riasec template table", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all riasec versions.")
     @GetMapping(value="/{studentEmail}/{version}", produces="application/json")
-    ResponseEntity<Response> getRiasecTemplate(@PathVariable("studentEmail") String studentEmail,@PathVariable("version") Long version){
+    @SecurityRequirement(name = "Bearer Authentication")
+    ResponseEntity<Response> getRiasecTemplate(@RequestHeader ("Authorization") String bearerToken,@PathVariable("studentEmail") String studentEmail,@PathVariable("version") Long version){
         ResponseEntity responseEntity;
         Response response=new Response();
         try{
+
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if (Objects.nonNull(idToken)) {
             responseEntity= riasecServices.getRiasecTemplate(studentEmail,version);
+            } else throw new Exception("bearer token is invalid");
         }catch(Exception e){
             log.error("Exception occurred while getting Riasec Template data "+e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
