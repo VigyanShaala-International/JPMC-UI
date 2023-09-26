@@ -10,7 +10,14 @@ This README would normally document whatever steps are necessary to get your app
 
 ### Versions ###
 
-* The code uses Java version 20 and Spring Boot version 3
+* The code uses Java version 17 and Spring Boot version 3.1
+
+
+### Steps to start the project ###
+
+* Clone this project and open in intelliJ
+* Install the correct java version and setup in intelliJ file -> project -> sdk section
+* Run the maven clean, compile and install from the Maven -> Vigyanshaala -> Lifecycle section on the right
 
 
 
