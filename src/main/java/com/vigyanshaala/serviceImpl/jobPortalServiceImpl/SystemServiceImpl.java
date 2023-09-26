@@ -14,9 +14,16 @@ import com.vigyanshaala.repository.jobPortalRepository.JobApplicationRepository;
 import com.vigyanshaala.repository.jobPortalRepository.JobRepository;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.SystemServices;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -34,11 +41,11 @@ import java.util.zip.ZipOutputStream;
 @Service
 @Slf4j
 public class SystemServiceImpl implements SystemServices {
-//    @Autowired
-//    private JavaMailSender javaMailSender;
+    @Autowired
+    private JavaMailSender javaMailSender;
 
-//    @Value("${spring.mail.username}")
-//    private String sender;
+    @Value("${spring.mail.username}")
+    private String sender;
 
     private final ExpiredJobsRepository expiredJobsRepository;
     private final JobApplicationRepository jobApplicationRepository;
@@ -128,21 +135,17 @@ public class SystemServiceImpl implements SystemServices {
 
     @Override
     public ResponseEntity mailJobApplicationsToHr() {
-//        ArrayList<Job> results = null;
+
         Response response = new Response();
         List<String> hrEmailList = new ArrayList<>();
         List<String> jobIdList = new ArrayList<>();
         List<String> studentIDList = new ArrayList<>();
         List<String> studentIDs = new ArrayList<>();
-        List<JobApplication> jobApplications = new ArrayList<>();
         Map<String, List<String>> jobIdtoStudentIdMap = new HashMap<>();
-        List<StudentDocument> studentDocumentList = new ArrayList<>();
-        //List<JobApplication> jobApplicationsCorrespondingToHr = new ArrayList<>();
         try {
             List<JobApplication> jobApplicationList = jobApplicationRepository.findByisJobApplicationPostedToHr(false);
             System.out.println(jobApplicationList);
             log.info("Job application list yet to be posted to HR is" + jobApplicationList);
-            //log.info("Successfully soft deleted expired jobs");
             for (JobApplication jobApplication : jobApplicationList) {
                 String hrEmail = jobApplication.getJob().getHrEmail();
                 String jobId = jobApplication.getJob().getJobId();
@@ -190,9 +193,6 @@ public class SystemServiceImpl implements SystemServices {
     public void generate(String jobId, List<String> studentIds) throws DocumentException, IOException {
 
         try {
-//            File jobApplication = new File("JobApplications");
-//            if (!jobApplication.exists())
-//                jobApplication.mkdir();
             Job job = jobRepository.findByJobId(jobId);
             File directory = new File(jobId);
             if (!directory.exists()) {
@@ -339,19 +339,9 @@ public class SystemServiceImpl implements SystemServices {
                                     File fileStructure = new File(studentFolder + "\\" + studentDocument.getStudentDocumentId() + ".pdf");
                                     if (!fileStructure.exists()) {
                                         fileStructure.createNewFile();
-                                        //Blob blob = studentDocument.getBlobData();
 
-                                        //InputStream is = new ByteArrayInputStream(studentDocument.getBlobData());
-                                        //String mimeType = URLConnection.guessContentTypeFromStream(is);
-
-                                        //InputStream in = blob.getBinaryStream();
                                         OutputStream out = new FileOutputStream(fileStructure);
-//                                    byte[] buff = new byte[4096];  // how much of the blob to read/write at a time
-//                                    int len = 0;
-//
-//                                    while ((len = is.read(buff)) != -1) {
-//                                        out.write(buff, 0, len);
-//                                    }
+
                                         out.write(studentDocument.getBlobData());
                                         out.close();
                                     }
@@ -362,15 +352,14 @@ public class SystemServiceImpl implements SystemServices {
 
                     }
                     // Zipping folders
-                    zip("C:\\Users\\harini\\IdeaProjects\\vigyanshaala-server\\" + jobId, "C:\\Users\\harini\\IdeaProjects\\vigyanshaala-server\\JobApplications\\" + jobId + ".zip");
+                    zip("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\" + jobId, "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId + ".zip");
 
                     EmailDetails details = new EmailDetails();
                     details.setSubject("Details of job applications");
                     details.setRecipient(job.getHrEmail());
                     details.setMsgBody("Hi, PFA responses to the list of job applications you have posted. Best regards, Team VigyanShaala ");
-                    details.setAttachment(jobId + ".zip");
-                    // Todo : Outlook configs in application.yml file, hence commenting out sendMailWithAttachment
-                    //sendMailWithAttachment(details);
+                    details.setAttachment("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId + ".zip");
+                    sendMailWithAttachment(details);
                 }
             }
         } catch (FileNotFoundException ex) {
@@ -379,7 +368,6 @@ public class SystemServiceImpl implements SystemServices {
             System.out.println(ex.getStackTrace());
             System.err.println("I/O error: " + ex);
         }
-        // Getting instance of PdfWriter
     }
 
     public static void zip(final String sourcNoteseDirPath, final String zipFilePath) throws IOException {
@@ -404,43 +392,42 @@ public class SystemServiceImpl implements SystemServices {
     }
 
 
-//    public String sendMailWithAttachment(EmailDetails details) {
-//        // Creating a mime message
-////        MimeMessage mimeMessage
-////                = javaMailSender.createMimeMessage();
-//        MimeMessageHelper mimeMessageHelper;
-//
-//        try {
-//
-//            // Setting multipart as true for attachments to
-//            // be sent
-//            mimeMessageHelper
-//                    = new MimeMessageHelper(mimeMessage, true);
-//            mimeMessageHelper.setFrom(sender);
-//            mimeMessageHelper.setTo(details.getRecipient());
-//            mimeMessageHelper.setText(details.getMsgBody());
-//            mimeMessageHelper.setSubject(
-//                    details.getSubject());
-//
-//            // Adding the attachment
-//            FileSystemResource file
-//                    = new FileSystemResource(
-//                    new File(details.getAttachment()));
-//
-//            mimeMessageHelper.addAttachment(
-//                    file.getFilename(), file);
-//
-//            // Sending the mail
-//            //javaMailSender.send(mimeMessage);
-//            return "Mail sent Successfully";
-//        }
-//
-//        // Catch block to handle MessagingException
-//        catch (MessagingException e) {
-//
-//            // Display message when exception occurred
-//            return "Error while sending mail!!!";
-//        }
-//    }
+    public String sendMailWithAttachment(EmailDetails details) {
+        // Creating a mime message
+        MimeMessage mimeMessage
+                = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper;
+
+        try {
+
+            // Setting multipart as true for attachments to
+            // be sent
+            mimeMessageHelper
+                    = new MimeMessageHelper(mimeMessage, true);
+            mimeMessageHelper.setFrom(sender);
+            mimeMessageHelper.setTo(details.getRecipient());
+            mimeMessageHelper.setText(details.getMsgBody());
+            mimeMessageHelper.setSubject(
+                    details.getSubject());
+
+            // Adding the attachment
+            FileSystemResource file
+                    = new FileSystemResource(
+                    new File(details.getAttachment()));
+
+            mimeMessageHelper.addAttachment(
+                    file.getFilename(), file);
+            // Sending the mail
+            javaMailSender.send(mimeMessage);
+            return "Mail sent Successfully";
+        }
+
+        // Catch block to handle MessagingException
+        catch (MessagingException e) {
+
+            // Display message when exception occurred
+            return "Error while sending mail!!!";
+        }
+    }
 
 }
