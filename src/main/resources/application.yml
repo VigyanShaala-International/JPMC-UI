@@ -13,4 +13,18 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto : create-drop
+      ddl-auto: create-drop
+  mail:
+    host: smtp-mail.outlook.com
+    username: careers@VigyanShaala.com
+    password: jjttjhlnxshmjdkb
+    properties:
+      mail:
+        store:
+          protocol: pop3
+        smtp:
+          ssl:
+            trust: smtp-mail.outlook.com
+          auth: true
+          starttls:
+            enable: true

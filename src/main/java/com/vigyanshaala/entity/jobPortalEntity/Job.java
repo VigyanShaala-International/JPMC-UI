@@ -41,6 +41,7 @@ public class Job {
     @ManyToOne(cascade = CascadeType.MERGE)
     private WorkMode workMode;
 
+    @Lob
     private String jobDescription;
     private String hrEmail;
 

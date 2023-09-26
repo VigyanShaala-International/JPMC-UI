@@ -459,7 +459,6 @@ public class AdminServiceImpl implements AdminServices {
         log.info("The job before updating is {}", job1);
 
         job.getQuestionnaire().setQuestionnaireId(questionnaireId);
-
         job1.setQuestionnaire(job.getQuestionnaire());
         job1.setJobDescription(job.getJobDescription());
         job1.setJobLocation(job.getJobLocation());
