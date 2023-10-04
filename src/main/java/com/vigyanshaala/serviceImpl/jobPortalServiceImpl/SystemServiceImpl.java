@@ -24,7 +24,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -40,9 +42,16 @@ import java.util.zip.ZipOutputStream;
 
 @Service
 @Slf4j
+@Transactional
 public class SystemServiceImpl implements SystemServices {
     @Autowired
     private JavaMailSender javaMailSender;
+    @Value("${serverCodePath}")
+    private String serverCodePath;
+    @Value("${jobApplicationsZipPath}")
+    private String jobApplicationsZipPath;
+    @Value("${emailDuration}")
+    public String emailDuration;
 
     @Value("${spring.mail.username}")
     private String sender;
@@ -351,14 +360,16 @@ public class SystemServiceImpl implements SystemServices {
                         }
 
                     }
+                    // Todo : externalize path in property file
                     // Zipping folders
-                    zip("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\" + jobId, "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId + ".zip");
-
+                    //zip("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\" + jobId, "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId + ".zip");
+                    zip(serverCodePath + jobId, jobApplicationsZipPath + jobId + ".zip");
                     EmailDetails details = new EmailDetails();
                     details.setSubject("Details of job applications");
                     details.setRecipient(job.getHrEmail());
                     details.setMsgBody("Hi, PFA responses to the list of job applications you have posted. Best regards, Team VigyanShaala ");
-                    details.setAttachment("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId + ".zip");
+                    //details.setAttachment("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId + ".zip");
+                    details.setAttachment(jobApplicationsZipPath + jobId + ".zip");
                     sendMailWithAttachment(details);
                 }
             }
@@ -427,6 +438,17 @@ public class SystemServiceImpl implements SystemServices {
 
             // Display message when exception occurred
             return "Error while sending mail!!!";
+        }
+    }
+
+    @Scheduled(cron = "${emailDuration}")
+    public void batchMailJobApplicationToHR() {
+        // some logic that will be executed on a schedule
+        log.info("Mailing job applications to HR...");
+        try {
+            mailJobApplicationsToHr();
+        } catch (Exception e) {
+            log.error("Exception occurred while mailing job applications to HR " + e);
         }
     }
 
