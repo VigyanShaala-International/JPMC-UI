@@ -102,6 +102,26 @@ timeBound BYTEA,
 primary key(student_id)
 );
 
+create table collaboration_template(
+student_id varchar(50),
+student_email varchar(255),
+version long,
+answerA BYTEA,
+answerB BYTEA,
+answerC BYTEA,
+primary key(student_id)
+);
+
+create table creativemindset_template(
+student_id varchar(50),
+student_email varchar(255),
+version long,
+answerA BYTEA,
+answerB BYTEA,
+answerC BYTEA,
+primary key(student_id)
+);
+
 create table questionnaire(
 questionnaire_id varchar(50),
 question1 varchar(255),
