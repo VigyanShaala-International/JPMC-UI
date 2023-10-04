@@ -22,6 +22,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
+      enable_lazy_load_no_trans: true
   mail:
     host: smtp-mail.outlook.com
     username: careers@VigyanShaala.com
@@ -36,7 +37,11 @@ spring:
           auth: true
           starttls:
             enable: true
-      ddl-auto : create-drop
+      ddl-auto: create-drop
 
 client-id: "817648875048-r3k4nf2okkfhtpptm9ulf77idt19tiiu.apps.googleusercontent.com"
 
+emailDuration: "*/20 * * * * *"
+
+serverCodePath: "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\"
+jobApplicationsZipPath: "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\"
