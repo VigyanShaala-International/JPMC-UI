@@ -360,7 +360,6 @@ public class SystemServiceImpl implements SystemServices {
                         }
 
                     }
-                    // Todo : externalize path in property file
                     // Zipping folders
                     //zip("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\" + jobId, "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId + ".zip");
                     zip(serverCodePath + jobId, jobApplicationsZipPath + jobId + ".zip");
