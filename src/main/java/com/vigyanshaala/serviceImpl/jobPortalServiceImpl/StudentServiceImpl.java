@@ -27,7 +27,7 @@ public class StudentServiceImpl implements StudentServices {
         Response response = new Response();
         try {
             List<Job> jobList = jobRepository.findAll();
-            log.info("The active job list is {}", jobList);
+            log.info("The job list is {}", jobList);
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully received all job locations");
             response.setData(jobList);
@@ -68,7 +68,7 @@ public class StudentServiceImpl implements StudentServices {
         Response response = new Response();
         try {
             List<Job> jobList = jobRepository.findActiveJobs();
-            log.info("The job list is {}", jobList);
+            log.info("The active job list is {}", jobList);
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully received all job locations");
             response.setData(jobList);

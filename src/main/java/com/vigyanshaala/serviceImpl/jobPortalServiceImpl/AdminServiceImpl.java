@@ -467,6 +467,7 @@ public class AdminServiceImpl implements AdminServices {
         job1.setIndustry(job.getIndustry());
         job1.setWorkMode(job.getWorkMode());
         job1.setJobTitle(job.getJobTitle());
+        job1.setIsActive(job.getIsActive());
         job1.setExpiryDate(job.getExpiryDate());
         job1.setJobId(job.getJobId());
         log.info("The job after updating is {}", job1);
