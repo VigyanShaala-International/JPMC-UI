@@ -12,6 +12,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 
@@ -32,12 +33,13 @@ public class UserController {
         log.info(email);
         ResponseEntity responseEntity;
         Response response = new Response();
-        responseEntity = userServices.getRole(email);
+        responseEntity = userServices.getUserInfo(email);
         log.info("responseEntity" + responseEntity);
         response = (Response) responseEntity.getBody();
         log.info("response" + response.getData());
         if(Objects.nonNull(response.getData())) {
             UserRole userRole = (UserRole) response.getData();
+            log.info(String.valueOf(userRole));
             return userRole.getRole();
         }
         return "None";
@@ -71,4 +73,37 @@ public class UserController {
             response.setStatusMessage("Exception occured while adding user"+e);
         }
         return response;
-}}
+}
+
+    @PostMapping(value="/uploadUserFile", consumes="multipart/form-data")
+    @SecurityRequirement(name = "Bearer Authentication")
+    Response fileUpload(@RequestHeader("Authorization") String bearerToken,@RequestParam("file") MultipartFile file)
+    {
+        log.info("inside user file upload controller");
+        Response response=new Response();
+        cacheManager.getCache("role-cache").clear();
+        try{
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)){
+                String email=idToken.getPayload().getEmail();
+                String role=getRole(email);
+                if(role.equalsIgnoreCase("Admin"))
+                {
+                    response = userServices.uploadUserFile(file);
+                }else{
+                    log.error("You need admin role to perform this action");
+                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                    response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                }
+            }
+            else throw new Exception("bearer token is invalid");
+        }
+        catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while adding user"+e);
+        }
+        return response;
+
+    }
+
+}

@@ -18,10 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * The following Entitlement Controller contains all the get call for the entitlement
@@ -61,20 +58,25 @@ public class EntitlementController {
         }
         return idToken;
     }
-    public String getRole(@PathVariable("encryptedEmail") String email) {
+    public List<String> getUserInfo(@PathVariable("encryptedEmail") String email) {
         log.info(email);
+        List<String> lst = new ArrayList<>();
         ResponseEntity responseEntity;
         Response response = new Response();
-        responseEntity = userServices.getRole(email);
+        responseEntity = userServices.getUserInfo(email);
         log.info("responseEntity" + responseEntity);
         response = (Response) responseEntity.getBody();
         log.info("response" + response.getData());
         if(Objects.nonNull(response.getData())) {
             UserRole userRole = (UserRole) response.getData();
-            return userRole.getRole();
+
+            lst.add(userRole.getRole());
+            lst.add(userRole.getCohort());
         }
-        return "None";
+        return lst;
     }
+
+
 
     @GetMapping(value="/getRoles", produces="application/json")
     public ResponseEntity<Response> role(@RequestHeader("Authorization") String bearerToken) throws IOException {
@@ -84,6 +86,8 @@ public class EntitlementController {
         Response response=new Response();
         String name="";
         String email="";
+        String role="";
+        String cohort="";
         try {
             GoogleIdToken idToken=decodeToken(bearerToken);
             if (idToken != null) {
@@ -91,13 +95,16 @@ public class EntitlementController {
                 email=payload.getEmail();
                 name=(String) payload.get("name");
                 log.info("Name and email " + name + " " + email);
-                String role = getRole(email);
+                List<String> lst = getUserInfo(email);
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("Successfully got the role for email "+email);
+                role=lst.get(0);
+                cohort=lst.get(1);
                 Map<String,String>entitlementMap=new HashMap<>();
                 entitlementMap.put("name",name);
                 entitlementMap.put("email",email);
                 entitlementMap.put("role",role);
+                entitlementMap.put("cohort",cohort);
                 response.setData(entitlementMap);
 
             } else {
