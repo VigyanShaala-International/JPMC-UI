@@ -62,5 +62,25 @@ public class StudentServiceImpl implements StudentServices {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Override
+    public ResponseEntity getActiveJobs(){
+        ResponseEntity responseEntity;
+        Response response = new Response();
+        try {
+            List<Job> jobList = jobRepository.findActiveJobs();
+            log.info("The active job list is {}", jobList);
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully received all job locations");
+            response.setData(jobList);
+
+        } catch (Exception e) {
+            log.error("Exception occurred while getting job locations ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while getting job locations " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 
 }
