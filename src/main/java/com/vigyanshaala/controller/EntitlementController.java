@@ -69,9 +69,13 @@ public class EntitlementController {
         log.info("response" + response.getData());
         if(Objects.nonNull(response.getData())) {
             UserRole userRole = (UserRole) response.getData();
-
+            log.info(String.valueOf(userRole));
             lst.add(userRole.getRole());
             lst.add(userRole.getCohort());
+        }
+        else{
+            lst.add("None");
+            lst.add("");
         }
         return lst;
     }
