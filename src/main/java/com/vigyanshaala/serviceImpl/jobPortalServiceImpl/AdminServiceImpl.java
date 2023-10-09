@@ -8,11 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -523,6 +524,7 @@ public class AdminServiceImpl implements AdminServices {
             String documentTypeId = UUID.randomUUID().toString();
             //documentType.setDocumentTypeId(documentTypeId);
             //studentDocument.setStudentDocumentId(studentDocumentId);
+            studentDocument.setFileName(StringUtils.cleanPath(file.getOriginalFilename()));
             studentDocument.setBlobData(file.getBytes());
             studentDocument.setStudentDocumentId(studentDocumentId);
             studentDocument.setDocumentType(file.getContentType());

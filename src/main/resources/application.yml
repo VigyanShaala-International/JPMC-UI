@@ -26,7 +26,7 @@ spring:
   mail:
     host: smtp-mail.outlook.com
     username: careers@VigyanShaala.com
-    password: jjttjhlnxshmjdkb
+    password: Career@VigyanShaala
     properties:
       mail:
         store:
@@ -41,7 +41,7 @@ spring:
 
 client-id: "817648875048-r3k4nf2okkfhtpptm9ulf77idt19tiiu.apps.googleusercontent.com"
 
-emailDuration: "*/20 * * * * *"
+emailDuration: "*/60 * * * * *"
 
 serverCodePath: "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\"
 jobApplicationsZipPath: "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\"
