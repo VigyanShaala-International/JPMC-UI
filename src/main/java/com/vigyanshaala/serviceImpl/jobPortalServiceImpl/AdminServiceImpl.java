@@ -418,14 +418,14 @@ public class AdminServiceImpl implements AdminServices {
     private Response saveJob(Job job, String operation) {
         Response response=new Response();
         //Finding if a job posting already exists
-        Job duplicateJob = jobRepository.findDuplicateJob(job.getCompany().getCompanyName(), job.getJobLocation().getJobLocation(), job.getJobTitle().getJobTitle(), job.getJobDescription());
-        log.info("The job which already exists in the table is {}", duplicateJob);
-        if (duplicateJob != null) {
-            response.setStatusCode(HttpStatus.OK.value());
-            response.setStatusMessage("The job detail already exists in the table");
-            response.setData(duplicateJob);
-            return response;
-        }
+//        Job duplicateJob = jobRepository.findDuplicateJob(job.getCompany().getCompanyName(), job.getJobLocation().getJobLocation(), job.getJobTitle().getJobTitle(), job.getJobDescription());
+//        log.info("The job which already exists in the table is {}", duplicateJob);
+//        if (duplicateJob != null) {
+//            response.setStatusCode(HttpStatus.OK.value());
+//            response.setStatusMessage("The job detail already exists in the table");
+//            response.setData(duplicateJob);
+//            return response;
+//        }
 
         log.info("The job detail received for adding is {}",job);
         try {
@@ -463,7 +463,12 @@ public class AdminServiceImpl implements AdminServices {
         job1.setQuestionnaire(job.getQuestionnaire());
         job1.setJobDescription(job.getJobDescription());
         job1.setJobLocation(job.getJobLocation());
+        job1.setCompany(job.getCompany());
+        job1.setEducationLevel(job.getEducationLevel());
+        job1.setIndustry(job.getIndustry());
+        job1.setWorkMode(job.getWorkMode());
         job1.setJobTitle(job.getJobTitle());
+        job1.setIsActive(job.getIsActive());
         job1.setExpiryDate(job.getExpiryDate());
         job1.setJobId(job.getJobId());
         log.info("The job after updating is {}", job1);

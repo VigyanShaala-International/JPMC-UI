@@ -5,4 +5,6 @@ public interface StudentServices {
     ResponseEntity getAllJobs();
     ResponseEntity getJobByID(String id);
 
+    ResponseEntity getActiveJobs();
+
 }
