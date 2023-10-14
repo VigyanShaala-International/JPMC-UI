@@ -72,9 +72,11 @@ public class EntitlementController {
             log.info(String.valueOf(userRole));
             lst.add(userRole.getRole());
             lst.add(userRole.getCohort());
+            lst.add(userRole.getCompletionStatus());
         }
         else{
             lst.add("None");
+            lst.add("");
             lst.add("");
         }
         return lst;
@@ -92,6 +94,7 @@ public class EntitlementController {
         String email="";
         String role="";
         String cohort="";
+        String completionStatus="";
         try {
             GoogleIdToken idToken=decodeToken(bearerToken);
             if (idToken != null) {
@@ -104,11 +107,13 @@ public class EntitlementController {
                 response.setStatusMessage("Successfully got the role for email "+email);
                 role=lst.get(0);
                 cohort=lst.get(1);
+                completionStatus=lst.get(2);
                 Map<String,String>entitlementMap=new HashMap<>();
                 entitlementMap.put("name",name);
                 entitlementMap.put("email",email);
                 entitlementMap.put("role",role);
                 entitlementMap.put("cohort",cohort);
+                entitlementMap.put("completionStatus",completionStatus);
                 response.setData(entitlementMap);
 
             } else {

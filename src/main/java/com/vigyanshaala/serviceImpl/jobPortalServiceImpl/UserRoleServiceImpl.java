@@ -61,6 +61,7 @@ public class UserRoleServiceImpl implements UserServices {
     public Response uploadUserFile(MultipartFile file) throws IOException {
         log.info("inside upload user file service");
         Response response=new Response();
+
         try {
             File convFile = new File(file.getOriginalFilename());
             convFile.createNewFile();
@@ -79,12 +80,22 @@ public class UserRoleServiceImpl implements UserServices {
                 throw new RuntimeException(e);
             }
             List<UserRole> userRoleList = new ArrayList<>();
+            List<String>columns=records.get(0);
+            if(columns.size()!=4 || !columns.get(0).equalsIgnoreCase("Role") || !columns.get(1).equalsIgnoreCase("Email") || !columns.get(2).equalsIgnoreCase("Cohort") || !columns.get(3).equalsIgnoreCase("Completion Status") )
+            {
+                response.setStatusCode(500);
+                response.setStatusMessage("Failed to upload the csv file. Please check the headers of the file. The headers should be in the following format : Role, Email, Cohort, Completion Status");
+                return response;
+
+            }
             records.remove(0);
             records.forEach(recordList -> {
+
                 UserRole userRole = new UserRole();
                 userRole.setRole(recordList.get(1));
                 userRole.setEmailId(recordList.get(0));
                 userRole.setCohort(recordList.get(2));
+                userRole.setCompletionStatus(recordList.get(3));
                 userRoleList.add(userRole);
             });
             userRoleRepository.saveAll(userRoleList);

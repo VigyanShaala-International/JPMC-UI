@@ -13,6 +13,7 @@ public class UserRole {
 //    @Enumerated(EnumType.STRING)
     private  String role;
     private String cohort;
+    private String completionStatus;
     @Id
     private  String emailId;
 

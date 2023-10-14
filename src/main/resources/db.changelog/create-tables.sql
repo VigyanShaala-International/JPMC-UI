@@ -136,6 +136,7 @@ create table user_role(
  email_id varchar(50),
  role varchar(50),
  cohort varchar(50),
+ completionStatus varchar(50),
  primary key (email_id));
 
 
