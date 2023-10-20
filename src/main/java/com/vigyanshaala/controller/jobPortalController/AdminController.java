@@ -82,13 +82,13 @@ public class AdminController {
                 String email=idToken.getPayload().getEmail();
                 String role = userController.getRole(email);
                 log.info(role);
-                if (role.equalsIgnoreCase("Admin")) {
+                if (role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")) {
                     responseEntity = adminServices.getWorkmodeList();
                 }
                 else {
-                log.error("You need admin role to perform this action");
+                log.error("You need admin or student role to perform this action");
                 response.setStatusCode(HttpStatus.FORBIDDEN.value());
-                response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                response.setStatusMessage("Access is missing, please contact the vigyanshaala team");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
                 }}
             else throw new Exception("bearer token is invalid");
@@ -141,13 +141,13 @@ public class AdminController {
             if(Objects.nonNull(idToken)) {
                 String email=idToken.getPayload().getEmail();
                 String role = userController.getRole(email);
-                if (role.equalsIgnoreCase("Admin")) {
+                if (role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")) {
                     responseEntity = adminServices.getEducationLevelList();
                 }
                 else {
-                    log.error("You need admin role to perform this action");
+                    log.error("You need admin or student role to perform this action");
                     response.setStatusCode(HttpStatus.FORBIDDEN.value());
-                    response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                    response.setStatusMessage("Access is missing, please contact the vigyanshaala team");
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
                 }
             } else throw new Exception ("bearer token is invalid");
@@ -198,13 +198,13 @@ public class AdminController {
             if(Objects.nonNull(idToken)) {
                 String email=idToken.getPayload().getEmail();
                 String role = userController.getRole(email);
-                if (role.equalsIgnoreCase("Admin")) {
+                if (role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")) {
                     responseEntity = adminServices.getIndustryList();
                 }
                 else {
-                log.error("You need admin role to perform this action");
+                log.error("You need admin or student role to perform this action");
                 response.setStatusCode(HttpStatus.FORBIDDEN.value());
-                response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                response.setStatusMessage("Access is missing, please contact the vigyanshaala team");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
                 }
             }else throw new Exception("bearer token is invalid");
@@ -258,13 +258,13 @@ public class AdminController {
                 String email=idToken.getPayload().getEmail();
             String role= userController.getRole(email);
             log.info(role);
-            if(role.equalsIgnoreCase("Admin")) {
+            if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")) {
                 responseEntity = adminServices.getCompanyList();
             }
             else{
-                log.error("You need admin role to perform this action");
+                log.error("You need admin or student role to perform this action");
                 response.setStatusCode(HttpStatus.FORBIDDEN.value());
-                response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                response.setStatusMessage("Access is missing, please contact the vigyanshaala team");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
             }} else throw new Exception("bearer token is invalid");
         }
@@ -317,12 +317,12 @@ public class AdminController {
                 String email=idToken.getPayload().getEmail();
                 String role= userController.getRole(email);
                 log.info(role);
-                if(role.equalsIgnoreCase("Admin")){
+                if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")){
                     responseEntity = adminServices.getJobTitleList();
                 }else{
-                    log.error("You need admin role to perform this action");
+                    log.error("You need admin or student role to perform this action");
                     response.setStatusCode(HttpStatus.FORBIDDEN.value());
-                    response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                    response.setStatusMessage("Access is missing, please contact the vigyanshaala team");
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
                 }}
             else throw new Exception("bearer token is invalid");
@@ -376,12 +376,12 @@ public class AdminController {
                 String email=idToken.getPayload().getEmail();
             String role= userController.getRole(email);
             log.info(role);
-            if(role.equalsIgnoreCase("Admin")) {
+            if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")) {
                 responseEntity = adminServices.getJobLocationList();
             }else{
-                log.error("You need admin role to perform this action");
+                log.error("You need admin or student role to perform this action");
                 response.setStatusCode(HttpStatus.FORBIDDEN.value());
-                response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                response.setStatusMessage("Access is missing, please contact the vigyanshaala team");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
             }}else throw new Exception("bearer token is invalid");
         }
@@ -479,7 +479,7 @@ public class AdminController {
 
 
 
-    @ApiOperation(value = "Fetch job from the job table", notes = "Returns a response with status code 200 for successful fetch from the job table.")
+    @ApiOperation(value = "Fetch filtered job from the job table", notes = "Returns a response with status code 200 for successful fetch from the job table.")
     @GetMapping(value = "/jobs/", produces = "application/json")
     @SecurityRequirement(name = "Bearer Authentication")
     ResponseEntity<Response> getJob(@RequestHeader("Authorization") String bearerToken, JobFilter jobFilter) {
@@ -491,7 +491,7 @@ public class AdminController {
                 String email=idToken.getPayload().getEmail();
                 String role= userController.getRole(email);
                 log.info(role);
-                if(role.equalsIgnoreCase("Admin")){
+                if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")){
                     List<Job> jobList = customJobRepository.fetchAll(jobFilter);
                     if (jobList.size() != 0) {
                         log.info("JobFilter is {} :" + jobFilter);
@@ -509,7 +509,7 @@ public class AdminController {
                 }else{
                     log.error("You need admin role to perform this action");
                     response.setStatusCode(HttpStatus.FORBIDDEN.value());
-                    response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                    response.setStatusMessage("Access is missing, please contact the vigyanshaala team");
                     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
                 }
             }else throw new Exception("bearer token is invalid");
@@ -534,7 +534,7 @@ public class AdminController {
                 String email = idToken.getPayload().getEmail();
                 String role = userController.getRole(email);
                 log.info(role);
-                if (role.equalsIgnoreCase("Admin")) {
+                if (role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")) {
 //
                     log.info("The job application is : {}", jobApplication);
                     ObjectMapper objectMapper = new ObjectMapper();
@@ -542,9 +542,9 @@ public class AdminController {
                     JobApplication jobApplication1 = objectMapper.readValue(jobApplication, JobApplication.class);
                     response = adminServices.createJobApplication(jobApplication1, files);
                 } else {
-                    log.error("You need admin role to perform this action");
+                    log.error("You need admin or student role to perform this action");
                     response.setStatusCode(HttpStatus.FORBIDDEN.value());
-                    response.setStatusMessage("Admin role is missing, please contact the vigyanshaala team");
+                    response.setStatusMessage("Access is missing, please contact the vigyanshaala team");
                 }
             }else throw new Exception("bearer token is invalid");
         } catch (Exception e) {

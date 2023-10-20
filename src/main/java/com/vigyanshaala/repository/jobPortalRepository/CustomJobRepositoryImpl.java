@@ -70,6 +70,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
         }
 
         predicates.add(criteriaBuilder.greaterThanOrEqualTo(jobTable.get("expiryDate"), LocalDate.now()));
+        predicates.add(criteriaBuilder.equal(jobTable.get("isActive"), "Y"));
 
         return entityManager.createQuery(query.select(jobTable)
                 .where(predicates.toArray(new Predicate[]{})).distinct(true).orderBy((criteriaBuilder.desc(jobTable.get("postingDate"))))).getResultList();

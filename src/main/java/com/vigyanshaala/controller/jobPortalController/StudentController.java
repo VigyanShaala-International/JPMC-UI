@@ -88,4 +88,36 @@ public class StudentController {
         }
         return responseEntity;
     }
+
+    @ApiOperation(value = "Get all active jobs from the job table without a filter", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all jobs.")
+    @GetMapping(value = "/job/active", produces = "application/json")
+    @SecurityRequirement(name = "Bearer Authentication")
+    ResponseEntity<Response> getActiveJobs(@RequestHeader("Authorization") String bearerToken) {
+        ResponseEntity responseEntity;
+        Response response = new Response();
+        try{
+            GoogleIdToken idToken=entitlementController.decodeToken(bearerToken);
+            if(Objects.nonNull(idToken)){
+                String email= idToken.getPayload().getEmail();
+                String role= userController.getRole(email);
+                log.info(role);
+                if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")) {
+                    responseEntity = studentServices.getActiveJobs();
+                }else{
+                    log.error("You need admin or student role to perform this action");
+                    response.setStatusCode(HttpStatus.FORBIDDEN.value());
+                    response.setStatusMessage("Student/Admin role is missing, please contact the vigyanshaala team");
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                }
+            }
+            else throw new Exception("bearer token is invalid");
+        }
+        catch(Exception e){
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred in getAllJobs controller : "+e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+        return responseEntity;
+
+    }
 }
