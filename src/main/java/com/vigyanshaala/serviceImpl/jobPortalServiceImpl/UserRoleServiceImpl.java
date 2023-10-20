@@ -81,10 +81,10 @@ public class UserRoleServiceImpl implements UserServices {
             }
             List<UserRole> userRoleList = new ArrayList<>();
             List<String>columns=records.get(0);
-            if(columns.size()!=4 || !columns.get(0).equalsIgnoreCase("Role") || !columns.get(1).equalsIgnoreCase("Email") || !columns.get(2).equalsIgnoreCase("Cohort") || !columns.get(3).equalsIgnoreCase("Completion Status") )
+            if(columns.size()!=5 || !columns.get(0).equalsIgnoreCase("Role") || !columns.get(1).equalsIgnoreCase("Email") || !columns.get(2).equalsIgnoreCase("Cohort") || !columns.get(3).equalsIgnoreCase("Completion Status") || columns.get(4).equalsIgnoreCase("Name") )
             {
                 response.setStatusCode(500);
-                response.setStatusMessage("Failed to upload the csv file. Please check the headers of the file. The headers should be in the following format : Role, Email, Cohort, Completion Status");
+                response.setStatusMessage("Failed to upload the csv file. Please check the headers of the file. The headers should be in the following format : Role, Email, Cohort, Completion Status, Name");
                 return response;
 
             }
@@ -92,10 +92,11 @@ public class UserRoleServiceImpl implements UserServices {
             records.forEach(recordList -> {
 
                 UserRole userRole = new UserRole();
-                userRole.setRole(recordList.get(1));
-                userRole.setEmailId(recordList.get(0));
+                userRole.setRole(recordList.get(0));
+                userRole.setEmailId(recordList.get(1));
                 userRole.setCohort(recordList.get(2));
                 userRole.setCompletionStatus(recordList.get(3));
+                userRole.setName(recordList.get(4));
                 userRoleList.add(userRole);
             });
             userRoleRepository.saveAll(userRoleList);

@@ -133,6 +133,7 @@ primary key(questionnaire_id)
 );
 
 create table user_role(
+ name varchar(50),
  email_id varchar(50),
  role varchar(50),
  cohort varchar(50),

@@ -73,6 +73,7 @@ public class EntitlementController {
             lst.add(userRole.getRole());
             lst.add(userRole.getCohort());
             lst.add(userRole.getCompletionStatus());
+            lst.add(userRole.getName());
         }
         else{
             lst.add("None");
@@ -100,7 +101,6 @@ public class EntitlementController {
             if (idToken != null) {
                 GoogleIdToken.Payload payload = idToken.getPayload();
                 email=payload.getEmail();
-                name=(String) payload.get("name");
                 log.info("Name and email " + name + " " + email);
                 List<String> lst = getUserInfo(email);
                 response.setStatusCode(HttpStatus.OK.value());
@@ -108,6 +108,7 @@ public class EntitlementController {
                 role=lst.get(0);
                 cohort=lst.get(1);
                 completionStatus=lst.get(2);
+                name=lst.get(3);
                 Map<String,String>entitlementMap=new HashMap<>();
                 entitlementMap.put("name",name);
                 entitlementMap.put("email",email);
