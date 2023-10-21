@@ -7,11 +7,10 @@ spring:
             client-id: 817648875048-r3k4nf2okkfhtpptm9ulf77idt19tiiu.apps.googleusercontent.com
             client-secret: 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
 
-  h2:
-    console:
-      enabled: true
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:postgresql://jpmcvigyanshaaladb.ccxfs1ndk8yn.eu-north-1.rds.amazonaws.com:5432/jpmcvigyanshaaladb
+    username: postgres
+    password: postgres
 
   liquibase:
     enabled: true
@@ -21,12 +20,15 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
       enable_lazy_load_no_trans: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   mail:
     host: smtp-mail.outlook.com
     username: careers@VigyanShaala.com
-    password: jjttjhlnxshmjdkb
+    password: Career@VigyanShaala
     properties:
       mail:
         store:
@@ -41,7 +43,7 @@ spring:
 
 client-id: "817648875048-r3k4nf2okkfhtpptm9ulf77idt19tiiu.apps.googleusercontent.com"
 
-emailDuration: "*/20 * * * * *"
+emailDuration: "0 0 20 ? * 1/3"
 
-serverCodePath: "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\"
-jobApplicationsZipPath: "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\"
+serverCodePath: "/home/ec2-user/"
+jobApplicationsZipPath: "/home/ec2-user/JobApplications/"

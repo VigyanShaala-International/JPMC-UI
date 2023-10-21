@@ -26,7 +26,7 @@ This README would normally document whatever steps are necessary to get your app
 
 ### Important Links ###
 
-* Swagger link : http://localhost:8080/swagger-ui/index.html
-* H2 Console link :http://localhost:8080/h2-console
+* Swagger link : http://ec2-51-20-92-209.eu-north-1.compute.amazonaws.com:8080/swagger-ui/index.html
+
 
 
