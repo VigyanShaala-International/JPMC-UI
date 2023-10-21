@@ -9,6 +9,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.vigyanshaala.entity.user.UserRole;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.UserServices;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,6 +80,7 @@ public class EntitlementController {
             lst.add("None");
             lst.add("");
             lst.add("");
+            lst.add("");
         }
         return lst;
     }
@@ -86,6 +88,7 @@ public class EntitlementController {
 
 
     @GetMapping(value="/getRoles", produces="application/json")
+    @SecurityRequirement(name="Bearer Authentication")
     public ResponseEntity<Response> role(@RequestHeader("Authorization") String bearerToken) throws IOException {
         log.info("client id "+clientId);
         log.info("bearer token "+bearerToken);
