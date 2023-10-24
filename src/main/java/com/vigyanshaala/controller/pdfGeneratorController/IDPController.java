@@ -17,7 +17,7 @@ import java.util.Objects;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/pdf/swot")
+@RequestMapping("/pdf/idp")
 @Slf4j
 public class IDPController {
     @Autowired

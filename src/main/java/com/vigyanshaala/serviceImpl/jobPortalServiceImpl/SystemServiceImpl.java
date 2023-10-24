@@ -150,6 +150,7 @@ public class SystemServiceImpl implements SystemServices {
         List<String> jobIdList = new ArrayList<>();
         List<String> studentIDList = new ArrayList<>();
         List<String> studentIDs = new ArrayList<>();
+        List<List<String>> separatedSIDList = new ArrayList<>();
         Map<String, List<String>> jobIdtoStudentIdMap = new HashMap<>();
         try {
             List<JobApplication> jobApplicationList = jobApplicationRepository.findByisJobApplicationPostedToHr(false);
@@ -168,14 +169,22 @@ public class SystemServiceImpl implements SystemServices {
                 }
             }
 
-
+            int i = 1;
             for (String s : jobIdList) {
                 studentIDs = new ArrayList<>();
                 for (JobApplication jobApplication : jobApplicationList) {
                     if (jobApplication.getJob().getJobId().equals(s))
                         studentIDs.add(jobApplication.getStudentId());
                 }
-                jobIdtoStudentIdMap.put(s, studentIDs);
+                if (studentIDs.size() > 4) {
+                    separatedSIDList = separate(studentIDs, 4);
+                    for (List<String> list : separatedSIDList) {
+                        jobIdtoStudentIdMap.put(s + "-set" + String.valueOf(i), list);
+                        i++;
+                    }
+                } else {
+                    jobIdtoStudentIdMap.put(s, studentIDs);
+                }
 
             }
 
@@ -198,178 +207,194 @@ public class SystemServiceImpl implements SystemServices {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    static <T> List<List<T>> separate(List<T> path, final int size) {
+        List<List<T>> separated = new ArrayList<>();
+
+        for (int i = 0; i < path.size(); i += size) {
+            separated.add(new ArrayList<>(path.subList(i, Math.min(path.size(), i + size))));
+        }
+        return separated;
+    }
+
 
     public void generate(String jobId, List<String> studentIds) throws DocumentException, IOException {
 
         try {
-            Job job = jobRepository.findByJobId(jobId);
-            File directory = new File(jobId);
-            if (!directory.exists()) {
-                directory.mkdir();
-            }
-            if (studentIds != null) {
-                for (String s : studentIds) {
-                    List<JobApplication> jobApplications = jobApplicationRepository.findBystudentId(s);
-                    File studentFolder = new File(directory + "\\" + s);
-                    if (!studentFolder.exists()) {
-                        studentFolder.mkdir();
+            {
+                {
+                    Job job = jobRepository.findByJobId(jobId.split("-")[0]);
+                    File directory = new File(jobId);
+                    if (!directory.exists()) {
+                        directory.mkdir();
                     }
-                    if (jobApplications != null) {
-                        for (JobApplication j : jobApplications) {
-                            if (j.getJob().getJobId().equals(jobId)) {
-                                Document document = new Document(PageSize.A4);
-                                String fileName = studentFolder + "\\" + s + "-jobApplication";
-                                fileName = fileName.replaceAll("[-+.^:,]", "").concat(".pdf");
-                                String zipFileName = fileName.concat(".zip");
-                                PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(fileName));
-                                writer.setCloseStream(false);
-                                // Opening the created document to modify it
-                                document.open();
+                    if (studentIds != null) {
+                        for (String s : studentIds) {
+                            List<JobApplication> jobApplications = jobApplicationRepository.findBystudentId(s);
+                            File studentFolder = new File(directory + "\\" + s);
+                            if (!studentFolder.exists()) {
+                                studentFolder.mkdir();
+                            }
+                            if (jobApplications != null) {
+                                for (JobApplication j : jobApplications) {
+                                    if (j.getJob().getJobId().equals(jobId.split("-")[0])) {
+                                        Document document = new Document(PageSize.A4);
+                                        String fileName = studentFolder + "\\" + "ApplicationResponse.pdf";
+                                        //fileName = fileName.replaceAll("[-+.^:,]", "").concat(".pdf");
+                                        String zipFileName = fileName.concat(".zip");
+                                        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(fileName));
+                                        writer.setCloseStream(false);
+                                        // Opening the created document to modify it
+                                        document.open();
 
-                                // Creating font
-                                // Setting font style and size
-                                Font fontTitle = FontFactory.getFont(FontFactory.TIMES_ROMAN);
-                                fontTitle.setSize(20);
+                                        // Creating font
+                                        // Setting font style and size
+                                        Font fontTitle = FontFactory.getFont(FontFactory.TIMES_ROMAN);
+                                        fontTitle.setSize(20);
 
-                                // Creating paragraph
-                                Paragraph paragraph = new Paragraph("Job application", fontTitle);
+                                        // Creating paragraph
+                                        Paragraph paragraph = new Paragraph("Job application", fontTitle);
 
-                                // Aligning the paragraph in document
-                                paragraph.setAlignment(Paragraph.ALIGN_CENTER);
+                                        // Aligning the paragraph in document
+                                        paragraph.setAlignment(Paragraph.ALIGN_CENTER);
 
-                                // Adding the created paragraph in document
-                                document.add(paragraph);
+                                        // Adding the created paragraph in document
+                                        document.add(paragraph);
 
-                                // Creating a table of 3 columns
-                                PdfPTable table = new PdfPTable(2);
+                                        // Creating a table of 3 columns
+                                        PdfPTable table = new PdfPTable(2);
 
-                                // Setting width of table, its columns and spacing
-                                table.setWidthPercentage(100f);
-                                //table.setWidths(new int[] { 3, 3, 3 });
-                                table.setSpacingBefore(5);
+                                        // Setting width of table, its columns and spacing
+                                        table.setWidthPercentage(100f);
+                                        //table.setWidths(new int[] { 3, 3, 3 });
+                                        table.setSpacingBefore(5);
 
-                                // Create Table Cells for table header
-                                PdfPCell cell = new PdfPCell();
+                                        // Create Table Cells for table header
+                                        PdfPCell cell = new PdfPCell();
 
-                                // Setting the background color and padding
-                                cell.setBackgroundColor(CMYKColor.DARK_GRAY);
-                                cell.setPadding(5);
+                                        // Setting the background color and padding
+                                        cell.setBackgroundColor(CMYKColor.DARK_GRAY);
+                                        cell.setPadding(5);
 
-                                // Creating font
-                                // Setting font style and size
-                                Font font = FontFactory.getFont(FontFactory.TIMES_ROMAN);
-                                font.setColor(CMYKColor.WHITE);
+                                        // Creating font
+                                        // Setting font style and size
+                                        Font font = FontFactory.getFont(FontFactory.TIMES_ROMAN);
+                                        font.setColor(CMYKColor.WHITE);
 
-                                // Adding headings in the created table cell/ header
-                                // Adding Cell to table
-                                cell.setPhrase(new Phrase("Job ID", font));
-                                table.addCell(cell);
-                                table.addCell(String.valueOf(j.getJobApplicationId()));
+                                        // Adding headings in the created table cell/ header
+                                        // Adding Cell to table
+                                        cell.setPhrase(new Phrase("Job ID", font));
+                                        table.addCell(cell);
+                                        table.addCell(String.valueOf(j.getJobApplicationId()));
 
-                                cell.setPhrase(new Phrase("Company", font));
-                                table.addCell(cell);
-                                table.addCell(String.valueOf(j.getJob().getCompany().getCompanyName()));
+                                        cell.setPhrase(new Phrase("Company", font));
+                                        table.addCell(cell);
+                                        table.addCell(String.valueOf(j.getJob().getCompany().getCompanyName()));
 
-                                cell.setPhrase(new Phrase("Job Title", font));
-                                table.addCell(cell);
-                                table.addCell(String.valueOf(j.getJob().getJobTitle().getJobTitle()));
+                                        cell.setPhrase(new Phrase("Job Title", font));
+                                        table.addCell(cell);
+                                        table.addCell(String.valueOf(j.getJob().getJobTitle().getJobTitle()));
 
-                                cell.setPhrase(new Phrase("Job Location", font));
-                                table.addCell(cell);
-                                table.addCell(String.valueOf(j.getJob().getJobLocation().getJobLocation()));
+                                        cell.setPhrase(new Phrase("Job Location", font));
+                                        table.addCell(cell);
+                                        table.addCell(String.valueOf(j.getJob().getJobLocation().getJobLocation()));
 
-                                cell.setPhrase(new Phrase("Job description", font));
-                                table.addCell(cell);
-                                table.addCell(String.valueOf(j.getJob().getJobDescription()));
+                                        cell.setPhrase(new Phrase("Job description", font));
+                                        table.addCell(cell);
+                                        table.addCell(String.valueOf(j.getJob().getJobDescription()));
 
-                                if (j.getJob().getQuestionnaire().getQuestion1() != "" || j.getJob().getQuestionnaire().getQuestion1() != null) {
-                                    cell.setPhrase(new Phrase("Question 1", font));
-                                    table.addCell(cell);
-                                    table.addCell(String.valueOf(j.getJob().getQuestionnaire().getQuestion1()));
+                                        if (j.getJob().getQuestionnaire().getQuestion1() != "" || j.getJob().getQuestionnaire().getQuestion1() != null) {
+                                            cell.setPhrase(new Phrase("Question 1", font));
+                                            table.addCell(cell);
+                                            table.addCell(String.valueOf(j.getJob().getQuestionnaire().getQuestion1()));
 
-                                    cell.setPhrase(new Phrase("Answer 1", font));
-                                    table.addCell(cell);
-                                    table.addCell(String.valueOf(j.getAnswer1()));
-                                }
+                                            cell.setPhrase(new Phrase("Answer 1", font));
+                                            table.addCell(cell);
+                                            table.addCell(String.valueOf(j.getAnswer1()));
+                                        }
 
-                                if (j.getJob().getQuestionnaire().getQuestion2() != "" || j.getJob().getQuestionnaire().getQuestion2() != null) {
-                                    cell.setPhrase(new Phrase("Question 2", font));
-                                    table.addCell(cell);
-                                    table.addCell(String.valueOf(j.getJob().getQuestionnaire().getQuestion2()));
+                                        if (j.getJob().getQuestionnaire().getQuestion2() != "" || j.getJob().getQuestionnaire().getQuestion2() != null) {
+                                            cell.setPhrase(new Phrase("Question 2", font));
+                                            table.addCell(cell);
+                                            table.addCell(String.valueOf(j.getJob().getQuestionnaire().getQuestion2()));
 
-                                    cell.setPhrase(new Phrase("Answer 2", font));
-                                    table.addCell(cell);
-                                    table.addCell(String.valueOf(j.getAnswer2()));
-                                }
+                                            cell.setPhrase(new Phrase("Answer 2", font));
+                                            table.addCell(cell);
+                                            table.addCell(String.valueOf(j.getAnswer2()));
+                                        }
 
-                                if (j.getJob().getQuestionnaire().getQuestion3() != "" || j.getJob().getQuestionnaire().getQuestion3() != null) {
-                                    cell.setPhrase(new Phrase("Question 3", font));
-                                    table.addCell(cell);
-                                    table.addCell(String.valueOf(j.getJob().getQuestionnaire().getQuestion3()));
+                                        if (j.getJob().getQuestionnaire().getQuestion3() != "" || j.getJob().getQuestionnaire().getQuestion3() != null) {
+                                            cell.setPhrase(new Phrase("Question 3", font));
+                                            table.addCell(cell);
+                                            table.addCell(String.valueOf(j.getJob().getQuestionnaire().getQuestion3()));
 
-                                    cell.setPhrase(new Phrase("Answer 3", font));
-                                    table.addCell(cell);
-                                    table.addCell(String.valueOf(j.getAnswer3()));
-                                }
+                                            cell.setPhrase(new Phrase("Answer 3", font));
+                                            table.addCell(cell);
+                                            table.addCell(String.valueOf(j.getAnswer3()));
+                                        }
 
-                                if (j.getJob().getQuestionnaire().getQuestion4() != "" || j.getJob().getQuestionnaire().getQuestion4() != null) {
-                                    cell.setPhrase(new Phrase("Question 4", font));
-                                    table.addCell(cell);
-                                    table.addCell(String.valueOf(j.getJob().getQuestionnaire().getQuestion4()));
+                                        if (j.getJob().getQuestionnaire().getQuestion4() != "" || j.getJob().getQuestionnaire().getQuestion4() != null) {
+                                            cell.setPhrase(new Phrase("Question 4", font));
+                                            table.addCell(cell);
+                                            table.addCell(String.valueOf(j.getJob().getQuestionnaire().getQuestion4()));
 
-                                    cell.setPhrase(new Phrase("Answer 4", font));
-                                    table.addCell(cell);
-                                    table.addCell(String.valueOf(j.getAnswer4()));
-                                }
+                                            cell.setPhrase(new Phrase("Answer 4", font));
+                                            table.addCell(cell);
+                                            table.addCell(String.valueOf(j.getAnswer4()));
+                                        }
 
-                                if (j.getJob().getQuestionnaire().getQuestion5() != "" || j.getJob().getQuestionnaire().getQuestion5() != null) {
-                                    cell.setPhrase(new Phrase("Question 5", font));
-                                    table.addCell(cell);
-                                    table.addCell(String.valueOf(j.getJob().getQuestionnaire().getQuestion5()));
+                                        if (j.getJob().getQuestionnaire().getQuestion5() != "" || j.getJob().getQuestionnaire().getQuestion5() != null) {
+                                            cell.setPhrase(new Phrase("Question 5", font));
+                                            table.addCell(cell);
+                                            table.addCell(String.valueOf(j.getJob().getQuestionnaire().getQuestion5()));
 
-                                    cell.setPhrase(new Phrase("Answer 5", font));
-                                    table.addCell(cell);
-                                    table.addCell(String.valueOf(j.getAnswer5()));
-                                }
-                                j.setIsJobApplicationPostedToHr(Boolean.TRUE);
-                                jobApplicationRepository.save(j);
-                                table.addCell(new Phrase());
-                                table.addCell(new Phrase());
+                                            cell.setPhrase(new Phrase("Answer 5", font));
+                                            table.addCell(cell);
+                                            table.addCell(String.valueOf(j.getAnswer5()));
+                                        }
+                                        j.setIsJobApplicationPostedToHr(Boolean.TRUE);
+                                        jobApplicationRepository.save(j);
+                                        table.addCell(new Phrase());
+                                        table.addCell(new Phrase());
 
 
-                                // Adding the created table to document
-                                document.add(table);
+                                        // Adding the created table to document
+                                        document.add(table);
 
-                                // Closing the document
-                                document.close();
+                                        // Closing the document
+                                        document.close();
 
-                                List<StudentDocument> studentDocumentList = j.getStudentDocumentList();
-                                for (StudentDocument studentDocument : studentDocumentList) {
-                                    File fileStructure = new File(studentFolder + "\\" + studentDocument.getStudentDocumentId() + ".pdf");
-                                    if (!fileStructure.exists()) {
-                                        fileStructure.createNewFile();
+                                        List<StudentDocument> studentDocumentList = j.getStudentDocumentList();
+                                        for (StudentDocument studentDocument : studentDocumentList) {
+                                            File fileStructure = new File(studentFolder + "\\" + studentDocument.getFileName() + ".pdf");
+                                            if (!fileStructure.exists()) {
+                                                fileStructure.createNewFile();
 
-                                        OutputStream out = new FileOutputStream(fileStructure);
+                                                OutputStream out = new FileOutputStream(fileStructure);
 
-                                        out.write(studentDocument.getBlobData());
-                                        out.close();
+                                                out.write(studentDocument.getBlobData());
+                                                out.close();
+                                            }
+                                        }
+
                                     }
                                 }
 
                             }
+                            // Zipping folders
+                            //zip("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\" + jobId, "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId + ".zip");
+
+                            //sendMailWithAttachment(details);
                         }
+                        zip(serverCodePath + jobId, jobApplicationsZipPath + jobId + ".zip");
+                        EmailDetails details = new EmailDetails();
+                        details.setSubject("Details of job applications");
+                        details.setRecipient(job.getHrEmail());
+                        details.setMsgBody("Hi, PFA responses to the list of responses for the job applications you have posted. Best regards, Team VigyanShaala ");
+                        //details.setAttachment("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId + ".zip");
+                        details.setAttachment(jobApplicationsZipPath + jobId + ".zip");
+                        sendMailWithAttachment(details);
 
                     }
-                    // Zipping folders
-                    //zip("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\" + jobId, "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId + ".zip");
-                    zip(serverCodePath + jobId, jobApplicationsZipPath + jobId + ".zip");
-                    EmailDetails details = new EmailDetails();
-                    details.setSubject("Details of job applications");
-                    details.setRecipient(job.getHrEmail());
-                    details.setMsgBody("Hi, PFA responses to the list of job applications you have posted. Best regards, Team VigyanShaala ");
-                    //details.setAttachment("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId + ".zip");
-                    details.setAttachment(jobApplicationsZipPath + jobId + ".zip");
-                    sendMailWithAttachment(details);
                 }
             }
         } catch (FileNotFoundException ex) {
