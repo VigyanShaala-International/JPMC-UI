@@ -1,5 +1,6 @@
 package com.vigyanshaala.serviceImpl.jobPortalServiceImpl;
 
+import com.google.common.io.Files;
 import com.vigyanshaala.entity.jobPortalEntity.*;
 import com.vigyanshaala.repository.jobPortalRepository.*;
 import com.vigyanshaala.response.Response;
@@ -531,6 +532,7 @@ public class AdminServiceImpl implements AdminServices {
             //studentDocument.setStudentDocumentId(studentDocumentId);
             studentDocument.setFileName(StringUtils.cleanPath(file.getOriginalFilename()));
             studentDocument.setBlobData(file.getBytes());
+            studentDocument.setFileExtension(Files.getFileExtension(file.getOriginalFilename()));
             studentDocument.setStudentDocumentId(studentDocumentId);
             studentDocument.setDocumentType(file.getContentType());
             studentDocument.setJobApplication(jobApplication);
