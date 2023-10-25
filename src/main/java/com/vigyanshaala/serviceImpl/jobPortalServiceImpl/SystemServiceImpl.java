@@ -17,6 +17,7 @@ import com.vigyanshaala.service.jobPortalService.SystemServices;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.codehaus.plexus.util.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -230,6 +231,9 @@ public class SystemServiceImpl implements SystemServices {
                     File directory = new File(jobId);
                     if (!directory.exists()) {
                         directory.mkdir();
+                    } else {
+                        FileUtils.forceDelete(directory);
+                        FileUtils.forceMkdir(directory);
                     }
                     if (studentIds != null) {
                         for (String s : studentIds) {
