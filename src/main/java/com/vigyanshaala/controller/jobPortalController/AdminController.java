@@ -720,7 +720,8 @@ public class AdminController {
                 log.info(role);
                 if (role.equalsIgnoreCase("Admin")) {
                     adminServices.uploadFile(file);
-                } else {
+                }
+                else {
                     log.error("You need admin role to perform this action");
                 }
             } else throw new Exception("bearer token is invalid");
