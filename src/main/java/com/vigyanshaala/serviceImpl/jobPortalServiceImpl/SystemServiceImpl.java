@@ -17,6 +17,7 @@ import com.vigyanshaala.service.jobPortalService.SystemServices;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.codehaus.plexus.util.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -218,14 +219,21 @@ public class SystemServiceImpl implements SystemServices {
 
 
     public void generate(String jobId, List<String> studentIds) throws DocumentException, IOException {
-
+        String jobId1 = "";
         try {
             {
                 {
-                    Job job = jobRepository.findByJobId(jobId.split("-")[0]);
+                    if (jobId.contains("-set"))
+                        jobId1 = jobId.split("-set")[0];
+                    else
+                        jobId1 = jobId;
+                    Job job = jobRepository.findByJobId(jobId1);
                     File directory = new File(jobId);
                     if (!directory.exists()) {
                         directory.mkdir();
+                    } else {
+                        FileUtils.forceDelete(directory);
+                        FileUtils.forceMkdir(directory);
                     }
                     if (studentIds != null) {
                         for (String s : studentIds) {
@@ -236,7 +244,7 @@ public class SystemServiceImpl implements SystemServices {
                             }
                             if (jobApplications != null) {
                                 for (JobApplication j : jobApplications) {
-                                    if (j.getJob().getJobId().equals(jobId.split("-")[0])) {
+                                    if (j.getJob().getJobId().equals(jobId1)) {
                                         Document document = new Document(PageSize.A4);
                                         String fileName = studentFolder + "\\" + "ApplicationResponse.pdf";
                                         //fileName = fileName.replaceAll("[-+.^:,]", "").concat(".pdf");
@@ -406,6 +414,10 @@ public class SystemServiceImpl implements SystemServices {
     }
 
     public static void zip(final String sourcNoteseDirPath, final String zipFilePath) throws IOException {
+        Path p1 = Path.of(zipFilePath);
+        // Delete zip if it already exists
+        if (Files.exists(p1))
+            Files.delete(p1);
         Path zipFile = Files.createFile(Paths.get(zipFilePath));
 
         Path sourceDirPath = Paths.get(sourcNoteseDirPath);
