@@ -9,6 +9,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.vigyanshaala.entity.user.UserRole;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.UserServices;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,10 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * The following Entitlement Controller contains all the get call for the entitlement
@@ -61,22 +59,37 @@ public class EntitlementController {
         }
         return idToken;
     }
-    public String getRole(@PathVariable("encryptedEmail") String email) {
+    public List<String> getUserInfo(@PathVariable("encryptedEmail") String email) {
         log.info(email);
+        List<String> lst = new ArrayList<>();
         ResponseEntity responseEntity;
         Response response = new Response();
-        responseEntity = userServices.getRole(email);
+        responseEntity = userServices.getUserInfo(email);
         log.info("responseEntity" + responseEntity);
         response = (Response) responseEntity.getBody();
         log.info("response" + response.getData());
         if(Objects.nonNull(response.getData())) {
             UserRole userRole = (UserRole) response.getData();
-            return userRole.getRole();
+            log.info(String.valueOf(userRole));
+            lst.add(userRole.getRole());
+            lst.add(userRole.getCohort());
+            lst.add(userRole.getCompletionStatus());
+            lst.add(userRole.getName());
         }
-        return "None";
+        else{
+            lst.add("None");
+            lst.add("");
+            lst.add("");
+
+            lst.add("");
+        }
+        return lst;
     }
 
+
+
     @GetMapping(value="/getRoles", produces="application/json")
+    @SecurityRequirement(name="Bearer Authentication")
     public ResponseEntity<Response> role(@RequestHeader("Authorization") String bearerToken) throws IOException {
         log.info("client id "+clientId);
         log.info("bearer token "+bearerToken);
@@ -84,20 +97,28 @@ public class EntitlementController {
         Response response=new Response();
         String name="";
         String email="";
+        String role="";
+        String cohort="";
+        String completionStatus="";
         try {
             GoogleIdToken idToken=decodeToken(bearerToken);
             if (idToken != null) {
                 GoogleIdToken.Payload payload = idToken.getPayload();
                 email=payload.getEmail();
-                name=(String) payload.get("name");
                 log.info("Name and email " + name + " " + email);
-                String role = getRole(email);
+                List<String> lst = getUserInfo(email);
                 response.setStatusCode(HttpStatus.OK.value());
                 response.setStatusMessage("Successfully got the role for email "+email);
+                role=lst.get(0);
+                cohort=lst.get(1);
+                completionStatus=lst.get(2);
+                name=lst.get(3);
                 Map<String,String>entitlementMap=new HashMap<>();
                 entitlementMap.put("name",name);
                 entitlementMap.put("email",email);
                 entitlementMap.put("role",role);
+                entitlementMap.put("cohort",cohort);
+                entitlementMap.put("completionStatus",completionStatus);
                 response.setData(entitlementMap);
 
             } else {
