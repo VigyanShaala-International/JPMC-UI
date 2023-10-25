@@ -37,12 +37,13 @@ public class StudentDocument {
         this.blobData = blobData;
     }
 
-    public StudentDocument(String studentDocumentId, JobApplication jobApplication, String documentType, byte[] blobData, String fileName) {
+    public StudentDocument(String studentDocumentId, JobApplication jobApplication, String documentType, byte[] blobData, String fileName, String fileExtension) {
         this.studentDocumentId = studentDocumentId;
         this.jobApplication = jobApplication;
         this.documentType = documentType;
         this.blobData = blobData;
         this.fileName = fileName;
+        this.fileExtension = fileExtension;
     }
 
     public StudentDocument() {
@@ -65,4 +66,14 @@ public class StudentDocument {
     }
 
     private String fileName;
+
+    public String getFileExtension() {
+        return fileExtension;
+    }
+
+    public void setFileExtension(String fileExtension) {
+        this.fileExtension = fileExtension;
+    }
+
+    private String fileExtension;
 }

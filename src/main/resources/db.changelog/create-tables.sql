@@ -162,6 +162,7 @@ student_document_id varchar(50),
 job_application_id varchar(50),
 document_type varchar(50),
 file_name varchar(100),
+file_extension varchar(10),
 blob_data BLOB,
 primary key(student_document_id),
 constraint job_application_id foreign key (job_application_id) references job_application(job_application_id)
