@@ -26,7 +26,7 @@ This README would normally document whatever steps are necessary to get your app
 
 ### Important Links ###
 
-* Swagger link : http://ec2-51-20-92-209.eu-north-1.compute.amazonaws.com:8080/swagger-ui/index.html
+* Swagger link : https://api.vigyanshaala.org/swagger-ui/index.html
 
 
 
