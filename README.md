@@ -26,7 +26,7 @@ This README would normally document whatever steps are necessary to get your app
 
 ### Important Links ###
 
-* Swagger link : http://localhost:8080/swagger-ui/index.html
-* H2 Console link :http://localhost:8080/h2-console
+* Swagger link : https://api.vigyanshaala.org/swagger-ui/index.html
+
 
 
