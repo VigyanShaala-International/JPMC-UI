@@ -44,6 +44,6 @@ spring:
 client-id: "817648875048-r3k4nf2okkfhtpptm9ulf77idt19tiiu.apps.googleusercontent.com"
 
 emailDuration: "0 0 20 ? * 1/3"
+expiredJob: "0 0 * * FRI"
 
-serverCodePath: "/home/ubuntu/"
-jobApplicationsZipPath: "/home/ubuntu/JobApplications/"
+

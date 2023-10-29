@@ -53,7 +53,8 @@ public class SystemServiceImpl implements SystemServices {
     private String jobApplicationsZipPath;
     @Value("${emailDuration}")
     public String emailDuration;
-
+    @Value("${expiredJob}")
+    public String expiredJob;
     @Value("${spring.mail.username}")
     private String sender;
 
@@ -68,6 +69,7 @@ public class SystemServiceImpl implements SystemServices {
     }
 
     @Override
+    @Scheduled(cron = "${expiredJob}")
     public ResponseEntity deleteExpiredJobs(String date) {
 //        ArrayList<Job> results = null;
         Response response = new Response();
@@ -486,6 +488,28 @@ public class SystemServiceImpl implements SystemServices {
         } catch (Exception e) {
             log.error("Exception occurred while mailing job applications to HR " + e);
         }
+    }
+
+    public ResponseEntity deleteDirectory(File directoryToBeDeleted) {
+        Response response = new Response();
+        try{
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirectory(file);
+            }
+        }
+        boolean result = directoryToBeDeleted.delete();
+        log.info("Successfully deleted files");
+        response.setStatusCode(HttpStatus.OK.value());
+        response.setStatusMessage("Successfully deleted files");
+    } catch (Exception e) {
+        log.error("Exception occurred while deleting files ", e);
+        response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setStatusMessage("Exception occurred while deleting files " + e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

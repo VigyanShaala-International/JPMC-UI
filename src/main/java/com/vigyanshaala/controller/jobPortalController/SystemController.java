@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -55,5 +56,21 @@ public class SystemController {
         return responseEntity;
 
 
+    }
+
+    @PostMapping(value="/deleteFiles", produces="application/json")
+    ResponseEntity<Response> deleteFiles() {
+        ResponseEntity responseEntity;
+        Response response=new Response();
+        try{
+            File dir = new File("/src/main/java/com.vigyanshaala/deletefolder");
+            responseEntity = systemServices.deleteDirectory(dir);
+        } catch (Exception e) {
+            log.error("Exception occurred while deleting files ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occured while deleting files" + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return responseEntity;
     }
 }
