@@ -493,7 +493,7 @@ public class AdminController {
             if(Objects.nonNull(idToken)) {
                 String email=idToken.getPayload().getEmail();
                 String role= userController.getRole(email);
-                int pageSize = 5;
+                int pageSize = 24;
                 Pageable p = PageRequest.of(pageNumber, pageSize);
                 log.info(role);
                 if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")){

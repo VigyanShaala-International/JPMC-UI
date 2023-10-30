@@ -67,7 +67,7 @@ public class StudentServiceImpl implements StudentServices {
 
     @Override
     public ResponseEntity getActiveJobs(Integer pageNumber){
-        int pageSize = 5;
+        int pageSize = 24;
         Pageable p = PageRequest.of(pageNumber, pageSize);
         Response response = new Response();
         try {
