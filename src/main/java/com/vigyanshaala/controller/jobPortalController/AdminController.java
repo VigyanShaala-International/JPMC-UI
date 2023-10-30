@@ -13,6 +13,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -482,7 +485,7 @@ public class AdminController {
     @ApiOperation(value = "Fetch filtered job from the job table", notes = "Returns a response with status code 200 for successful fetch from the job table.")
     @GetMapping(value = "/jobs/", produces = "application/json")
     @SecurityRequirement(name = "Bearer Authentication")
-    ResponseEntity<Response> getJob(@RequestHeader("Authorization") String bearerToken, JobFilter jobFilter) {
+    ResponseEntity<Response> getJob(@RequestHeader("Authorization") String bearerToken, JobFilter jobFilter, @RequestParam(value="pageNumber", defaultValue="0",required=false) Integer pageNumber) {
         ResponseEntity responseEntity;
         Response response = new Response();
         try{
@@ -490,15 +493,18 @@ public class AdminController {
             if(Objects.nonNull(idToken)) {
                 String email=idToken.getPayload().getEmail();
                 String role= userController.getRole(email);
+                int pageSize = 5;
+                Pageable p = PageRequest.of(pageNumber, pageSize);
                 log.info(role);
                 if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")){
-                    List<Job> jobList = customJobRepository.fetchAll(jobFilter);
-                    if (jobList.size() != 0) {
+                    Page<Job> jobList = customJobRepository.fetchAll(jobFilter, p);
+                    if (jobList.getSize() != 0) {
                         log.info("JobFilter is {} :" + jobFilter);
                         log.info("The job fetched is {}", jobList);
                         response.setStatusCode(HttpStatus.OK.value());
                         response.setStatusMessage("Successfully received the job details");
                         response.setData(jobList);
+                        response.setPages(jobList.getTotalPages());
                         return ResponseEntity.status(HttpStatus.OK).body(response);
                     } else {
                         log.info("No job was found for the corresponding job ID");
