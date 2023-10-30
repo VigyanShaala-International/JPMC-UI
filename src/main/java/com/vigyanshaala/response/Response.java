@@ -14,11 +14,16 @@ public class Response<T> {
 
     private String statusMessage;
 
+
+    private int pages;
+
     private T data;
 
-    public Response(int statusCode, String statusMessage, T data)
+    public Response(int statusCode,int pages, String statusMessage, T data)
     {
         this.statusCode=statusCode;
+
+        this.pages=pages;
 
         this.statusMessage=statusMessage;
 
@@ -33,8 +38,13 @@ public class Response<T> {
         this.statusCode = statusCode;
     }
 
+    public int getPages() {
+        return pages;
+    }
 
-
+    public void setPages(int pages) {
+        this.pages = pages;
+    }
 
 
     public String getStatusMessage() {

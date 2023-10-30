@@ -4,6 +4,9 @@ import com.vigyanshaala.entity.jobPortalEntity.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +24,7 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
 
     }
 
-    public List<Job> fetchAll(JobFilter filter) {
+    public Page<Job> fetchAll(JobFilter filter, Pageable p) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
@@ -72,8 +75,15 @@ public class CustomJobRepositoryImpl implements CustomJobRepository {
         predicates.add(criteriaBuilder.greaterThanOrEqualTo(jobTable.get("expiryDate"), LocalDate.now()));
         predicates.add(criteriaBuilder.equal(jobTable.get("isActive"), "Y"));
 
-        return entityManager.createQuery(query.select(jobTable)
-                .where(predicates.toArray(new Predicate[]{})).distinct(true).orderBy((criteriaBuilder.desc(jobTable.get("postingDate"))))).getResultList();
+        List<Job> queryRes = entityManager.createQuery(query.select(jobTable)
+                .where(predicates.toArray(new Predicate[]{}))
+                .distinct(true)
+                .orderBy((criteriaBuilder.desc(jobTable.get("postingDate")))))
+                .getResultList();
+        int start = (int) p.getOffset();
+        int end = Math.min((start + p.getPageSize()), queryRes.size());
+        List<Job> pageContent = queryRes.subList(start, end);
+        return new PageImpl<>(pageContent, p, queryRes.size());
 
     }
 }

@@ -5,6 +5,9 @@ import com.vigyanshaala.repository.jobPortalRepository.JobRepository;
 import com.vigyanshaala.response.Response;
 import com.vigyanshaala.service.jobPortalService.StudentServices;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -63,14 +66,16 @@ public class StudentServiceImpl implements StudentServices {
     }
 
     @Override
-    public ResponseEntity getActiveJobs(){
-        ResponseEntity responseEntity;
+    public ResponseEntity getActiveJobs(Integer pageNumber){
+        int pageSize = 5;
+        Pageable p = PageRequest.of(pageNumber, pageSize);
         Response response = new Response();
         try {
-            List<Job> jobList = jobRepository.findActiveJobs();
+            Page<Job> jobList = jobRepository.findActiveJobs(p);
             log.info("The active job list is {}", jobList);
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully received all job locations");
+            response.setPages(jobList.getTotalPages());
             response.setData(jobList);
 
         } catch (Exception e) {

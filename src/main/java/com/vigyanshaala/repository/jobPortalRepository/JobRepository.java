@@ -1,6 +1,8 @@
 package com.vigyanshaala.repository.jobPortalRepository;
 
 import com.vigyanshaala.entity.jobPortalEntity.Job;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -29,5 +31,5 @@ public interface JobRepository extends JpaRepository<Job, String>, CustomJobRepo
 
     @Transactional
     @Query(value = "SELECT * FROM job j where j.is_active= 'Y'", nativeQuery = true)
-    public List<Job> findActiveJobs();
+    public Page<Job> findActiveJobs(Pageable p);
 }

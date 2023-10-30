@@ -92,7 +92,7 @@ public class StudentController {
     @ApiOperation(value = "Get all active jobs from the job table without a filter", notes = "Returns a response entity with status code 200 and response in the body. The response data contains the list of all jobs.")
     @GetMapping(value = "/job/active", produces = "application/json")
     @SecurityRequirement(name = "Bearer Authentication")
-    ResponseEntity<Response> getActiveJobs(@RequestHeader("Authorization") String bearerToken) {
+    ResponseEntity<Response> getActiveJobs(@RequestHeader("Authorization") String bearerToken, @RequestParam(value="pageNumber", defaultValue="0",required=false) Integer pageNumber) {
         ResponseEntity responseEntity;
         Response response = new Response();
         try{
@@ -102,7 +102,7 @@ public class StudentController {
                 String role= userController.getRole(email);
                 log.info(role);
                 if(role.equalsIgnoreCase("admin") || role.equalsIgnoreCase("student")) {
-                    responseEntity = studentServices.getActiveJobs();
+                    responseEntity = studentServices.getActiveJobs(pageNumber);
                 }else{
                     log.error("You need admin or student role to perform this action");
                     response.setStatusCode(HttpStatus.FORBIDDEN.value());
