@@ -1,6 +1,5 @@
 package com.vigyanshaala.serviceImpl.jobPortalServiceImpl;
 
-import com.lowagie.text.*;
 import com.lowagie.text.pdf.CMYKColor;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
@@ -200,9 +199,9 @@ public class SystemServiceImpl implements SystemServices {
             response.setStatusCode(HttpStatus.OK.value());
             response.setStatusMessage("Successfully flagged expired jobs");
         } catch (Exception e) {
-            log.error("Exception occurred while soft deleting titles ", e);
+            log.error("Exception occurred while mailing job applications to HR ", e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            response.setStatusMessage("Exception occurred while soft deleting titles " + e);
+            response.setStatusMessage("Exception occurred while mailing job applications to HR" + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
         return ResponseEntity.status(HttpStatus.OK).body(response);
