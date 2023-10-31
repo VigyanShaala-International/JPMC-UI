@@ -1,0 +1,50 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 817648875048-r3k4nf2okkfhtpptm9ulf77idt19tiiu.apps.googleusercontent.com
+            client-secret: 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
+
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db.changelog/changelog.yml
+
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+      enable_lazy_load_no_trans: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  mail:
+    host: smtp-mail.outlook.com
+    username: careers@VigyanShaala.com
+    password: Career@VigyanShaala
+    properties:
+      mail:
+        store:
+          protocol: pop3
+        smtp:
+          ssl:
+            trust: smtp-mail.outlook.com
+          auth: true
+          starttls:
+            enable: true
+      ddl-auto: create-drop
+
+client-id: "817648875048-r3k4nf2okkfhtpptm9ulf77idt19tiiu.apps.googleusercontent.com"
+
+emailDuration: "0 0 20 ? * 1/3"
+
+serverCodePath: "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\"
+jobApplicationsZipPath: "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\"
