@@ -4,13 +4,13 @@ spring:
       client:
         registration:
           google:
-            client-id: 817648875048-r3k4nf2okkfhtpptm9ulf77idt19tiiu.apps.googleusercontent.com
-            client-secret: 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
+            client-id: 35603378190-n5a7bbg1j9g8uh5l3igm6d66fe7v2k99.apps.googleusercontent.com
+            client-secret: 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
 
   datasource:
-    url: jdbc:postgresql://jpmcvigyanshaaladb.ccxfs1ndk8yn.eu-north-1.rds.amazonaws.com:5432/jpmcvigyanshaaladb
+    url: jdbc:postgresql://vigyanshaalaorgdb.ccxfs1ndk8yn.eu-north-1.rds.amazonaws.com:5432/vigyanshaalaDB
     username: postgres
-    password: postgres
+    password: Transfer#Ledger
 
   liquibase:
     enabled: true
@@ -41,7 +41,7 @@ spring:
             enable: true
       ddl-auto: create-drop
 
-client-id: "817648875048-r3k4nf2okkfhtpptm9ulf77idt19tiiu.apps.googleusercontent.com"
+client-id: "35603378190-n5a7bbg1j9g8uh5l3igm6d66fe7v2k99.apps.googleusercontent.com"
 
 emailDuration: "0 0 20 ? * 1/3"
 
