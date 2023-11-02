@@ -1,5 +1,6 @@
 package com.vigyanshaala.serviceImpl.jobPortalServiceImpl;
 
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.CMYKColor;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
@@ -227,7 +228,7 @@ public class SystemServiceImpl implements SystemServices {
                     else
                         jobId1 = jobId;
                     Job job = jobRepository.findByJobId(jobId1);
-                    File directory = new File(jobId);
+                    File directory = new File(jobApplicationsZipPath + jobId);
                     if (!directory.exists()) {
                         directory.mkdir();
                     } else {
@@ -392,7 +393,7 @@ public class SystemServiceImpl implements SystemServices {
 
                             //sendMailWithAttachment(details);
                         }
-                        zip(serverCodePath + jobId, jobApplicationsZipPath + jobId + ".zip");
+                        zip(jobApplicationsZipPath + jobId, jobApplicationsZipPath + jobId + ".zip");
                         EmailDetails details = new EmailDetails();
                         details.setSubject("Details of job applications");
                         details.setRecipient(job.getHrEmail());
@@ -482,9 +483,28 @@ public class SystemServiceImpl implements SystemServices {
         log.info("Mailing job applications to HR...");
         try {
             mailJobApplicationsToHr();
+            deleteDirectory(new File(jobApplicationsZipPath));
+
         } catch (Exception e) {
             log.error("Exception occurred while mailing job applications to HR " + e);
         }
     }
+    
+    public ResponseEntity deleteDirectory(File directoryToBeDeleted) {
+        Response response = new Response();
+        try {
+            FileUtils.cleanDirectory(directoryToBeDeleted);
+            log.info("Successfully deleted directory");
+            response.setStatusCode(HttpStatus.OK.value());
+            response.setStatusMessage("Successfully deleted directory");
+        } catch (Exception e) {
+            log.error("Exception occurred while deleting directory ", e);
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            response.setStatusMessage("Exception occurred while deleting directory " + e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 
 }
