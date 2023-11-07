@@ -28,6 +28,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -53,7 +55,8 @@ public class SystemServiceImpl implements SystemServices {
     private String jobApplicationsZipPath;
     @Value("${emailDuration}")
     public String emailDuration;
-
+    @Value("${expiredJob}")
+    public String expiredJob;
     @Value("${fromEmail}")
     private String sender;
 
@@ -68,11 +71,14 @@ public class SystemServiceImpl implements SystemServices {
     }
 
     @Override
-    public ResponseEntity deleteExpiredJobs(String date) {
+    @Scheduled(cron = "${expiredJob}")
+    public ResponseEntity deleteExpiredJobs() {
 //        ArrayList<Job> results = null;
         Response response = new Response();
         try {
-              expiredJobsRepository.softdeleteJobs(date);
+              SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+              Date date = new Date();
+              expiredJobsRepository.softdeleteJobs(formatter.format(date));
 //            System.out.println(results);
             log.info("Successfully soft deleted expired jobs");
             response.setStatusCode(HttpStatus.OK.value());
