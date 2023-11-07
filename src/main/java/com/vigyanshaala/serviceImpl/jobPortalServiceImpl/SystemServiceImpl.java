@@ -51,8 +51,6 @@ public class SystemServiceImpl implements SystemServices {
     private String serverCodePath;
     @Value("${jobApplicationsZipPath}")
     private String jobApplicationsZipPath;
-    @Value("${expiredJob}")
-    public String expiredJob;
     @Value("${emailDuration}")
     public String emailDuration;
 
@@ -70,7 +68,6 @@ public class SystemServiceImpl implements SystemServices {
     }
 
     @Override
-    @Scheduled(cron = "${expiredJob}")
     public ResponseEntity deleteExpiredJobs(String date) {
 //        ArrayList<Job> results = null;
         Response response = new Response();
