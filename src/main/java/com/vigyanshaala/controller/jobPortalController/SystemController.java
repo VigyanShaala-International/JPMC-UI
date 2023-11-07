@@ -27,9 +27,7 @@ public class SystemController {
         ResponseEntity responseEntity;
         Response response=new Response();
         try{
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            Date date = new Date();
-            responseEntity = systemServices.deleteExpiredJobs(formatter.format(date));
+            responseEntity = systemServices.deleteExpiredJobs();
         } catch (Exception e) {
             log.error("Exception occurred while deleting job ", e);
             response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
