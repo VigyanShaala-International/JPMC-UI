@@ -56,7 +56,7 @@ public class SystemServiceImpl implements SystemServices {
     @Value("${emailDuration}")
     public String emailDuration;
 
-    @Value("${spring.mail.username}")
+    @Value("${fromEmail}")
     private String sender;
 
     private final ExpiredJobsRepository expiredJobsRepository;
