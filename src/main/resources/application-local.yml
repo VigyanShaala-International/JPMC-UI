@@ -43,6 +43,7 @@ spring:
       ddl-auto: create-drop
 
 client-id: "35603378190-n5a7bbg1j9g8uh5l3igm6d66fe7v2k99.apps.googleusercontent.com"
+fromEmail: "careers@VigyanShaala.com"
 
 emailDuration: "0 0 20 ? * 1/3"
 
