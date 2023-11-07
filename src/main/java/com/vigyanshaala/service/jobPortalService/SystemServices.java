@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface SystemServices {
 
-    ResponseEntity deleteExpiredJobs(String date);
+    ResponseEntity deleteExpiredJobs();
 
     ResponseEntity mailJobApplicationsToHr();
 }
