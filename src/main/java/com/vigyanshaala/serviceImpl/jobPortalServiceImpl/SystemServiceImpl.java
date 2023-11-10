@@ -394,17 +394,13 @@ public class SystemServiceImpl implements SystemServices {
                                 }
 
                             }
-                            // Zipping folders
-                            //zip("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\" + jobId, "C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId + ".zip");
-
-                            //sendMailWithAttachment(details);
+                           
                         }
                         zip(jobApplicationsZipPath + jobId, jobApplicationsZipPath + jobId + ".zip");
                         EmailDetails details = new EmailDetails();
                         details.setSubject("Details of job applications");
                         details.setRecipient(job.getHrEmail());
-                        details.setMsgBody("Hi, PFA responses to the list of responses for the job applications you have posted. Best regards, Team VigyanShaala ");
-                        //details.setAttachment("C:\\Users\\harin\\IdeaProjects\\vigyanshaala-server-new\\JobApplications\\" + jobId + ".zip");
+                        details.setMsgBody("Hi, PFA student responses for the job applications you have posted. Best regards, Team VigyanShaala ");
                         details.setAttachment(jobApplicationsZipPath + jobId + ".zip");
                         sendMailWithAttachment(details);
 
